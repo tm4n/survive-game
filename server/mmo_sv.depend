@@ -1,0 +1,821 @@
+# depslib dependency file v1.0
+1338762561 source:/home/tilman/projects/mmo/server/main.cpp
+	<string>
+	<sstream>
+	<iostream>
+	"include/gameServer.h"
+	"include/loginServer.h"
+
+1306739856 /home/tilman/projects/mmo/server/include/Timer.h
+
+1306740034 source:/home/tilman/projects/mmo/server/Timer.cpp
+	"include/Timer.h"
+	"SDL/SDL.h"
+
+1338411143 /usr/include/mysql++/mysql++.h
+	"connection.h"
+	"cpool.h"
+	"query.h"
+	"scopedconnection.h"
+	"sql_types.h"
+	"transaction.h"
+
+1338411143 /usr/include/mysql++/connection.h
+	"common.h"
+	"noexceptions.h"
+	"options.h"
+	<string>
+	"tcp_connection.h"
+	"uds_connection.h"
+	"wnp_connection.h"
+
+1338411143 /usr/include/mysql++/common.h
+	<winsock.h>
+	"config.h"
+	<mysql/mysql_version.h>
+	<mysql_version.h>
+	<mysql/mysql.h>
+	<mysql.h>
+
+1348906279 /usr/include/mysql/mysql_version.h
+	<custom_conf.h>
+
+1346230246 /usr/include/mysql/mysql.h
+	<standards.h>
+	<sys/types.h>
+	<winsock2.h>
+	"mysql_version.h"
+	"mysql_com.h"
+	"mysql_time.h"
+	"my_list.h"
+	"typelib.h"
+	"my_alloc.h"
+
+1346230246 /usr/include/mysql/mysql_com.h
+
+1346230246 /usr/include/mysql/mysql_time.h
+
+1346230246 /usr/include/mysql/my_list.h
+
+1346230246 /usr/include/mysql/typelib.h
+	"my_alloc.h"
+
+1346230246 /usr/include/mysql/my_alloc.h
+
+1338411143 /usr/include/mysql++/noexceptions.h
+	"common.h"
+
+1338411143 /usr/include/mysql++/options.h
+	"common.h"
+	<deque>
+	<string>
+
+1338411143 /usr/include/mysql++/tcp_connection.h
+	"connection.h"
+
+1338411143 /usr/include/mysql++/uds_connection.h
+	"connection.h"
+
+1338411143 /usr/include/mysql++/wnp_connection.h
+	"connection.h"
+
+1338411143 /usr/include/mysql++/cpool.h
+	"beemutex.h"
+	<list>
+	<assert.h>
+	<time.h>
+
+1338411143 /usr/include/mysql++/beemutex.h
+	"exceptions.h"
+
+1338411143 /usr/include/mysql++/exceptions.h
+	"options.h"
+	<exception>
+	<string>
+	<sstream>
+	<typeinfo>
+
+1338411143 /usr/include/mysql++/query.h
+	"common.h"
+	"exceptions.h"
+	"noexceptions.h"
+	"qparms.h"
+	"querydef.h"
+	"result.h"
+	"row.h"
+	"sqlstream.h"
+	"stadapter.h"
+	"transaction.h"
+	<deque>
+	<iomanip>
+	<list>
+	<map>
+	<set>
+	<vector>
+	<ext/slist>
+	<slist>
+	"insertpolicy.h"
+
+1338411143 /usr/include/mysql++/qparms.h
+	"stadapter.h"
+	<vector>
+
+1338411143 /usr/include/mysql++/stadapter.h
+	"common.h"
+	"datetime.h"
+	"null.h"
+	"sql_buffer.h"
+	"tiny_int.h"
+	<stdexcept>
+	<string>
+
+1338411143 /usr/include/mysql++/datetime.h
+	"common.h"
+	"comparable.h"
+	<string>
+	<iostream>
+
+1338411143 /usr/include/mysql++/comparable.h
+
+1338411143 /usr/include/mysql++/null.h
+	"exceptions.h"
+	<iostream>
+	<string>
+
+1338411143 /usr/include/mysql++/sql_buffer.h
+	"refcounted.h"
+	"type_info.h"
+	<string>
+
+1338411143 /usr/include/mysql++/refcounted.h
+	<memory>
+
+1338411143 /usr/include/mysql++/type_info.h
+	"common.h"
+	"exceptions.h"
+	<map>
+	<sstream>
+	<typeinfo>
+
+1338411143 /usr/include/mysql++/tiny_int.h
+	"common.h"
+	<ostream>
+
+1338411143 /usr/include/mysql++/querydef.h
+
+1338411143 /usr/include/mysql++/result.h
+	"common.h"
+	"exceptions.h"
+	"field.h"
+	"field_names.h"
+	"field_types.h"
+	"noexceptions.h"
+	"refcounted.h"
+	"row.h"
+
+1338411143 /usr/include/mysql++/field.h
+	"common.h"
+	"type_info.h"
+	<vector>
+
+1338411143 /usr/include/mysql++/field_names.h
+	<string>
+	<vector>
+
+1338411143 /usr/include/mysql++/field_types.h
+	"type_info.h"
+	<vector>
+
+1338411143 /usr/include/mysql++/row.h
+	"common.h"
+	"mystring.h"
+	"noexceptions.h"
+	"refcounted.h"
+	"vallist.h"
+	<vector>
+	<string>
+
+1338411143 /usr/include/mysql++/mystring.h
+	"common.h"
+	"datetime.h"
+	"exceptions.h"
+	"null.h"
+	"sql_buffer.h"
+	<string>
+	<sstream>
+	<limits>
+	<stdlib.h>
+	<string.h>
+
+1338411143 /usr/include/mysql++/vallist.h
+	"manip.h"
+	<string>
+	<vector>
+
+1338411143 /usr/include/mysql++/manip.h
+	"common.h"
+	"myset.h"
+	"stadapter.h"
+	<iostream>
+
+1338411143 /usr/include/mysql++/myset.h
+	"common.h"
+	"mystring.h"
+	"stream2string.h"
+	<iostream>
+	<set>
+
+1338411143 /usr/include/mysql++/stream2string.h
+	<sstream>
+	<string>
+
+1338411143 /usr/include/mysql++/sqlstream.h
+	"common.h"
+	<sstream>
+
+1338411143 /usr/include/mysql++/transaction.h
+	"common.h"
+
+1338411143 /usr/include/mysql++/insertpolicy.h
+
+1338411143 /usr/include/mysql++/scopedconnection.h
+	"common.h"
+
+1338411143 /usr/include/mysql++/sql_types.h
+	"common.h"
+	"tiny_int.h"
+	<string>
+	<stdint.h>
+
+1307098276 source:/home/tilman/projects/mmo/libraries/tinyxml/tinystr.cpp
+	"tinystr.h"
+
+1307098276 /home/tilman/projects/mmo/libraries/tinyxml/tinystr.h
+	<assert.h>
+	<string.h>
+
+1307098276 source:/home/tilman/projects/mmo/libraries/tinyxml/tinyxml.cpp
+	<ctype.h>
+	<sstream>
+	<iostream>
+	"tinyxml.h"
+
+1307527624 /home/tilman/projects/mmo/libraries/tinyxml/tinyxml.h
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<string>
+	<iostream>
+	<sstream>
+	"tinystr.h"
+
+1307098282 source:/home/tilman/projects/mmo/libraries/tinyxml/tinyxmlerror.cpp
+	"tinyxml.h"
+
+1307098276 source:/home/tilman/projects/mmo/libraries/tinyxml/tinyxmlparser.cpp
+	<ctype.h>
+	<stddef.h>
+	"tinyxml.h"
+	<windows.h>
+
+1342985032 source:/home/tilman/projects/mmo/server/SimpleConnectionPool.cpp
+	"include/SimpleConnectionPool.h"
+
+1338402369 /home/tilman/projects/mmo/server/include/SimpleConnectionPool.h
+	<mysql++.h>
+	<enet/enet.h>
+
+1349822808 source:/home/tilman/projects/mmo/server/gameServer.cpp
+	"include/gameServer.h"
+	"SDL/SDL.h"
+	"include/Timer.h"
+	<mysql++.h>
+	<pthread.h>
+	<cmath>
+	<ctime>
+	"helper.h"
+	"backends/b_classes.h"
+	"backends/b_npcs.h"
+	"backends/b_items.h"
+	"backends/b_dropsets.h"
+	"backends/b_quests.h"
+	"backends/b_skills.h"
+	"include/net_sv.h"
+	"include/player_sv.h"
+	"include/level_sv.h"
+
+1347447738 /home/tilman/projects/mmo/server/include/gameServer.h
+	<game.h>
+	"enet/enet.h"
+	"level_sv.h"
+	"SimpleConnectionPool.h"
+	"backends/b_skills.h"
+	<string>
+	<list>
+	<set>
+
+1329665950 /home/tilman/projects/mmo/shared/game.h
+	"defs.h"
+	"enet/enet.h"
+	"backends/b_classes.h"
+	"backends/b_npcs.h"
+	"backends/b_items.h"
+	"level.h"
+	"actor.h"
+	<vector>
+
+1329953560 source:/home/tilman/projects/mmo/shared/game.cpp
+	"game.h"
+
+1345578740 source:/home/tilman/projects/mmo/shared/net.cpp
+	"net.h"
+	"string.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1345578794 /home/tilman/projects/mmo/shared/net.h
+	"defs.h"
+	"enet/enet.h"
+	"vec.h"
+	"item.h"
+
+1345586218 source:/home/tilman/projects/mmo/server/loginServer.cpp
+	"include/loginServer.h"
+	"helper.h"
+	"include/net_sv.h"
+	<cstdio>
+	<pthread.h>
+
+1309389446 /home/tilman/projects/mmo/server/include/loginServer.h
+	"enet/enet.h"
+	"SimpleConnectionPool.h"
+	<string>
+	<list>
+
+1349825398 /home/tilman/projects/mmo/shared/helper.h
+	<vector>
+	<string>
+
+1349825398 source:/home/tilman/projects/mmo/shared/helper.cpp
+	"helper.h"
+	<cstdio>
+	<cstdlib>
+	<sstream>
+	"backends/b_game.h"
+	"unistd.h"
+	<windows.h>
+	<Shlobj.h>
+	<Shlwapi.h>
+	<malloc.h>
+
+1326928672 /home/tilman/projects/mmo/shared/backends/b_classes.h
+	"defs.h"
+	<iostream>
+	<string>
+
+1317416131 /home/tilman/projects/mmo/shared/backends/b_level.h
+	"defs.h"
+	"actor.h"
+	<vector>
+
+1348020329 source:/home/tilman/projects/mmo/shared/backends/b_classes.cpp
+	"b_classes.h"
+	"tinyxml.h"
+	"helper.h"
+	<windows.h>
+	"adll.h"
+
+1318464489 source:/home/tilman/projects/mmo/shared/backends/b_level.cpp
+	"b_level.h"
+	"string.h"
+	<iostream>
+	<fstream>
+
+1347452354 source:/home/tilman/projects/mmo/shared/actor.cpp
+	"actor.h"
+	<cmath>
+	<algorithm>
+	"defs.h"
+	"stdio.h"
+
+1345036587 /home/tilman/projects/mmo/shared/actor.h
+	"defs.h"
+	"level.h"
+	"item_cont.h"
+	"bufflist.h"
+
+1318544871 source:/home/tilman/projects/mmo/server/b_level_sv.cpp
+	"include/b_level_sv.h"
+
+1318464866 /home/tilman/projects/mmo/server/include/b_level_sv.h
+	"backends/b_level.h"
+	"game.h"
+	"npc_sv.h"
+
+1349825398 /home/tilman/projects/mmo/shared/defs.h
+	"vec.h"
+	"stdio.h"
+
+1335814052 /home/tilman/projects/mmo/shared/vec.h
+
+1345037810 /home/tilman/projects/mmo/shared/npc.h
+	<actor.h>
+
+1341013220 /home/tilman/projects/mmo/server/include/npc_sv.h
+	"npc.h"
+	"game.h"
+	"level_sv.h"
+	"actor_updater.h"
+	"npc_ai.h"
+
+1349572129 source:/home/tilman/projects/mmo/server/npc_sv.cpp
+	"include/npc_sv.h"
+	"backends/b_dropsets.h"
+	<sstream>
+
+1345037850 source:/home/tilman/projects/mmo/shared/npc.cpp
+	"npc.h"
+	<backends/b_npcs.h>
+
+1335815642 source:/home/tilman/projects/mmo/shared/vec.cpp
+	"vec.h"
+	<math.h>
+
+1317161377 source:/home/tilman/projects/mmo/shared/flist.cpp
+
+1347230598 /home/tilman/projects/mmo/shared/flist.h
+	"defs.h"
+	"stdio.h"
+
+1317160841 /home/tilman/projects/mmo/shared/flist.cpp
+	"flist.h"
+
+1349562082 /home/tilman/projects/mmo/server/include/player_sv.h
+	"gameServer.h"
+	"player.h"
+	<enet/enet.h>
+	"actor_updater.h"
+	"level_sv.h"
+	"path.h"
+	"enet/enet.h"
+
+1345583977 /home/tilman/projects/mmo/shared/player.h
+	"actor.h"
+	"inventory.h"
+	"questlog.h"
+	"skill_cont.h"
+
+1349800193 source:/home/tilman/projects/mmo/server/player_sv.cpp
+	"include/player_sv.h"
+	"include/net_sv.h"
+	<sstream>
+
+1349812536 source:/home/tilman/projects/mmo/shared/player.cpp
+	"player.h"
+	"backends/b_classes.h"
+	"string.h"
+
+1307098277 source:/home/tilman/projects/mmo/libraries/tinyxml/xmltest.cpp
+	<iostream>
+	<sstream>
+	<stdio.h>
+	<crtdbg.h>
+	"tinyxml.h"
+
+1345578994 /home/tilman/projects/mmo/server/include/actor_updater.h
+	<set>
+	"enet/enet.h"
+	"npc_sv.h"
+	"player_sv.h"
+	"container_sv.h"
+
+1345579008 source:/home/tilman/projects/mmo/server/actor_updater.cpp
+	"include/actor_updater.h"
+	"include/npc_sv.h"
+	"include/player_sv.h"
+	"include/net_sv.h"
+	"stdio.h"
+
+1345025395 /home/tilman/projects/mmo/server/include/net_sv.h
+	"net.h"
+	"actor.h"
+	"item_cont.h"
+	"questlog.h"
+	"skill_cont.h"
+
+1349405935 source:/home/tilman/projects/mmo/server/net_sv.cpp
+	"include/net_sv.h"
+	"vec.h"
+	"include/player_sv.h"
+	"include/npc_sv.h"
+	"string.h"
+
+1347311336 source:/home/tilman/projects/mmo/server/path.cpp
+	"include/path.h"
+
+1336589918 /home/tilman/projects/mmo/server/include/path.h
+	<list>
+	<vector>
+	"level_sv.h"
+	"pqueue.h"
+
+1318470930 /home/tilman/projects/mmo/server/include/pqueue.h
+	"defs.h"
+
+1318613686 source:/home/tilman/projects/mmo/server/pqueue.cpp
+	"include/pqueue.h"
+	"stdio.h"
+
+1345163226 /home/tilman/projects/mmo/shared/level.h
+	"defs.h"
+	"flist.h"
+	"actor.h"
+	<list>
+
+1345163194 /home/tilman/projects/mmo/server/include/level_sv.h
+	"level.h"
+	"game.h"
+	"npc_sv.h"
+	"player_sv.h"
+	<list>
+
+1345163145 source:/home/tilman/projects/mmo/server/level_sv.cpp
+	"include/level_sv.h"
+
+1348020329 source:/home/tilman/projects/mmo/shared/level.cpp
+	"level.h"
+	"string.h"
+	<cmath>
+	<iostream>
+	<fstream>
+	"helper.h"
+
+1340833928 /home/tilman/projects/mmo/shared/backends/b_npcs.h
+	"defs.h"
+	<iostream>
+	<string>
+
+1348020329 source:/home/tilman/projects/mmo/shared/backends/b_npcs.cpp
+	"b_npcs.h"
+	"tinyxml.h"
+	"helper.h"
+	<windows.h>
+	"adll.h"
+
+1349564422 /home/tilman/projects/mmo/server/include/npc_ai.h
+	"npc_sv.h"
+
+1349803340 source:/home/tilman/projects/mmo/server/npc_ai.cpp
+	"include/npc_ai.h"
+
+1347239726 source:/home/tilman/projects/mmo/shared/inventory.cpp
+	"inventory.h"
+	"game.h"
+
+1340833665 /home/tilman/projects/mmo/shared/inventory.h
+	"item_cont.h"
+	"player.h"
+	"backends/b_items.h"
+
+1340833668 /home/tilman/projects/mmo/shared/item_cont.h
+	"item.h"
+	"flist.h"
+
+1336870610 /home/tilman/projects/mmo/shared/item.h
+	"defs.h"
+
+1336870692 source:/home/tilman/projects/mmo/shared/item.cpp
+	"item.h"
+	"cstring"
+
+1326039729 /home/tilman/projects/mmo/server/gameServer_handle_netevent.cpp
+
+1340833666 source:/home/tilman/projects/mmo/shared/item_cont.cpp
+	"item_cont.h"
+
+1334872270 source:/home/tilman/projects/mmo/server/base85.cpp
+	<stdio.h>
+
+1341178247 /home/tilman/projects/mmo/shared/backends/b_items.h
+	"defs.h"
+	<iostream>
+	<string>
+	<list>
+	"item.h"
+
+1348020329 source:/home/tilman/projects/mmo/shared/backends/b_items.cpp
+	"b_items.h"
+	"tinyxml.h"
+	"helper.h"
+	<iostream>
+	<sstream>
+	<windows.h>
+	"adll.h"
+	"b_classes.h"
+
+1329674934 /home/tilman/projects/mmo/shared/backends/b_dropsets.h
+	"defs.h"
+	<iostream>
+	<string>
+	<list>
+	"item_cont.h"
+
+1329873998 source:/home/tilman/projects/mmo/shared/backends/b_dropsets.cpp
+	"b_dropsets.h"
+	"tinyxml.h"
+	"b_items.h"
+	"helper.h"
+	<iostream>
+	<sstream>
+	<windows.h>
+	"adll.h"
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/enet.h
+	<stdlib.h>
+	"enet/win32.h"
+	"enet/unix.h"
+	"enet/types.h"
+	"enet/protocol.h"
+	"enet/list.h"
+	"enet/callbacks.h"
+
+1307098283 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/win32.h
+	<stdlib.h>
+	<winsock2.h>
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/unix.h
+	<stdlib.h>
+	<sys/time.h>
+	<sys/types.h>
+	<netinet/in.h>
+	<unistd.h>
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/types.h
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/protocol.h
+	"enet/types.h"
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/list.h
+	<stdlib.h>
+
+1307098277 /home/tilman/projects/mmo/libraries/enet-1.3.2/include/enet/callbacks.h
+	<stdlib.h>
+
+1309248974 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/enet.h
+	<stdlib.h>
+	"enet/win32.h"
+	"enet/unix.h"
+	"enet/types.h"
+	"enet/protocol.h"
+	"enet/list.h"
+	"enet/callbacks.h"
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/win32.h
+	<stdlib.h>
+	<winsock2.h>
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/unix.h
+	<stdlib.h>
+	<sys/time.h>
+	<sys/types.h>
+	<netinet/in.h>
+	<unistd.h>
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/types.h
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/protocol.h
+	"enet/types.h"
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/list.h
+	<stdlib.h>
+
+1309248752 /home/tilman/projects/mmo/libraries/enet-1.3.3/include/enet/callbacks.h
+	<stdlib.h>
+
+1349825398 source:/home/tilman/projects/mmo/shared/backends/b_quests.cpp
+	"b_quests.h"
+	"tinyxml.h"
+	"helper.h"
+	<iostream>
+	<sstream>
+	<windows.h>
+	"adll.h"
+
+1349825398 /home/tilman/projects/mmo/shared/backends/b_quests.h
+	"defs.h"
+	<iostream>
+	<string>
+	<list>
+
+1336782920 /home/tilman/projects/mmo/shared/questlog.h
+	<list>
+	<utility>
+	<string>
+	"defs.h"
+	"item_cont.h"
+
+1340487404 source:/home/tilman/projects/mmo/shared/questlog.cpp
+	"questlog.h"
+	"backends/b_quests.h"
+	"backends/b_npcs.h"
+	"backends/b_items.h"
+	<sstream>
+	<iostream>
+	<utility>
+
+1346804137 /home/tilman/projects/mmo/shared/backends/b_skills.h
+	"defs.h"
+	<iostream>
+	<string>
+	<list>
+	<vector>
+	"bufflist.h"
+
+1347498693 source:/home/tilman/projects/mmo/shared/backends/b_skills.cpp
+	"b_skills.h"
+	"tinyxml.h"
+	"helper.h"
+	<iostream>
+	<sstream>
+	<cmath>
+	<windows.h>
+	"adll.h"
+
+1345045042 /home/tilman/projects/mmo/shared/skill_cont.h
+	"defs.h"
+
+1341273536 source:/home/tilman/projects/mmo/shared/skill_cont.cpp
+	"skill_cont.h"
+	<cstring>
+	"backends/b_skills.h"
+
+1347409549 source:/home/tilman/projects/mmo/server/container_sv.cpp
+	"include/container_sv.h"
+	"backends/b_dropsets.h"
+	<sstream>
+
+1343175739 /home/tilman/projects/mmo/server/include/container_sv.h
+	"container.h"
+	"game.h"
+	"level_sv.h"
+	"actor_updater.h"
+
+1343174531 /home/tilman/projects/mmo/shared/container.h
+	<actor.h>
+
+1343174531 source:/home/tilman/projects/mmo/shared/container.cpp
+	"container.h"
+
+1344556416 /home/tilman/projects/mmo/shared/buff.h
+	<list>
+	"defs.h"
+
+1344554832 source:/home/tilman/projects/mmo/shared/buff.cpp
+	"buff.h"
+
+1347449274 /home/tilman/projects/mmo/shared/bufflist.h
+	<list>
+	"defs.h"
+
+1347449362 source:/home/tilman/projects/mmo/shared/bufflist.cpp
+	"bufflist.h"
+	<iostream>
+
+1348020329 /home/tilman/projects/mmo/shared/backends/b_game.h
+	"defs.h"
+	<string>
+
+1349870719 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/enet.h
+	<stdlib.h>
+	"enet/win32.h"
+	"enet/unix.h"
+	"enet/types.h"
+	"enet/protocol.h"
+	"enet/list.h"
+	"enet/callbacks.h"
+
+1349870718 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/win32.h
+	<stdlib.h>
+	<winsock2.h>
+
+1349870720 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/unix.h
+	<stdlib.h>
+	<sys/time.h>
+	<sys/types.h>
+	<netinet/in.h>
+	<unistd.h>
+
+1349870718 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/types.h
+
+1349870721 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/protocol.h
+	"enet/types.h"
+
+1349870720 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/list.h
+	<stdlib.h>
+
+1349870718 /home/tilman/projects/mmo/libraries/enet-1.3.5/include/enet/callbacks.h
+	<stdlib.h>
+

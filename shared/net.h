@@ -1,0 +1,95 @@
+#ifndef __NET_H__
+#define __NET_H__
+
+#include "defs.h"
+#include "enet/enet.h"
+#include "vec.h"
+
+////////////////////////////////////////////////
+// package type defines
+#define NET_VERSION 0
+
+#define NET_CHAT 5
+
+#define NET_GAME_STATE 8
+
+#define NET_SYNC_SERVER 9
+#define NET_SYNC_PLAYER 10
+#define NET_REMOVE_PLAYER 11 // needed?
+
+#define NET_CREATE_ACTOR 12
+#define NET_REMOVE_ACTOR 13
+
+
+// #define NET_INPUT
+
+#define NET_UPDATE_STATE 50
+#define NET_UPDATE_TARGET 51
+#define NET_UPDATE_POS 52
+#define NET_UPDATE_HEALTH 53
+#define NET_UPDATE_WEAPON 54
+
+
+////////////////////////////////////////////////
+// syncronization data
+
+struct s_net_version
+{
+    int version;
+};
+
+struct s_net_sync_server
+{
+    char mapfile[32];
+    //...
+};
+
+struct s_net_sync_player
+{
+    char name[32];
+};
+
+struct s_net_remove_player
+{
+
+};
+
+struct s_net_sync_finish
+{
+    uint own_actor_id;
+};
+
+// value updates
+struct s_net_update_state
+{
+    uint actor_id;
+    ushort state;
+};
+
+struct s_net_update_target
+{
+    uint actor_id;
+    uint target;
+};
+
+struct s_net_update_pos
+{
+    uint actor_id;
+    float x, y;
+};
+
+struct s_net_update_health
+{
+    uint actor_id;
+    float health;
+};
+
+
+
+////////////////////////////////////////////////
+// network helper functions, both client and server
+
+int net_send_event(short evtype, const char *data, int size, ENetPeer *);
+int net_broadcast_event(short evtype, const char *data, int size, ENetHost *);
+
+#endif
