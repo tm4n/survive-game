@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Style No Load C</title>
+    <para>The <literal>noload_c</literal> style works a lot like the near-defunct GLee loader. You
+        don't need to call a function to load all of the function pointers; instead, you simply call
+        the GL functions as normal. If it hasn't been loaded, it will be. This makes it among the
+        most user-friendly of the loader styles.</para>
+    <para>As a C style, it follows the naming conventions of the <literal
+            xlink:href="Style_Pointer_CPP">pointer_c</literal> style. It prefixes enums and
+        functions with <literal>GL/WGL/GLX</literal> and <literal>gl/wgl/glX</literal> as
+        appropriate.</para>
+    <para>The system is designed to be automatic, responding to your application's needs. However,
+        calling a function that cannot be loaded from the implementation will result in a
+        crash.</para>
+    <para>To help alleviate this, the system does have variables to tell you which extensions are
+        available (at least, according to the extension strings). They are named by this convention
+            <literal>ogl/wgl/glx_exts_&lt;extension name></literal>. These are
+            <literal>int</literal> types. However, unlike the magic function pointers, you have to
+        call another function to initialize them. You must call
+            <literal>ogl/wgl/glx_CheckExtensions</literal>. This function only checks what is
+        exported by the extension string, so it cannot report on the number of functions that failed
+        to load.</para>
+    <section>
+        <title>Example</title>
+        <para>This example is for loading the OpenGL functions; it expects the OpenGL header to be
+            included. For loading WGL/GLX functions, include their headers and change the
+                <literal>ogl_</literal> prefixes to <literal>wgl</literal> or <literal>glx</literal>
+            as appropriate.</para>
+        <programlisting>//Create OpenGL context and make it current.</programlisting>
+        <para>That was a trick question: there is no initialization required. That is the whole
+            point of this style, after all.</para>
+        <para>However, if you want to query which extensions are around, you
+                <emphasis>need</emphasis> to initialize that:</para>
+        <programlisting>//Create OpenGL context and make it current.
+ogl_CheckExtensions();</programlisting>
+        <para>The presence of extensions can be checked as follows:</para>
+        <programlisting>if(ogl_exts_EXT_texture_compression_s3tc)
+  glCompressedTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256,
+    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, compressedSize, compressedPixels);
+else
+{
+  void *decompressedPixels = DecompressPixels(256, 256,
+    compressedSize, compressedPixels);
+
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256,
+    GLRGBA, GL_UNSIGNED_BYTE, decompressedPixels);
+  free(decompressedPixels);
+}</programlisting>
+    </section>
+    <section>
+        <title>Versions</title>
+        <para>When you use this system and provide a version number of OpenGL,
+                <literal>noload_c</literal> will assume that you are <emphasis>serious</emphasis>
+            about that version number. Which means that if you create a 3.3 header, and you do not
+            supply a context that claims support for at least OpenGL version 3.3, <emphasis>crashing
+                may occur</emphasis>.</para>
+        <para>In particular, OpenGL changed the mechanism to check for the presence/absence of
+            extensions in version 3.0. Therefore, <literal>noload_c</literal> will also change how
+            it checks for the presence/absence of extensions based on that. If you provide a version
+            3.0 or greater, it will use the new style of extension querying. Thus, if your context
+            is only version 2.1, then this style will be unable to function and will likely crash
+            when it fails to load an appropriate function pointer.</para>
+    </section>
+</article>

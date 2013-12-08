@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Style Pointer C++</title>
+    <para>The <literal>pointer_cpp</literal> style is designed to work well in C++. Where
+            <literal>pointer_c</literal> maximizes interoperability with other systems (it defines
+        global functions with the expected C names), <literal>pointer_cpp</literal> is primarily
+        about making it easy for intellisense and the like to find the function definitions for easy
+        work.</para>
+    <para>With the exception of the typedefs, everything lives in a C++ namespace based on each
+        spec: <literal>gl</literal>, <literal>wgl</literal>, and <literal>glX</literal> (the same
+        names that would have gone on the front of the function names). If the
+            <literal>-prefix</literal> option was provided, then the spec namespace will itself be
+        within a namespace named for the prefix.</para>
+    <para>The extension variables are in their own namespace:
+            <literal>&lt;prefix>::&lt;spec>::exts</literal>. The type of the variable is not a mere
+            <literal>bool</literal>; it is an <literal>exts::LoadTest</literal>. This type is
+        convertible to bool (via the safe-bool idiom, so no need to worry about that), but it also
+        has a function to see how many functions failed to load for that extension. It will always
+        report that it loaded if the extension string is in the spec; the
+            <literal>exts::LoadTest::GetNumFailed()</literal> will return the number of functions
+        that failed to load (if any).</para>
+    <para>The enumerators are actual C++ enums now. There is no enumeration name; all of the enums
+        live in one big enumeration. Because the enumerators are namespace-qualified now, there is
+        no need to put the <literal>(W)GL(X)_</literal> in front of them. So we do not. However,
+        this causes two problems:</para>
+    <orderedlist>
+        <listitem>
+            <para>Some enumerators (<literal>2D</literal>, for example. Yes, that is an OpenGL
+                enumerator; it's for feedback rendering) begin with characters that C++ doesn't
+                allow as identifiers. Thus, these enumerators are prefixed with an
+                        <quote><literal>_</literal></quote> character. So <literal>2D</literal>
+                becomes <literal>_2D</literal>.</para>
+        </listitem>
+        <listitem>
+            <para>Certain enumerators use widely used by OS's for various things. Windows for
+                example <literal>#define</literal>s <literal>TRUE</literal> and
+                    <literal>FALSE</literal>, among others. There's no automated way to detect this,
+                so there's just a list of the known ones. The C++ standard states that all
+                identifiers that begin with an underscore followed by a capital letter are reserved
+                for the standard library. So we cannot prefix them with an underscore; instead, we
+                suffix them with one. So <literal>TRUE</literal> becomes
+                <literal>TRUE_</literal>.</para>
+        </listitem>
+    </orderedlist>
+    <para>The functions are function pointers, but their names are not hidden behind a
+            <literal>#define</literal>. This should allow code-completion tools to be more useful.
+        They also aren't prefixed with <literal>(w)gl(X)</literal>, since they live in a
+        namespace.</para>
+    <para>The system functions (the function that loads the function pointers, version getting, etc)
+        are contained in the <literal>&lt;prefix>::&lt;spec>::sys</literal> namespace. The loader
+        function will always be called <literal>LoadFunctions</literal>. It returns an
+            <literal>ext::LoadTest</literal>, which works as above. It will only be false if it
+        couldn't even attempt to load functions (due to being unable to get the extension string).
+        The number of functions that failed to load refers to the core functions (and core extension
+        functions).</para>
+    <section>
+        <title>Example</title>
+        <para>This example is for loading the OpenGL functions; it expects the OpenGL header to be
+            included. For loading WGL/GLX functions, include their headers and change the
+                <quote>gl</quote> namespaces to <quote>wgl</quote> or <quote>glx</quote> as
+            appropriate.</para>
+        <programlisting>//Create OpenGL context and make it current.
+
+gl::exts::LoadTest didLoad = gl::sys::LoadFunctions();
+if(!didLoad)
+{
+  //The context cannot work with the generated headers for some reason. Abort.
+  //Destroy the context
+  return;
+}
+
+printf("Number of functions that failed to load: %i.\n", didLoad.GetNumMissing());</programlisting>
+        <para>The presence of extensions can be checked as follows:</para>
+        <programlisting>if(gl::exts::var_EXT_texture_compression_s3tc)
+  gl::CompressedTexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, 256, 256,
+    gl::COMPRESSED_RGBA_S3TC_DXT5_EXT, compressedSize, compressedPixels);
+else
+{
+  void *decompressedPixels = DecompressPixels(256, 256,
+    compressedSize, compressedPixels);
+
+  gl::TexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, 256, 256,
+    gl::RGBA, gl::UNSIGNED_BYTE, decompressedPixels);
+  free(decompressedPixels);
+}</programlisting>
+    </section>
+    <section>
+        <title>Versions</title>
+        <para>When you use this system and provide a version number of OpenGL,
+                <literal>pointer_cpp</literal> will assume that you are <emphasis>serious</emphasis>
+            about that version number. Which means that if you create a 3.3 header, and you do not
+            supply a context that claims support for at least OpenGL version 3.3, loading failure
+            may occur.</para>
+        <para>In particular, OpenGL changed the mechanism to check for the presence/absence of
+            extensions in version 3.0. Therefore, <literal>pointer_cpp</literal> will also change
+            how it checks for the presence/absence of extensions based on that. If you provide a
+            version 3.0 or greater, it will use the new style. Thus, if your context is only version
+            2.1, then this style will be unable to function and will return
+                <literal>LOAD_FAILED</literal>.</para>
+    </section>
+    <section>
+        <title>Compatibility</title>
+        <para>These headers are "compatible" with headers from other libraries (FreeGLUT, GLFW,
+            etc), but only in the sense that they define the appropriate typedefs globally. If any
+            of these headers have inline functions that make calls into GL, expecting functions to
+            be named in the standard GL style, then they're in trouble. Also, these headers
+                <emphasis>prevent</emphasis> the later inclusion of <filename>gl.h</filename> and
+            similar headers, so that kind of code will likely complain.</para>
+        <para>If you're using some kind of hybrid like this, you need to create an insulation layer
+            between those inline functions and the appropriate typedefs.</para>
+    </section>
+</article>

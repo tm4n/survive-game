@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Styles</title>
+    <para><phrase role="toc"/></para>
+    <para>The <literal>-style</literal> command line option defines how the header and source files
+        are generated. They will always generate the same information (more or less); the difference
+        between styles explains the form that this information takes. The information generated
+        is:</para>
+    <itemizedlist>
+        <listitem>
+            <para>Typedefs for OpenGL types (<literal>GLenum</literal>, <literal>GLint</literal>,
+                etc).</para>
+        </listitem>
+        <listitem>
+            <para>A means to tell whether each of the extensions specified by the user is loaded or
+                not. This is usually exposed via a global variable who's name contains the extension
+                name.</para>
+        </listitem>
+        <listitem>
+            <para>The enumerators for all of the extensions specified as well as any specified
+                OpenGL versions/profiles (where applicable).</para>
+        </listitem>
+        <listitem>
+            <para>Functions (whether function pointers or something else, that's up to the style)
+                for the various extensions specified, as well as any specified OpenGL
+                versions/profiles (where applicable).</para>
+        </listitem>
+        <listitem>
+            <para>A function that will load all function pointers. Even if the style uses static
+                linking, a function will still be provided. Until this function is called, you
+                cannot use any of the mechanisms to test whether an extension is loaded, nor can you
+                call any other functions.</para>
+            <para>The function's return value will be a status code saying whether it succeeded.
+                Success is defined solely in terms of loading the specified core OpenGL version;
+                therefore, WGL or GLX loader functions will always <quote>succeed</quote>. Test for
+                individual extensions if you want to know what happened there.</para>
+        </listitem>
+        <listitem>
+            <para>Optionally, if using the OpenGL specification, the style will export a number of
+                useful helper functions to query OpenGL version information. This is
+                per-style.</para>
+        </listitem>
+    </itemizedlist>
+    <para>The different types of styles will decide what form these take (enumerators could be
+            <literal>const</literal> variables of some kind instead of the usual
+            <literal>#define</literal>s, for example). But each style must provide this set of
+        information.</para>
+    <section>
+        <title>Available styles</title>
+        <para>There are a number of styles available, with documentation explaining exactly what
+            they generate:</para>
+        <itemizedlist>
+            <listitem>
+                <para><link xlink:href="Style_Pointer_C"><literal>pointer_c</literal></link>:
+                    Function-pointer-based style for C. It is the most widely compatible, comparable
+                    to GLEW. It has variables to test whether an extension was loaded (and how many
+                    of its functions were loaded). Like GLEW, it requires calling an initialization
+                    function to set it up. This is best used for C or C++ users who need to be able
+                    to share the headers with other tools (note: usually, you don't need to do
+                    this).</para>
+            </listitem>
+            <listitem>
+                <para><link xlink:href="Style_Pointer_CPP"><literal>pointer_cpp</literal></link>:
+                    Function-pointer-based style for C++. It wraps all function pointers, extension
+                    variables, and enumerators in a namespace (not the typedefs). It requires
+                    calling an initialization function to set it up. This is best used for C++ users
+                    who don't need compatibility, but would like OpenGL stuff to not pollute the
+                    global namespace so much.</para>
+            </listitem>
+            <listitem>
+                <para><link xlink:href="Style_Function_CPP"><literal>func_cpp</literal></link>:
+                    Inline-function-based style for C++. This means that the header contains actual
+                    inline functions, which forward their parameters to the actual function pointers
+                    internally. Like <literal>pointer_cpp</literal>, most of OpenGL is in a
+                    namespace. This is best used for C++ users who want the best possible
+                    autocompletion from their IDE or coding tool of choice.</para>
+            </listitem>
+            <listitem>
+                <para><link xlink:href="Style_No_Load_C"><literal>noload_c</literal></link>:
+                    Automatic loading style for C. This is similar to the old loading tool GLee.
+                    Unlike the other styles, it does not require an initialization function; you
+                    simply call whatever function you want to use. The first time a call is
+                    encountered, it will load that function. This is best used for C or C++ users
+                    who don't want to do explicit initialization, and also want header compatibility
+                    like <literal>pointer_c</literal>.</para>
+            </listitem>
+            <listitem>
+                <para><link xlink:href="Style_No_Load_CPP"><literal>noload_cpp</literal></link>:
+                    Automatic loading style for C++. This is similar to the old loading tool GLee.
+                    Unlike the other styles, it does not require an initialization function; you
+                    simply call whatever function you want to use. The first time a call is
+                    encountered, it will load that function. It will wrap most of OpenGL in a
+                    namespace. This is best used for C++ users who don't want to do explicit
+                    initialization.</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+    <section>
+        <title>Core Extensions</title>
+        <para>OpenGL 3.0 introduced the concept of <quote>core extensions.</quote> Normally with
+            extensions, even ARB extensions, the enumerators, functions and typedefs end in the
+            extension type suffix: ARB, EXT, etc. This allows any extension that is to be inducted
+            into the core to have its behavior modified where necessary.</para>
+        <para>With GL 3.0, the ARB changed things by making certain extensions core extensions.
+            These are extensions where their declarations don't have the extension suffix. This
+            represents APIs that do not change between extension and core. As such, the
+            enums/functions/etc are considered part of both the extension and a version of
+            OpenGL.</para>
+        <para>Core extensions are special in that part of OpenGL is effectively in an extension. For
+            example, ARB_uniform_buffer_object is a core extension; all of the functions/enums it
+            defines are part of GL 3.1 as well as the extension.</para>
+        <para>Because of this, it is possible to ask for GL 3.1 (which will provide those
+            functions/enums) <emphasis>and</emphasis> ARB_uniform_buffer_object at the same time. Or
+            to ask for GL 3.0 (where it isn't core) and ARB_uniform_buffer_object. Or to ask for GL
+            3.1 <emphasis>without</emphasis> explicitly asking for ARB_uniform_buffer_object.</para>
+        <para>The way this works is as follows. If you explicitly ask for an extension, the system
+            will <emphasis>always</emphasis> provide you a way to query whether that extension is
+            loaded. If you don't ask for the extension, but the version number effectively requires
+            that extension (asking for GL 3.1+ requires ARB_uniform_buffer_object), you'll still get
+            the enums and functions, but you <emphasis>won't</emphasis> get a way to query whether
+            that extension specifically is loaded.</para>
+        <para>In short, if you want GL 4.2, but you want to verify whether particular parts are
+                <quote>available,</quote> (ie: if you only get GL version 4.1, but there are 4.2
+            features exposed via extensions), you must explicitly request each extension.</para>
+    </section>
+    <section>
+        <title>Compatibility profile</title>
+        <para>The compatibility profile complicates code generation a bit. The system will do its
+            best to cull inappropriate enumerators/functions based on core/compatibility.</para>
+        <para>However, this may not be possible in every case. For example, take the
+                <literal>GL_QUADS</literal> enumerator. This enumerator was defined way back in GL
+            1.1. But 3.1 removed it, so if you ask for a 3.1 core header, you shouldn't get
+                <literal>GL_QUADS</literal>.</para>
+        <para>The problem is that it didn't <emphasis>stay</emphasis> removed. GL
+            4.0/ARB_tessellation_shader brought it back (though only as a tessellation target).
+            Which means if you ask for a 3.1 core header it should be gone, but if you ask for a 3.1
+            core header that includes ARB_tessellation_shader, it should return. As it should if you
+            ask for a 4.1 core header (with or without ARB_tessellation_shader).</para>
+        <para>This system cannot due that, primarily because the source of the OpenGL specification
+            information (the .spec files, as processed through various scripts) does not provide
+            enough information. The spec files only define what is core or compatibility in the
+            current OpenGL version, not what <emphasis>used</emphasis> to be core for a while, then
+            was only in compatibility, then came back into core.</para>
+        <para>Therefore, the system errs on the side of being inclusive. If it came back into core,
+            it is considered to have never <emphasis>left</emphasis> core OpenGL. Thus, if you ask
+            the system for 3.1, core profiles, you will see <literal>GL_QUADS</literal>, as well as
+            a few others. The number of these are rather few, so it should not be a problem.</para>
+    </section>
+    <section>
+        <title>User-created styles</title>
+        <para>The style mechanism is designed to be extensible. You should be able to write new
+            styles relatively painlessly. This system is <link xlink:href="Style_Creation">covered
+                in some detail</link>. The general idea is that you write a Lua script that exposes
+            a number of functions. Then you hook this script into the build system by adding a line
+            of code to one of the files. At which point, you're done. Making the style script is the
+            hard part.</para>
+    </section>
+</article>

@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Structure Reference</title>
+    <para>This is a reference manual for making structures. It covers all of the information about
+        valid structure actions, parameters, and the specific interactions with styles.</para>
+    <para><phrase role="toc"/></para>
+    <section>
+        <title>Concepts</title>
+        <para>Structures are defined by a Lua table. Lua's table mechanism is a lot like
+            JavaScript's similar constructs; it makes for a handy data storage format. And since it
+            is a Lua table, it doesn't have to be <quote>parsed;</quote> it's just a valid Lua
+            object. This also allows parts of tables to be used in different places, and for tables
+            to effectively be <quote>copied</quote> by simply using another variable.</para>
+        <para>A structure is built as a nested series of tables. So you would define one like
+            this:</para>
+        <programlisting>local my_struct =
+{
+  { type="foo", },
+  { type="bar", },
+}</programlisting>
+        <para>The contents of the base structure is an array of values. Once you have created the
+            table, the actual data structure is created as follows:</para>
+        <programlisting>local Structure = require "Structure"
+
+Structure.BuildStructure(my_struct)</programlisting>
+        <para>The return value is a special object that should be returned along with your
+            style.</para>
+        <para>Each element of a structure is called an <glossterm>action.</glossterm> The type of
+            action is defined by the <literal>type</literal> field. Using an invalid type will
+            result in a build-time error (ie: <literal>BuildStructure</literal> will error). This
+            makes it easy to do some basic verification by simply executing your structure's script.
+            That won't verify things like whether a function exists or the correctness of
+            parameters, but at least you know you've spelled your action types correctly.</para>
+        <para>Each type can have a number of attributes. Some attributes are specific to certain
+            types, while others can be used anywhere.</para>
+        <para>Actions can be nested within other actions. For some actions, it generally does not
+            make sense to nest them, while others only make sense if they contain other actions. The
+            outer action can influence how inner actions are processed. For example, actions that
+            iterate over something will execute their contents once per iteration. There are actions
+            that will execute their contents only if a style-provided function returns true. And so
+            forth.</para>
+        <para>When a structure is processed, each action will be executed in the order provided. Do
+            note that no steps are taken to prevent infinite recursion/iteration; if your structure
+            uses a table which uses another table which itself contains the first table, that is a
+            legal table in Lua. Attempting to process such a structure with
+                <literal>BuildStructure</literal> will halt with a Lua stack overflow or execute
+            infinitely.</para>
+        <section>
+            <title>Context</title>
+            <para>There is a notion of a current <glossterm>context</glossterm>. The context
+                represents all of the information currently available to an action (and therefore
+                whatever style functions it calls). Some actions will augment the current context
+                with new information. These take the form of parameters passed to style
+                functions.</para>
+            <para>If an action provides some new context variable(s), then all child actions may
+                access them. Actions that provide new context variables will provide them to all
+                child actions contained within that action.</para>
+            <para>Some actions <emphasis>require</emphasis> certain context variables to be
+                available. If they are not, then a runtime error will result. For example, the
+                function iterator action iterates over all of the functions within the current
+                extension or version (both of which are context variables). If no extension or
+                version is available, then the action will fail to execute.</para>
+            <para>Similarly, actions cannot modify already existing context variables. So you cannot
+                nest actions that provide the same context variable(s).</para>
+            <para>In the reference table below, there will be text that says, <quote>must be within
+                    the scope of X.</quote> This means that the action needs to be inside an action
+                that provides the context variable(s) X.</para>
+        </section>
+        <section>
+            <title>Current Style</title>
+            <para>When style functions need to be called, the system will use the current style to
+                do so. The style will be the table provided to the generation system.</para>
+            <para>However, it is often convenient for the user to put different functions within
+                tables in a style. For example, you could have a function called
+                    <literal>WriteExtVariable</literal>. When generating your header file, you want
+                it to write an <literal>extern</literal> declaration, but in your source file, it
+                should write it as a non-<literal>extern</literal> definition. What you can do is
+                define a pair of sub-tables of your main style table. A table called
+                    <literal>header</literal> would have one version of
+                    <literal>WriteExtVariable</literal>, while the table called
+                    <literal>source</literal> would have another version.</para>
+            <para>Thus, you could use the same structural element to process both. Like this:</para>
+            <programlisting>local piece =
+{
+  { type="ext-iter",
+    { type="write", name="ExtVariable(hFile, extName, spec, options)", },
+  }
+}
+
+local my_struct =
+{
+  { type="group", style="header"
+    piece,
+  }
+  { type="group", style="source"
+    piece,
+  }
+}</programlisting>
+            <para>When the system goes to find <literal>WriteExtVariable</literal>, it will first
+                check the most recently set sub-style. If it does not find the function there, it
+                will check the next one. And the next. Until it comes to the main style table. If
+                it's not there, <emphasis>then</emphasis> it errors out. Thus, every additional
+                substyle <emphasis>increases</emphasis> the number of functions available; it never
+                reduces them.</para>
+            <para>Indeed, the <literal>style</literal> parameter itself uses similar resolution
+                methods. For example, you could have a second table inside the
+                    <literal>header</literal> table also given the name <literal>source</literal>
+                (so it's full name relative to the main style is <literal>header.source</literal>).
+                If you are inside the <literal>header</literal> style and then ask for the
+                    <literal>source</literal> style, you will get the
+                    <literal>header.source</literal> sub-style.</para>
+            <para>This is a very useful tool for making large structure construction more
+                manageable.</para>
+        </section>
+    </section>
+    <section>
+        <title>Action Reference</title>
+        <para>This is a list of all of the actions and their associated attributes.</para>
+        <para>When an action says, <quote>Provides access to the X variable,</quote> this also means
+            that the action <emphasis>cannot nest</emphasis> with any action that provides the X
+            variable. Including itself.</para>
+        <section>
+            <title>System</title>
+            <para>These actions are system-level actions. They can be used in any context, and they
+                don't have anything to do (directly at least) with writing data or even the spec
+                data at all.</para>
+            <glosslist>
+                <glossentry>
+                    <glossterm>group</glossterm>
+                    <glossdef>
+                        <para>Represents a collection of actions. This has no real semantics; it's
+                            mainly used as the base table for variables that contain actions. Every
+                            table in the structure must have an action, so this is used to group
+                            them. They can also have conditional attributes and such.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>filter</glossterm>
+                    <glossdef>
+                        <para>Will execute its child actions only if the named style function
+                            returns true. The default parameters are <literal>()</literal> (ie: no
+                            parameters).</para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>name</literal>: The base name of the function that
+                                    does filtering. The full name will be prefixed by
+                                            <quote><literal>Filter</literal></quote>.</para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>neg</literal>: If this is true, then the meaning of
+                                    the return value is inverted. That is, if the function returns
+                                    true, then it will <emphasis>not</emphasis> process the
+                                    children. This is useful for reusing filter functions in
+                                    opposite ways without having to write a new one.</para>
+                            </listitem>
+                        </itemizedlist>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>context</glossterm>
+                    <glossdef>
+                        <para>Adds a user-defined value to the current context. This will create a
+                            new parameter within the scope of this action that any function can
+                            reference. The default parameter list is <literal>()</literal>.</para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>key</literal>: The string name of the new context
+                                    variable. Required. Must end in the
+                                        <quote><literal>_</literal></quote> character, to ensure
+                                    that it doesn't conflict with system context variables.</para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>data</literal>: A Lua value that represents the new
+                                    context variable's data.</para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>name</literal>: The base name of the function to call
+                                    to fill in the context variable. The full name will be prefixed
+                                    by <quote><literal>State</literal></quote>.</para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>dispose</literal>: The base name of a function that
+                                    takes the context variable (and <emphasis>only</emphasis> the
+                                    context variable, so no parameter selection). This will be
+                                    called when the variable is disposed of. This would be for
+                                    clean-up work, like for file closing and such. The full name
+                                    will be prefixed by
+                                    <quote><literal>Dispose</literal></quote>.</para>
+                            </listitem>
+                        </itemizedlist>
+                        <para>Either <literal>name</literal> or <literal>data</literal> must be
+                            defined. <literal>data</literal> takes priority if both are
+                            defined.</para>
+                        <para>Provides access to the parameter named by <literal>key</literal>. Note
+                            that this means you can't nest <literal>context</literal>'s that provide
+                            the same variable.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>call</glossterm>
+                    <glossdef>
+                        <para>Calls a given style function. The default parameter list is
+                                <literal>()</literal>.</para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>name</literal>: The name of the function to call. The
+                                    name will be exactly as specified.</para>
+                            </listitem>
+                        </itemizedlist>
+                    </glossdef>
+                </glossentry>
+            </glosslist>
+        </section>
+        <section>
+            <title>File</title>
+            <para>These actions are for dealing with file data. Creating files, writing data to
+                files, etc.</para>
+            <glosslist>
+                <glossentry>
+                    <glossterm>file</glossterm>
+                    <glossdef>
+                        <para>Creates a tabbed-file. See the TabbedFile.lua module to understand
+                            what this is. The default function parameters are: <literal>(basename,
+                                options)</literal></para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>name</literal>: The exact name of the style function
+                                    to call that returns the full pathname of the file to
+                                    create</para>
+                            </listitem>
+                        </itemizedlist>
+                        <para>Provides access to the <literal>hFile</literal> variable.</para>
+                        <para>Note that you really need the <literal>basename</literal> variable. At
+                            the very least, you should extract the directory name from it, so that
+                            the user can provide a proper directory name. You can use
+                                <literal>util.ParsePath</literal> for this. Thus, your code should
+                            look like:</para>
+                        <programlisting>function style_name.GetFilenameFunc(basename, ...)
+  local base, dir = util.ParsePath(basename)
+  local filename = --compute filename here.
+  return dir .. filename
+end</programlisting>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>block</glossterm>
+                    <glossdef>
+                        <para>Writes the beginning of a block before executing its children, and
+                            writes the ending of a block after executing the children. The default
+                            function parameters are: <literal>(hFile, spec,
+                            options)</literal></para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>name</literal>: The base name of a pair of functions
+                                    to call to write the beginning and end of the block. The block
+                                    beginning function's name will be prefixed by
+                                            <quote><literal>WriteBlockBegin</literal></quote>;
+                                    similarly the ending function is prefixed with
+                                            <quote><literal>WriteBlockEnd</literal></quote></para>
+                            </listitem>
+                        </itemizedlist>
+                        <para>Must be within the scope of <literal>hFile</literal>.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>write</glossterm>
+                    <glossdef>
+                        <para>Calls a function to write something to the file. The default
+                            parameters to the function are <literal>(hFile, specData, spec,
+                                options)</literal>.</para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>name</literal>: The base name of the function that
+                                    does the actual writing. The full name will be prefixed by
+                                            <quote><literal>Write</literal></quote>.</para>
+                            </listitem>
+                        </itemizedlist>
+                        <para>Must be within the scope of <literal>hFile</literal>.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>blank</glossterm>
+                    <glossdef>
+                        <para>Writes a blank line to the file.</para>
+                        <para>Must be within the scope of <literal>hFile</literal>.</para>
+                    </glossdef>
+                </glossentry>
+            </glosslist>
+        </section>
+        <section>
+            <title>Iterators</title>
+            <para>These actions are for iterating over lists of data in the specification.</para>
+            <glosslist>
+                <glossentry>
+                    <glossterm>ext-iter</glossterm>
+                    <glossdef>
+                        <para>Executes its children once for every extension that the user has
+                            explicitly asked to generate code for.</para>
+                        <para>Provides access to the <literal>extName</literal> parameter.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>version-iter</glossterm>
+                    <glossdef>
+                        <para>Executes its children once for every version in the specification that
+                            is less than or equal to the one the user asked for. If we are
+                            processing a specification that doesn't have any versions (ie: isn't
+                            OpenGL), then none of the children will be executed.</para>
+                        <para>Provides access to the <literal>version</literal> parameter.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>sub-version-iter</glossterm>
+                    <glossdef>
+                        <para>Execute its children once for every version less than or equal to the
+                            current <literal>version</literal> parameter.</para>
+                        <para>Must be within the scope of <literal>version</literal>. Provides
+                            access to the <literal>sub_version</literal> parameter.</para>
+                        <para>This is useful for generating a group of functions or files that do
+                            something for each version, and for each version of OpenGL &lt;= that
+                            version. For example, you can have a bunch of headers that only provide
+                            functions/enums for features introduced within that version. Then, you
+                            can generate a file for each version, which includes headers only for
+                            the contents of everything <emphasis>up to</emphasis> that version of
+                            OpenGL and not just within it.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>enum-iter</glossterm>
+                    <glossdef>
+                        <para>Executes its children once for every enumerator within scope.
+                                <quote>Scope</quote> is defined by the <literal>extName</literal>
+                            and/or <literal>version</literal> parameters. If
+                                <literal>extName</literal> is available, then it will iterate over
+                            all enums in the extension. If <literal>version</literal> is available,
+                            then it will iterate over all enums that were introduced within that
+                            particular version (and <emphasis>only</emphasis> them). If both are
+                            available, <literal>extName</literal> takes priority.</para>
+                        <para>Must be within the scope of <literal>extName</literal> or
+                                <literal>version</literal>. Provides access to the
+                                <literal>enum</literal> and <literal>enumTable</literal>
+                            parameters.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>func-iter</glossterm>
+                    <glossdef>
+                        <para>Executes its children once for every function within scope. Scope is
+                            defined as for <literal>enum-iter</literal>.</para>
+                        <para>Must be within the scope of <literal>extName</literal> or
+                                <literal>version</literal>. Provides access to the
+                                <literal>func</literal> parameters.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>enum-seen</glossterm>
+                    <glossdef>
+                        <para>This is a special action which records which enumerators were iterated
+                            over within its scope. Every time an <literal>enum-iter</literal>
+                            finishes processing an enumerator, the enumerator name that was
+                            processed will be recorded in <literal>enumSeen</literal>. That allows
+                            the user to be able to detect if this is the first time (inside this
+                            scope) that the enum was processed. This helps styles execute
+                            statelessly.</para>
+                        <para>To see if an enumerator was processed already, use
+                                <literal>enumSeen[enum.name]</literal>. The value stored there will
+                            be a string containing the extension name or the version that it was
+                            most recently seen within.</para>
+                        <para>Provides access to the <literal>enumSeen</literal> parameter.</para>
+                        <para>Note that if you place a filter within an <literal>enum-iter</literal>
+                            block that is in an <literal>enum-seen</literal> scope, the filter's
+                            active/inactive status <emphasis>will not affect</emphasis> whether
+                                <literal>enumSeen</literal> will be updated. It doesn't matter if
+                            nothing was written; the enumerator being iterated over is
+                            enough.</para>
+                        <para>If that's not good enough, if you need the filter mechanism to be
+                            respected, you can use <literal>context</literal> and
+                                <literal>call</literal> actions to create the equivalent. The
+                                <literal>context</literal> would create some key as a new table, and
+                            the <literal>call</literal> would be used to update the table with an
+                            enumerator.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>func-seen</glossterm>
+                    <glossdef>
+                        <para>Works like <literal>enum-seen</literal>, except for functions.</para>
+                        <para>Provides access to the <literal>funcSeen</literal> parameter.</para>
+                    </glossdef>
+                </glossentry>
+            </glosslist>
+        </section>
+        <section>
+            <title>Common Attributes</title>
+            <para>Actions can have attributes. What follows is a list of attributes that can be used
+                in any action (or at least in a lot of them).</para>
+            <glosslist>
+                <glossentry>
+                    <glossterm>name</glossterm>
+                    <glossdef>
+                        <para>Part or all of a function name to call. The name, when possibly
+                            augmented with action-specific text, will used to fetch a function from
+                            the various styles and sub-styles as stated in the Current Style
+                            section. If the name is followed by a parenthesized list of parameters,
+                            then these parameters will be used in that order to call the
+                            function(s). If a particular parameter is not available in this context,
+                            a runtime error will occur. Each action that defines a name also defines
+                            a default set of parameters for functions that don't provide their own
+                            parameter list.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>style</glossterm>
+                    <glossdef>
+                        <para>Adds a new sub-style scoping. It fetches the style table using the
+                            rules specified above in the Current Style section.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>optional</glossterm>
+                    <glossdef>
+                        <para>Normally, the inability to resolve a function name to a function will
+                            result in an error. If this attribute is set to true however, then the
+                            failure to resolve a function will simply mean that the function is not
+                            called. All children are processed as though the function had been
+                            called normally, <emphasis>UNLESS</emphasis> it is a filter action. In
+                            that case, the filter will be assumed to have returned false, meaning
+                            that children will not be processed (unless <literal>neg</literal> is
+                                <emphasis>also</emphasis> set, in which case it will flip that into
+                                <literal>true</literal>, thus always processing children if the
+                            function isn't present).</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>first</glossterm>
+                    <glossdef>
+                        <para>If it is set to true, this action (and any of its children) will only
+                            be processed the first time through the most recent iteration loop. This
+                            only works with the <emphasis>most recent</emphasis> iteration
+                            loop.</para>
+                        <para>The interaction with filters can play havoc with this.
+                                <literal>first</literal> will only work when it is the numerically
+                            first time the node is seen within the most recent iterator. If a filter
+                            filters out the first time through, then the first action and its
+                            children will <emphasis>never</emphasis> be executed.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>last</glossterm>
+                    <glossdef>
+                        <para>If it is set to true, this action (and any of its children) will only
+                            be processed the last time through the most recent iteration loop. The
+                            same caveats apply with respect to filters.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>value</glossterm>
+                    <glossdef>
+                        <para>If this is set, then the given Lua value will be passed to any
+                            functions called by this action as the <literal>value</literal>
+                            parameter. Note that this parameter is <emphasis>not
+                                inherited</emphasis>. This parameter is not given to any child
+                            actions; only the action this value is set on will have access to this
+                            value.</para>
+                        <para>The value must be a string. However, to allow the string to use
+                            various names defined by the system, the string can have special codes
+                            in it. Any use of <quote>%</quote> in the string will denote the
+                            beginning of a special name. Thus, you shouldn't do things like this:
+                                    <quote><literal>some%string</literal>,</quote> this will make
+                            the system think that <literal>%string</literal> is a special name. If
+                            you use <quote>%</quote> by itself, with a space or non-identifier
+                            characters after it, then it will remain a % sign. So
+                                    <quote><literal>some% string</literal></quote> is fine, as is
+                                    <quote><literal>some%-string</literal></quote>.</para>
+                        <para>The special names are just context variable names, only a limited
+                            subset of them. Of the standard context variables, the only ones you can
+                            use are those which are naturally strings (like
+                                <literal>version</literal> and <literal>extName</literal>) or those
+                            which are reasonably convertible to strings (<literal>enum</literal>
+                            would return it's basic string name, with no prefixing).</para>
+                        <para>The main purpose of this is to be able to print messages easily, like
+                            comments that say that extension X's declarations begin here.</para>
+                        <para>User-defined context variables can also be used, but they must be
+                            either strings or tables. If they are tables, then they either must have
+                            a <literal>__tostring</literal> metamethod, or they must have a member
+                            function called <literal>_ValueResolve</literal> function. This function
+                            only takes the table as a parameter.</para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>cond</glossterm>
+                    <glossdef>
+                        <para>These are special conditionals that act like single-action filters.
+                            Unlike regular filters, they are pre-defined by the system. When they
+                            are false, the current action and its children will not be
+                            processed.</para>
+                        <para>There are a fixed set of conditions. Most of them match iterator
+                            names. For these, they are considered to pass if the corresponding
+                            iterator would execute at least once. Also, since they are based on
+                            iterators, they can <emphasis>only</emphasis> be used in the same
+                            context that their corresponding iterators can:</para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><literal>ext-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>version-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>core-ext-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>core-ext-cull-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>enum-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>func-iter</literal></para>
+                            </listitem>
+                            <listitem>
+                                <para><literal>core-funcs</literal>: Returns true if the spec has
+                                    core functions/enumerators at all. Basically, checks if the
+                                    specification is OpenGL and not WGL or GLX. Technically
+                                        <literal>version-iter</literal> would do the same job, but
+                                    in a less obvious way.</para>
+                            </listitem>
+                        </itemizedlist>
+                    </glossdef>
+                </glossentry>
+            </glosslist>
+        </section>
+    </section>
+    <section>
+        <title>Standard Context Variables</title>
+        <para>Here are a list of the various standard context variables, with references to the
+            actions that provide them.</para>
+        <para>Again, <emphasis>DO NOT MODIFY THEM!</emphasis> You can call member functions on them
+            and inspect them. But unless they're user-defined parameters, do not directly change
+            their tables.</para>
+        <glosslist>
+            <glossentry>
+                <glossterm>specData</glossterm>
+                <glossdef>
+                    <para>This is the entire data containing every enumeration, typedef, function,
+                        etc for the specification (OpenGL, WGL, GLX). It is a massive struct, and
+                        it's format is complex.</para>
+                    <para>You can see what specData looks like by reading
+                            <filename>glspecs/glspec.lua</filename>. <literal>specData</literal> is
+                        derived from this table, but with some modifications. The modifications are
+                        detailed in the comments at the top of
+                            <filename>modules/LoadLuaSpec.lua</filename>. They're primarily
+                        convenience stuff, to make it easier to find enums and functions by name and
+                        so forth.</para>
+                    <para>Normally, you should not need to look at this data structure directly. So
+                        include it in a parameter list sparingly.</para>
+                    <para>This parameter is always available.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>spec</glossterm>
+                <glossdef>
+                    <para>This is a struct containing functions used to get specification-specific
+                        strings. This allows the style of writing to be mostly independent of things
+                        like whether it is writing to OpenGL or WGL. For example, if you have the
+                        base name of an enumeration, and you want to prefix it with the spec-defined
+                        prefix for enumerations, you do this:</para>
+                    <programlisting>spec.EnumNamePrefix() .. enumName</programlisting>
+                    <para>There are a number of spec functions that return prefix strings or other
+                        spec-based strings. You can find these in the
+                            <filename>modules/Specs.lua</filename> file, with a comment stating what
+                        each one returns.</para>
+                    <para>There are also some functions that provide general information: list of
+                        versions, list of core extensions, a string containing the definitions for
+                        the OpenGL function to load function pointers, etc. These lists are all
+                        stored in the <filename>data</filename> directory, using the file format
+                            <literal>data/&lt;specName>_spec&lt;data>.lua</literal>.</para>
+                    <para>This parameter is always available.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>options</glossterm>
+                <glossdef>
+                    <para>The options data structure. It contains the options processed from the
+                        command-line. Among these is <literal>extensions</literal>, the list of
+                        extension names that are being explicitly written. You can tell which spec
+                        is being used with <literal>options.spec</literal>, but it's better to rely
+                        on the <literal>spec</literal> parameter as seen below.</para>
+                    <para>This parameter is always available.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>basename</glossterm>
+                <glossdef>
+                    <para>The base filename provided by the user, relative to the current working
+                        directory. You will need this to generate files in the directory the user
+                        wants for <literal>file</literal> action types.</para>
+                    <para>This parameter is always available.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>value</glossterm>
+                <glossdef>
+                    <para>A user-defined value. This parameter is only available if the action
+                        itself has the <literal>value</literal> attribute. Child actions of actions
+                        that have <literal>value</literal> attributes will <emphasis>not</emphasis>
+                        inherit them.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>hFile</glossterm>
+                <glossdef>
+                    <para>A <literal>TabbedFile</literal>. This is a special kind of Lua IO file. It
+                        supports all of the Lua IO methods (<emphasis>DO NOT CLOSE IT!</emphasis>),
+                        but it's designed to handle indentation. As such, it extends the Lua IO with
+                        specialized routines to auto-indent individual lines. This allows the system
+                        to determine the indention to use based on command-line options. The
+                        assumption with almost all of the writing functions is that each write is an
+                        individual line.</para>
+                    <para>This parameter is provided by the <literal>file</literal> action.</para>
+                    <para>Note that you must use it with Lua's member calling conventions
+                            (<literal>hFile:write</literal>, for example). If you try to use
+                            <literal>io.write</literal>, things will break.</para>
+                    <para><literal>hFile:inc</literal> and <literal>hFile:dec</literal> are
+                        functions that increment/decrement the current indention level. The
+                        indention can be preserved with <literal>hFile:push</literal> and restored
+                        with <literal>hFile:pop</literal>.</para>
+                    <para>The <literal>TabbedFile</literal> also offers the ability to do string
+                        formatting directly into the write. <literal>hFile:fmt</literal> takes a
+                        format string and some parameters, forwards the parameters to
+                            <literal>string.format</literal>, then writes that string as a
+                        line.</para>
+                    <para>There are block writing functions, <literal>hFile:writeblock</literal> and
+                            <literal>hFile:fmtblock</literal>. These functions will split the
+                        written string into individual lines and indent each one.</para>
+                    <para>If you don't want indented writes, then use
+                            <literal>hFile:rawwrite</literal> and
+                        <literal>hFile:rawfmt</literal>.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>extName</glossterm>
+                <glossdef>
+                    <para>The base name of an extension. Usually paired with
+                            <literal>specData</literal>, as the name alone isn't terribly useful.
+                        You can get the list of enumerators and functions defined by this extension
+                        with <literal>specData[extName].enums/funcs</literal>. These are not named
+                        of enumerators and functions; they're the actual part of the
+                            <literal>specData</literal> that defines everything about that
+                        enum/func.</para>
+                    <para>This parameter is provided by the <literal>ext-iter</literal>,
+                            <literal>core-ext-iter</literal>, and
+                            <literal>core-ext-cull-iter</literal> actions.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>version</glossterm>
+                <glossdef>
+                    <para>A <emphasis>string</emphasis> (remember this) that contains the version of
+                        interest. Since it's a string, you need to apply <literal>tonumber</literal>
+                        to it to get a proper number.</para>
+                    <para>This parameter is provided by the <literal>version-iter</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>sub_version</glossterm>
+                <glossdef>
+                    <para>A <emphasis>string</emphasis> (remember this) that contains a version
+                        between the first version and the current <literal>version</literal>
+                        version.</para>
+                    <para>This parameter is provided by the <literal>sub-version-iter</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>enum</glossterm>
+                <glossdef>
+                    <para>This is an enumeration. Not the <emphasis>name</emphasis> of an
+                        enumeration; the enumeration itself. It contains the name
+                            <literal>enum.name</literal>, but it also contains versioning
+                        information and so forth. It is an entry from the
+                            <literal>specData.enumerations</literal> table.</para>
+                    <para>This parameter is provided by the <literal>enum-iter</literal>
+                        action.</para>
+                    <para>If you want to get the value of an enumerator, you cannot simply use
+                            <literal>enum.value</literal>. You need the <literal>enum</literal> and
+                        the <literal>enumTable</literal> (see below). Then, you use
+                            <literal>common.ResolveEnumValue</literal>, where
+                            <literal>common</literal> is the <literal>CommonStyle</literal> module
+                        table.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>enumTable</glossterm>
+                <glossdef>
+                    <para>A table of <literal>enum</literal>s, indexed by enumeration name. It comes
+                        from <literal>specData.enumtable</literal>.</para>
+                    <para>This parameter is provided by the <literal>enum-iter</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>func</glossterm>
+                <glossdef>
+                    <para>This is a function. As with <literal>enum</literal>, it is not merely the
+                        name of a function (that's <literal>func.name</literal>); it is the function
+                        itself. It is an element taken from the
+                            <literal>specData.funcData.functions</literal> array. It contains many
+                        properties of a function.</para>
+                    <para>This parameter is provided by the <literal>func-iter</literal>
+                        action.</para>
+                    <para>If you want to get the parameters (C-style) in a function, you can use
+                            <literal>common.GetFuncParamList</literal>, which requires a
+                            <literal>typename</literal> (see below). Otherwise, you would have to
+                        deal with the many difficulties of pulling a viable parameter list from a
+                            <literal>func</literal>.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>enumSeen</glossterm>
+                <glossdef>
+                    <para>A table indexed by enumerator name. If an entry is present, then the
+                        enumerator was already seen at least once before.</para>
+                    <para>This parameter is provided by the <literal>func-seen</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>funcSeen</glossterm>
+                <glossdef>
+                    <para>A table indexed by function name. If an entry is present, then the
+                        function was already seen at least once before.</para>
+                    <para>This parameter is provided by the <literal>func-seen</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+        </glosslist>
+    </section>
+    <section>
+        <title>Common Structure</title>
+        <para>The module <literal>CommonStruct</literal> represents reuseable components for your
+            structure. You can use them as you see fit. Each of the following is a function within
+            the <literal>CommonStruct</literal> table. These are useful for more complex iteration
+            mechanism than what the standard structure iterators provide. They call functions with
+            specific names, but you can use the style scoping mechanism to put the right styles into
+            position to make them work.</para>
+        <glosslist>
+            <glossentry>
+                <glossterm>Extensions</glossterm>
+                <glossdef>
+                    <para>This function takes no arguments and returns a group of actions will
+                        iterate over every extension the user asked to export. For each extension,
+                        it will call a function named <literal>WriteExtension(hFile, extName, spec,
+                            options)</literal> to write each component.</para>
+                    <para>Obviously, since it is writing things, it needs to be used within a
+                            <literal>file</literal> action. Also, since it uses the
+                            <literal>ext-iter</literal> action, it cannot be used
+                            <emphasis>within</emphasis> an <literal>ext-iter</literal>
+                        action.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>Enumerators</glossterm>
+                <glossdef>
+                    <para>This function takes no arguments and returns a group of actions that will
+                        iterate over every enumerator in every extension and version that the user
+                        asked to export. This will respect core/compatibility. For each enumerator,
+                        it will call a function named <literal>WriteEnumerator(hFile, enum,
+                            enumTable, spec, options, enumSeen)</literal> to write each
+                        enumerator.</para>
+                    <para>It will first iterate over the enumerators in extensions that the user
+                        asked for. Each extension will be in its own group, optionally writing a
+                        header for each using <literal>WriteSmallHeader(hFile, value,
+                            options)</literal> (so if you wish to suppress the header, make this an
+                        empty function on the current style). Then it will iterate over all of the
+                        versions. For each version, it will iterate over any core extension enums
+                        that were <emphasis>not</emphasis> explicitly requested (writing a header
+                        for each). Then it will iterate over that version's non-core-extension
+                        enums.</para>
+                    <para>This must be used within the scope of <literal>hFile</literal>, and since
+                        it uses extension, version, and enumerator iterators, it can't be in scope
+                        of any of those. It also uses <literal>enum-seen</literal>.</para>
+                </glossdef>
+            </glossentry>
+            <glossentry>
+                <glossterm>Functions</glossterm>
+                <glossdef>
+                    <para>This function optionally takes one argument and returns a group of actions
+                        that will iterate over every function in every extension and version that
+                        the user asked to export. This will respect core/compatibility. For each
+                        function, it will call a function named <literal>WriteFunction(hFile, func,
+                            spec, options, funcSeen)</literal> to write each function.</para>
+                    <para>It will iterate over functions in the same group order as with
+                        enumerators. It will write headers where appropriate, which can be
+                        omitted.</para>
+                    <para>This must be used within the scope of <literal>hFile</literal>, and since
+                        it uses extension, version, and function iterators, it can't be in scope of
+                        any of those. It also uses <literal>func-seen</literal>.</para>
+                </glossdef>
+            </glossentry>
+        </glosslist>
+    </section>
+</article>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Home</title>
+    <section>
+        <title>OpenGL Loader Generator</title>
+        <para>This loader generation system is used to create OpenGL headers and loading code for
+            your specific needs. Rather than getting every extension and core enumerator/function
+            all in one massive header, you get only what you actually want and ask for. This tool
+            supports OpenGL 4.4 and the recent crop of OpenGL extensions.</para>
+        <para><link xlink:href="https://bitbucket.org/alfonse/glloadgen/downloads">Download it
+                here;</link> you will need to have the Lua runtime installed on your machine to use
+            the code generation scripts. It's pretty tiny, so it shouldn't be a problem. Windows
+            users can install <link xlink:href="http://code.google.com/p/luaforwindows/">Lua For
+                Windows</link>, or just <link xlink:href="http://luabinaries.sourceforge.net/">the
+                Lua binaries packages</link>. The code should be compatible with Lua 5.1 and 5.2,
+            but it has only been tested on 5.1.</para>
+        <para>Note: this script is designed to be stand-alone. There is a caveat: Lua lacks any real
+            filesystem commands, so the script cannot create directories for the destination files.
+            However, if you have installed the <link
+                xlink:href="http://keplerproject.github.com/luafilesystem/">Lua FileSystem</link>
+            Lua module (such that Lua can detect it), then this script will access and use it to
+            create directories. It comes with Lua For Windows, but you can use <link
+                xlink:href="http://www.luarocks.org/">LuaRocks</link> to install it on any platform
+            as well.</para>
+        <para>The scripts in this package are licensed under the terms of the MIT License.</para>
+        <section>
+            <title>Basic Usage</title>
+            <para>To use the code generator, with Lua in your path (assuming that
+                    <literal>lua</literal> is the name of your Lua executable), type this:</para>
+            <programlisting>lua LoadGen.lua -style=pointer_c -spec=gl -version=3.3 -profile=core core_3_3</programlisting>
+            <para>This tells the system to generate a header/source pair for OpenGL
+                    (<literal>-spec=gl</literal>, as opposed to WGL or GLX), for version 3.3, the
+                core profile. It will generate it in the <literal>pointer_c</literal> style, which
+                means that it will use function pointer-style, with C linkage and source. Such code
+                is usable from C and C++, or other languages that can interface with C.</para>
+            <para>The option <filename>core_3_3</filename> is the basic component of the filename
+                that will be used for the generation. Since it is generating OpenGL loaders (again,
+                as opposed to WGL or GLX), it will generate files named
+                    <filename>gl_core_3_3.*</filename>, where * is the extension used by the
+                particular style.</para>
+            <para>The above command line will generate <filename>gl_core_3_3.h</filename> and
+                    <filename>gl_core_3_3.c</filename> files. Simply include them in your project;
+                there is no library to build, no unresolved externals to filter through.</para>
+            <para>You will need to call <literal>ogl_LoadFunctions</literal> to initialize the
+                library if you use the <literal>pointer_c</literal> style. And you must call it
+                    <emphasis>after</emphasis> OpenGL context creation. For example, if you are
+                using FreeGLUT, your code looks like this:</para>
+            <programlisting>//Pre-window creation.
+int windowID = glutCreateWindow("Name");
+
+if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
+{
+  glutDestroyWindow(windowID);
+}
+//Call functions here.</programlisting>
+            <para>Replace the "Pre-window creation" and <literal>glutCreateWindow</literal> call with
+                your usual OpenGL context creation code.</para>
+            <para>The <link xlink:href="Command_Line_Options">full command-line syntax
+                    documentation</link> is available. Of particular note is the
+                    <literal>-style</literal> parameter, which defines how the loader is generated.
+                Different styles will have different initialization needs and so forth (you don't
+                even need to initialize some styles at all). The available styles are:</para>
+            <itemizedlist>
+                <listitem>
+                    <para><link xlink:href="Style_Pointer_C"><literal>pointer_c</literal></link>:
+                        Function-pointer-based style for C. It is the most widely compatible,
+                        comparable to GLEW. It has variables to test whether an extension was loaded
+                        (and how many of its functions were loaded). Like GLEW, it requires calling
+                        an initialization function to set it up. This is best used for C or C++
+                        users who need to be able to share the headers with other tools (note:
+                        usually, you don't need to do this).</para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="Style_Pointer_CPP"
+                        ><literal>pointer_cpp</literal></link>: Function-pointer-based style for
+                        C++. It wraps all function pointers, extension variables, and enumerators in
+                        a namespace (not the typedefs). It requires calling an initialization
+                        function to set it up. This is best used for C++ users who don't need
+                        compatibility, but would like OpenGL stuff to not pollute the global
+                        namespace so much.</para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="Style_Function_CPP"><literal>func_cpp</literal></link>:
+                        Inline-function-based style for C++. This means that the header contains
+                        actual inline functions, which forward their parameters to the actual
+                        function pointers internally. Like <literal>pointer_cpp</literal>, most of
+                        OpenGL is in a namespace. This is best used for C++ users who want the best
+                        possible autocompletion from their IDE or coding tool of choice.</para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="Style_No_Load_C"><literal>noload_c</literal></link>:
+                        Automatic loading style for C. This is similar to the old loading tool GLee.
+                        Unlike the other styles, it does not require an initialization function; you
+                        simply call whatever function you want to use. The first time a call is
+                        encountered, it will load that function. This is best used for C or C++
+                        users who don't want to do explicit initialization, and also want header
+                        compatibility like <literal>pointer_c</literal>.</para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="Style_No_Load_CPP"><literal>noload_cpp</literal></link>:
+                        Automatic loading style for C++. This is similar to the old loading tool
+                        GLee. Unlike the other styles, it does not require an initialization
+                        function; you simply call whatever function you want to use. The first time
+                        a call is encountered, it will load that function. It will wrap most of
+                        OpenGL in a namespace. This is best used for C++ users who don't want to do
+                        explicit initialization.</para>
+                </listitem>
+            </itemizedlist>
+            <para>Each linked page has instructions on how to use the generated interface.</para>
+            <para>More about styles can be found on the <link xlink:href="Styles">style
+                page</link>.</para>
+        </section>
+        <section>
+            <title>Extensions</title>
+            <para>Note that the above command line will <emphasis>only</emphasis> generate
+                enumerators and functions for core OpenGL 3.3. It doesn't offer any extensions. To
+                use extensions, you must ask for them with command line parameters, as
+                follows:</para>
+            <programlisting>lua LoadGen.lua -style=pointer_c -spec=gl -version=3.3 -profile=core core_3_3 -exts ARB_texture_view ARB_vertex_attrib_binding EXT_texture_filter_anisotropic -ext=EXT_texture_compression_s3tc -extfile=SomeFile.txt</programlisting>
+            <para>The <literal>-exts</literal> option starts a list of space-separated extension
+                names (note: don't try to put the output filename after <literal>-exts</literal>;
+                the system can't tell the difference between a filename and an extension). The
+                    <literal>-ext</literal> option only specifies a single name.</para>
+            <para><literal>-extfile</literal> specifies a <emphasis>filename</emphasis> to load
+                extensions from. The format of this file is fairly simple; it is <link
+                    xlink:href="Extension Files">explained here on this site</link>. The file is
+                expected to contain extension names, one on each line. Extension files can also have
+                    <literal>#include</literal> directives, which will include another extension
+                file (relative pathing only). Please don't infinitely recurse your inclusions;
+                there's no protection in the system to check for it.</para>
+            <para>The system has a number of <link xlink:href="Common_Extension_Files">common
+                    extension files</link> that store useful sets of extensions. You may use these
+                as you wish.</para>
+        </section>
+        <section>
+            <title>Examples</title>
+            <para>Here are some example command lines. This command-line generates loaders for core
+                OpenGL 3.3, without proprietary extensions, but with non-hardware features that were
+                added to OpenGL in later versions:</para>
+            <programlisting>lua LoadGen.lua core_3_3 -style=pointer_c -spec=gl -version=3.3 -profile=core -stdext=gl_ubiquitous.txt -stdext=gl_core_post_3_3.txt</programlisting>
+            <para>This command-line is for OpenGL 4.4, but with certain commonly-provided extensions
+                that are generally useful.</para>
+            <programlisting>lua LoadGen.lua core_4_4 -style=pointer_c -spec=gl -version=4.4 -profile=core -stdext=gl_ubiquitous.txt -stdext=gl_plat_3_3.txt</programlisting>
+            <para>This command-line generates a header that exposes OpenGL 3.2 for what MacOSX 10.8
+                uses (note: the loader generator files have not been tested with MacOSX of any
+                kind):</para>
+            <programlisting>lua LoadGen.lua core_3_2 -style=pointer_c -spec=gl -version=3.2 -profile=core -stdext=gl_ubiquitous.txt -stdext=gl_macosx_3_2.txt</programlisting>
+        </section>
+    </section>
+</article>

@@ -1,0 +1,1280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>New Style Step By Step</title>
+    <para>Making a style is a somewhat complex process. This will be a step-by-step guide to using
+        the system to make a part of a style. The style we will create will be a simple C-style
+        function loader.</para>
+    <para><phrase role="toc"/></para>
+    <section>
+        <title>Initial setup</title>
+        <para>All of the Lua scripts should go in the <filename>modules</filename> folder. For this
+            demonstration, we will create two files: one for the style and one for the structure.
+            The style will go into a file called <filename>StyleTest.lua</filename>, while the
+            structure will go into <filename>StructTest.lua</filename>.</para>
+        <para>The basic boilerplate for the structure is very simple:</para>
+        <programlisting>local struct = require "Structure"
+local common = require "CommonStruct"
+
+local my_struct = 
+{
+}
+
+my_struct = struct.BuildStructure(my_struct)
+return my_struct</programlisting>
+        <para>The first two statements include the <literal>Structure</literal> module, which allows
+            us to build our structure, and the <literal>CommonStruct</literal> module, which
+            provides some commonly used structural elements.</para>
+        <para><literal>my_struct</literal> is the base table for our structure. It's currently
+            empty, but we'll work on that as we progress.</para>
+        <para>Notice that what is returned is the built structure, which is a table. Lua's module
+            loading system will store this, so that the structure will only be built once.</para>
+        <para>The boilerplate for our style is fairly simple as well:</para>
+        <programlisting>local util = require "util"
+local struct = require "StructTest"
+local common = require "CommonStyle"
+
+local my_style = {}
+
+local function Create()
+    return util.DeepCopyTable(my_style), struct
+end
+
+return { Create = Create }</programlisting>
+        <para>The <literal>util</literal> module contains some basic utility functions that we will
+            use. The style is what decides which structure it uses, so we include our structure's
+            module table. And the <literal>CommonStyle</literal> are functions commonly used by
+            styles.</para>
+        <para><literal>my_style</literal> is the base style table. It's empty; we will fill it in
+            through this demonstration.</para>
+        <para>The return value is a table that exports a single function: <literal>Create</literal>.
+            The processing system expects <literal>Create</literal> to return both a style and a
+            structure. So we perform a table copy of our style and return the structure as
+            presented.</para>
+        <para>There is one final step before we begin: we must hook our style into the glLoadGen
+            system. To do this, we create a file called <filename>UserStyle.lua</filename>. This
+            file should go in the <filename>modules</filename> directory with the rest. All it does
+            is return a table containing any additional styles.</para>
+        <para>In our case, we will do this:</para>
+        <programlisting>return
+{
+	test = require("StyleTest")
+}</programlisting>
+        <para>The key name "test" here is the command-line name for the style. So to execute our
+            style, we use the <literal>-style=test</literal> parameter, with an appropriate set of
+            other options.</para>
+    </section>
+    <section>
+        <title>Header</title>
+        <para>Our C-style loader will generate two files: a header and a source file. So our first
+            major step is to generate the header file.</para>
+        <para>The header file and source files will have to do two very different things. The header
+            file will contain function pointers, extension variables and #defines for enumerators
+            that the user will use. But since this is C, variables in headers must be declared with
+                <literal>extern</literal>. So the declaration in the headers has to be different
+            from the definitions in the source files.</para>
+        <para>Therefore, we are going to split our main style (<literal>my_style</literal>) into two
+            sub-styles: <literal>hdr</literal> and <literal>src</literal>. <literal>hdr</literal>
+            contains the writing logic for header-specific issues, and the same goes for
+                <literal>src</literal> for source-specific issues.</para>
+        <para>So let's start doing that. In our style file, we now have this:</para>
+        <programlisting>local my_style = {}
+
+local hdr = {}
+my_style.hdr = hdr
+
+local src = {}
+my_style.src = src</programlisting>
+        <para>Everything before and after this looks the same as before. <literal>my_style</literal>
+            will contain functions that both the <literal>src</literal> and <literal>hdr</literal>
+            sub-styles share.</para>
+        <para>Now that we have divided our style, we now must start building our structure. We need
+            to generate a header file. So we use the <literal>file</literal> structure
+            action:</para>
+        <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+  },
+}</programlisting>
+        <para>The <literal>style</literal> attribute in the <literal>file</literal> action says to
+            use the substyle named <literal>hdr</literal>, which we have defined in our main style.
+            The function <literal>GetFilename</literal> now must be placed into our style. We could
+            put it in either <literal>my_style</literal> or <literal>hdr</literal> and the system
+            would find it. But since it is header-specific, it should go into
+            <literal>hdr</literal>; that's the whole point of splitting them up to begin
+            with.</para>
+        <para>So, in our style, we add a function to get the appropriate filename:</para>
+        <programlisting>local hdr = {}
+my_style.hdr = hdr
+
+function hdr.GetFilename(basename, spec, options)
+  return basename .. ".h"
+end</programlisting>
+        <para>The variable <literal>basename</literal> contains all of the pathing information, as
+            well as the specific name that the user requested. All we need to do is add an
+            appropriate extension. We could decorate the name with anything as we see fit, but we
+            only need to add an extension.</para>
+        <para>You should be able to run this and have an empty file be generated.</para>
+        <para>Every header in C or C++ should have include guards; this is standard practice and is
+            very important. Include guards effectively have scope: the
+                <literal>#ifndef/#define</literal> at the top, and the <literal>#endif</literal> at
+            the bottom. So we will handle this in our structure using the <literal>block</literal>
+            action:</para>
+        <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    { type="block", name="IncludeGuard",
+    },
+  },
+}</programlisting>
+        <para>Here, we don't provide a parameter list, so the block's default parameter list is
+            used. The default for <literal>block</literal> actions is <literal>(hFile, spec,
+                options)</literal>.</para>
+        <para><literal>block</literal> actions will call two different functions. In our case, it
+            will call <literal>WriteBlockBeginIncludeGuard</literal> before executing any child
+            actions, and <literal>WriteBlockEndIncludeGuard</literal> after writing all child
+            actions. There are no child actions as of yet, so we will just see include-guards
+            guarding nothing.</para>
+        <para>To actually write our beginning and ending include guards, we need some style code.
+            The first code we need is a function that will compute the include guard name.</para>
+        <programlisting>local function GetIncludeGuard(spec, options)
+  local temp = 
+    options.prefix .. spec.GetIncludeGuardString() .. "_THIS_IS_A_TEST_H"
+  return temp:upper()
+end</programlisting>
+        <para>Note that this function takes <literal>spec</literal> and <literal>options</literal>,
+            and that it uses both of them. The reason for this goes back to some of the <link
+                xlink:href="Style_Creation">responsibilities that styles must fulfill</link>.
+            Remember that styles must allow the user to specify a prefix to allow two different
+            invocations of the same style with the same specification to coexist in a program. So
+            our include guard need to incorporate the user's specified prefix. Also it includes a
+            string generated by the <literal>spec</literal>, which will differ between OpenGL, WGL,
+            and GLX. That way, you can include the GL generated header in the same source file as
+            the WGL generated one.</para>
+        <para>Now that we have a function that computes the include guard, we simply need to write
+            it:</para>
+        <programlisting>function hdr.GetFilename(basename, spec, options)
+  return basename .. ".h"
+end
+
+function hdr.WriteBlockBeginIncludeGuard(hFile, spec, options)
+  local guard = GetIncludeGuard(spec, options)
+  hFile:fmt("#ifndef %s\n", guard)
+  hFile:fmt("#define %s\n", guard)
+end
+
+function hdr.WriteBlockEndIncludeGuard(hFile, spec, options)
+  hFile:fmt("#endif /*%s*/\n", GetIncludeGuard(spec, options))
+end</programlisting>
+        <para>Note the use of <literal>hFile:fmt</literal>, which works like a form of
+                <literal>printf</literal> for Lua files. This is provided by the
+                <literal>TabbedFile.lua</literal> module.</para>
+        <section>
+            <title>Header preamble</title>
+            <para>The next steps are very specific to writing OpenGL loading systems. If your intent
+                is to generate something else with this system, then you won't need this preamble
+                stuff.</para>
+            <para>First, we need to recognize the intent of our loading system. Like most <link
+                    xlink:href="http://www.opengl.org/wiki/OpenGL_Loading_Library">OpenGL loading
+                    libraries,</link> we expect our header to <emphasis>completely
+                    replace</emphasis> all uses of <filename>gl.h</filename> (though not WGL or
+                GLX's headers). Because of that, we need to make sure that the user has not included
+                    <filename>gl.h</filename> or other similar files first. Also, if they try to
+                include <filename>gl.h</filename> afterwards, we want it to not be included.</para>
+            <para>Similarly, there are <filename>wglext.h</filename> and
+                    <filename>glxext.h</filename> files (available from the OpenGL.org registry)
+                that do the same job as our loaders. We want to stop users from including them
+                too.</para>
+            <para>To do this, we need to put some <literal>#define</literal>s into our header. What
+                we want to do is <literal>#define</literal> the include guards that these file use,
+                so that they think they've already been included. And if we detect that they were
+                already defined, we issue a <literal>#error</literal> to halt compilation.</para>
+            <para>The hard work has been done for us; the function
+                    <literal>spec.GetHeaderInit()</literal> will get the appropriate header
+                    <literal>#define</literal>s that perform these tricks. All we need to do is
+                write what this function returns.</para>
+            <para>To do that, we add a <literal>write</literal> action to our structure:</para>
+            <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    { type="block", name="IncludeGuard",
+      { type="write", name="Guards(hFile, spec, options)", },
+    },
+  },
+}</programlisting>
+            <para>The function <literal>WriteGuards</literal> will be called. As a header-specific
+                function, it goes into <literal>hdr</literal>. To write it, we simply do this in our
+                style:</para>
+            <programlisting>function hdr.WriteGuards(hFile, spec, options)
+  hFile:rawwrite(spec.GetHeaderInit())
+end</programlisting>
+            <para>The <literal>rawwrite</literal> command ignores all indentation in the
+                    <literal>TabbedFile</literal> and simply directly writes the block of text to
+                the output.</para>
+            <para>The next step is to write some necessary definitions. Our system is designed to
+                replace <filename>gl.h</filename> and the platform-specific extension headers.
+                However, these headers do more than just declare some functions. They also define
+                typedefs, things like <literal>GLuint</literal>, <literal>GLenum</literal>, and so
+                forth. These are crucial, and they must be defined before you can start declaring
+                function pointers and such. If you're writing a C++ loader, it's probably best to
+                    <emphasis>not</emphasis> stick them in a namespace.</para>
+            <para>OpenGL versions have increased the number of typedefs over the years. And we will
+                need to write these typedefs into our headers. If you were writing a non C/C++-based
+                loader, you would have quite a time figuring out how to define these typedefs and
+                such for your platform of interest, since the .spec files are geared towards C/C++.
+                But you would work something out, based on the definitions in the OpenGL
+                specification and your platform of interest.</para>
+            <para>Given that we're writing a C loader, we have an easier time; the hard work has
+                been done for us. The typedefs exists as blocks of text waiting to be thrown into a
+                header. The only thing we need is to simply regurgitate the information into the
+                file of interest.</para>
+            <para>To do this, we need to add another <literal>write</literal> action to our
+                style:</para>
+            <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    { type="block", name="IncludeGuard",
+      { type="write", name="Guards(hFile, spec, options)", },
+      { type="blank" },
+      { type="write", name="Typedefs(hFile, specData, spec, options)",},
+    },
+  },
+}</programlisting>
+            <para>Note that <literal>WriteTypedefs</literal> takes the <literal>specData</literal>
+                parameter. That's because some of the data we need to write lives in the
+                specification data and some of it lives in the <literal>spec</literal>.</para>
+            <para>Also, note that we use a <literal>blank</literal> to insert a blank line between
+                them. This is just for clarity.</para>
+            <para>As for writing the data, here is how we do it in the style:</para>
+            <programlisting>function hdr.WriteTypedefs(hFile, specData, spec, options)
+  local defArray = common.GetStdTypedefs()
+
+  hFile:write("#ifndef GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS\n")
+  hFile:write("#define GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS\n")
+  hFile:write("\n")
+  hFile:inc()
+	
+  for _, def in ipairs(defArray) do
+    hFile:write(def)
+  end
+	
+  hFile:dec()
+  hFile:write("\n")
+  hFile:write("#endif /*GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS*/\n")
+  hFile:write("\n")
+
+  common.WritePassthruData(hFile, specData.funcData.passthru)
+end</programlisting>
+            <para>This is a bit complicated. <literal>common.GetStdTypedefs()</literal> is where the
+                standard typedefs for the OpenGL 1.1 types live. We wrap them in their own set of
+                include guards to ensure that they never get defined multiple times; all of these
+                definitions will be used for our OpenGL, WGL, and GLX headers, which need to
+                co-exist with one another.</para>
+            <para>Once we have that, we use the function <literal>common.WritePassthruData</literal>
+                to write the spec-specific typedefs, passing it the <literal>passthru</literal>
+                table loaded from the specification files.</para>
+            <para>You should be able to run the code generation process and get a header with a
+                bunch of type definitions in it.</para>
+        </section>
+        <section>
+            <title>Extension variables</title>
+            <para>With that task out of the way, we can now proceed to write our extension variable
+                declarations. However, if we want this file to co-exist with C and C++ (ie: you can
+                include the header from C++ code, even though the source code for it is C), then we
+                need to wrap all of our real C code in an <literal>extern "C"</literal>
+                block.</para>
+            <para>Since this is a block in terms of C logic, we use the <literal>block</literal> for
+                it in our structure:</para>
+            <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    { type="block", name="IncludeGuard",
+      { type="write", name="Guards(hFile, spec, options)", },
+      { type="blank" },
+      { type="write", name="Typedefs(hFile, specData, spec, options)",},
+      { type="blank" },
+      { type="block", name="Extern(hFile)",
+      },
+    },
+  },
+}</programlisting>
+            <para>Our style needs two functions. Since both of these are header specific, they both
+                go into the <literal>hdr</literal> table:</para>
+            <programlisting>function hdr.WriteBlockBeginExtern(hFile)
+  common.WriteExternCStart(hFile)
+end
+
+function hdr.WriteBlockEndExtern(hFile)
+  common.WriteExternCEnd(hFile)
+end</programlisting>
+            <para>Because of how common this is, there are functions in the
+                    <literal>common</literal> table for doing exactly this task. Indeed, we can
+                shorten this by directly copying those functions into our table:</para>
+            <programlisting>hdr.WriteBlockBeginExtern = common.WriteExternCStart
+hdr.WriteBlockEndExtern = common.WriteExternCEnd</programlisting>
+            <para>Now that we have an extern block, we need to write an extension variable for every
+                extension that we were told to export. Since this is plain C89, we don't have access
+                to <literal>bool</literal>, so we'll use <literal>int</literal> for the type instead
+                with the usual boolean semantics.</para>
+            <para>To iterate over extensions and write them, we use the <literal>ext-iter</literal>
+                iterator in our structure:</para>
+            <programlisting>{ type="block", name="Extern(hFile)",
+  { type="ext-iter",
+    { type="write", name="Extension(hFile, extName, spec, options)", },
+  },
+},</programlisting>
+            <para>For each extension, we will call <literal>WriteExtension</literal> in the style,
+                passing it the name of the extension via <literal>extName</literal>.</para>
+            <para>To write the extension variable declaration, we first need a function to compute
+                the name of the extension variable. We'll make this a separate function because we
+                will need to write the variable definitions in the source file, and it would be best
+                not to copy-and-paste code. So we need a <literal>local</literal> function to
+                generate this:</para>
+            <programlisting>local function GetExtensionVarName(extName, spec, options)
+	return options.prefix .. spec.DeclPrefix() .. "ext_" .. extName
+end</programlisting>
+            <para>Notice that we again decorate the name with the user-defined prefix as well as a
+                specification-defined prefix. <literal>spec.DeclPrefix()</literal> is a common
+                prefix used for user-created variables and functions. The <literal>spec</literal>
+                also has functions for getting canonical prefixes (<literal>GL_</literal>,
+                    <literal>WGL_</literal>, etc), as we will see later.</para>
+            <para>Armed with this function, we can now add the writing function to
+                    <literal>hdr</literal>:</para>
+            <programlisting>function hdr.WriteExtension(hFile, extName, spec, options)
+  hFile:fmt("extern int %s;\n", GetExtensionVarName(extName, spec, options));
+end</programlisting>
+            <para>You should be able to run this and get a number of <literal>extern</literal>
+                declarations in the header now.</para>
+        </section>
+        <section>
+            <title>Enumerators</title>
+            <para>Wasn't that easy? Well, it won't be quite so easy anymore.</para>
+            <para>Now it's time to generate our enumerators. Since this is a C-style loader, we will
+                use the standard convention in C for enumerators: <literal>#define</literal>s. We
+                could define an actual C enumeration, but we'll go with the common way it's done,
+                for now.</para>
+            <para>Iterating over all of the extensions was simple. However, enumerators can come
+                from one of three sources:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>Extensions the user asked for.</para>
+                </listitem>
+                <listitem>
+                    <para>OpenGL extensions that are core for the version the user asked for, but
+                        the user didn't specifically ask for that extension.</para>
+                </listitem>
+                <listitem>
+                    <para>The version of OpenGL the user asked for, outside of any core
+                        extensions.</para>
+                </listitem>
+            </itemizedlist>
+            <para>And we must iterate over each of these individually.</para>
+            <para>Compounding this is the fact that we also need to <emphasis>avoid</emphasis>
+                writing the same enumerator <literal>#define</literal> twice (sometimes an enum will
+                be in a version and an extension). This problem is easily solved via special
+                structure actions.</para>
+            <para>So, the first step with our structure is to introduce an
+                    <literal>enum-seen</literal> action. Any enumeration that is iterated over by
+                any child action will be captured. Later iterations that produce the same enumerator
+                can detect it and choose not write the <literal>#define</literal> statement.</para>
+            <programlisting>{ type="block", name="Extern(hFile)",
+  { type="ext-iter",
+    { type="write", name="Extension(hFile, extName, spec, options)", },
+  },
+  { type="enum-seen",
+  },
+},</programlisting>
+            <para>In order to iterate over every enum in every extension the user requested, we must
+                do exactly that: iterate over each extension, then iterate over every enumerator in
+                that extension. For the former, we use the <literal>ext-iter</literal> as before;
+                for the latter, we use <literal>enum-iter</literal>:</para>
+            <programlisting>{ type="enum-seen",
+  { type="ext-iter",
+    {type="enum-iter",
+      { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+      { type="blank", last=true },
+    },
+  },
+},</programlisting>
+            <para>This will call the <literal>WriteEnumerator</literal> function for every
+                enumerator in every extension. The <literal>blank</literal> action here uses the
+                attribute <literal>last</literal>, which means that it will only insert a blank line
+                on the last iteration of the inner-most enumerator. So this puts a space between
+                every extension's enumerator. But it <emphasis>doesn't</emphasis> insert a space if
+                the extension had no enumerators at all. This is because
+                    <literal>enum-iter</literal> doesn't execute any of its children if there are no
+                enumerators, much like a for-loop over an empty list.</para>
+            <para>So, how do we write an enumerator in our style? That's kind of complicated. First,
+                we need a function to generate an enumerator name.</para>
+            <programlisting>local function GetEnumName(enum, spec, options)
+	return spec.EnumNamePrefix() .. enum.name
+end</programlisting>
+            <para>Note that the enumerator does <emphasis>not</emphasis> prefix the enum name with
+                the user-specified prefix <literal>options.prefix</literal>. This is a concession to
+                the purpose of this loader: it's trying to emulate the common OpenGL style as much
+                as possible. Furthermore, multiply-defined enums are usually a warning, not an
+                error, so it isn't too big of a problem.</para>
+            <para>To write the enumerator, we use this function:</para>
+            <programlisting>function hdr.WriteEnumerator(hFile, enum, enumTable, spec, options, enumSeen)
+  if(enumSeen[enum.name]) then return end
+
+  hFile:fmt("#define %s %s\n",
+    GetEnumName(enum, spec, options),
+    common.ResolveEnumValue(enum, enumTable))
+end</programlisting>
+            <para>The <literal>if</literal> statement checks to see if the enum has been processed
+                before. If not, we generate a <literal>#define</literal>. Note that it is
+                    <emphasis>not</emphasis> this function's responsibility to actually store a
+                value in the <literal>enumSeen</literal> table. That is done by the
+                    <literal>enum-iter</literal> internally.</para>
+            <para>The value of the enumerator is stored oddly. One enum can reference another, so
+                resolving the value requires recursively going from enum to enum until you find one
+                with a real value. That is the job of <literal>common.ResolveEnumValue</literal>,
+                which uses the <literal>enumTable</literal>.</para>
+            <para>You can run this code, and you will get a file that contains enumerator
+                definitions for the requested extensions. But not for any core versions.</para>
+            <para>To get them, we need to augment our structure a bit. The user asked for a specific
+                version and profile (assume we're talking about OpenGL, rather than WGL/GLX). This
+                means that the user wants the enums for that particular version/profile. To do this,
+                we have to iterate over all of the versions between the first version (1.1) and the
+                one the user asked for, writing out the appropriate enumerators for each
+                version.</para>
+            <para>We do that with a <literal>version-iter</literal> action:</para>
+            <programlisting>{ type="enum-seen",
+  { type="ext-iter",
+    {type="enum-iter",
+      { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+      { type="blank", last=true },
+    },
+  },
+  { type="version-iter",
+  },
+},</programlisting>
+            <para>Within that iterator, we need to iterate over all extensions that were
+                    <emphasis>not</emphasis> explicitly requested. There is a special extension
+                iterator for this: <literal>core-ext-cull-iter</literal>. It only works in the
+                presence of a <literal>version-iter</literal>. Once in place, we do our previous
+                enumeration iteration code:</para>
+            <programlisting>{ type="enum-seen",
+  { type="ext-iter",
+    {type="enum-iter",
+      { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+      { type="blank", last=true },
+    },
+  },
+  { type="version-iter",
+    { type="core-ext-cull-iter",
+      {type="enum-iter",
+        { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+        { type="blank", last=true },
+      },
+    },
+  },
+},</programlisting>
+            <para>This time, we don't even have to touch the style; this will now print the
+                enumerators for any core extensions not asked for explicitly.</para>
+            <para>To add in the enumerators for a version that aren't in core extensions from that
+                version, we make one more <literal>enum-iter</literal> pass, directly beneath the
+                    <literal>version-iter</literal>. <literal>enum-iter</literal> iterates over an
+                extension if an extension iterator is in use, but if none is in use, it looks for a
+                version iterator:</para>
+            <programlisting>{ type="enum-seen",
+  { type="ext-iter",
+    {type="enum-iter",
+      { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+      { type="blank", last=true },
+    },
+  },
+  { type="version-iter",
+    { type="core-ext-cull-iter",
+      {type="enum-iter",
+        { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+        { type="blank", last=true },
+      },
+    },
+    {type="enum-iter",
+      { type="write", name="Enumerator(hFile, enum, enumTable, spec, options, enumSeen)", },
+      { type="blank", last=true },
+    },
+  },
+},</programlisting>
+            <para>Again, no style changes are necessary.</para>
+            <para>Now, you might be thinking that maybe this should all just be one big
+                    <quote>iterate over all of the enumerators</quote> action, rather than a bunch
+                of little ones. While that is not available, there is the next best thing: the
+                common structural elements in the <literal>common</literal> table we created in our
+                    <literal>StructTest.lua</literal> file. It has a number of useful structural
+                elements, and this is one of them:</para>
+            <programlisting>{ type="block", name="Extern(hFile)",
+  { type="ext-iter",
+    { type="write", name="Extension(hFile, extName, spec, options)", },
+  },
+  { type="blank" },
+  common.Enumerators(),
+},</programlisting>
+            <para>This is almost exactly equivalent to the above block, right down to the name of
+                the function it calls (<literal>Enumerator</literal>) and the parameters it uses.
+                The only difference is that it adds some optional function calls to print headers
+                (naming each extension and version number), but that's unimportant. And
+                optional.</para>
+        </section>
+        <section>
+            <title>Functions</title>
+            <para>Functions work more or less like enumerators, in that you have to iterate over
+                them like enumerators. In fact, they work <emphasis>so much</emphasis> like
+                enumerators that the only difference between the final version of the structure for
+                enums and for functions is the use of <literal>func-seen</literal>,
+                    <literal>func-iter</literal>, and writing with a call to
+                    <literal>Function(hFile, func, typemap, spec, options, funcSeen)</literal>. So
+                let's not waste time and skip right to the end:</para>
+            <programlisting>{ type="func-seen",
+  { type="ext-iter",
+    {type="func-iter",
+      { type="write", name="Function(hFile, func, typemap, spec, options, funcSeen)", },
+      { type="blank", last=true },
+    },
+  },
+  { type="version-iter",
+    { type="core-ext-cull-iter",
+      {type="func-iter",
+        { type="write", name="Function(hFile, func, typemap, spec, options, funcSeen)", },
+        { type="blank", last=true },
+      },
+    },
+    {type="func-iter",
+      { type="write", name="Function(hFile, func, typemap, spec, options, funcSeen)", },
+      { type="blank", last=true },
+    },
+  },
+},</programlisting>
+            <para>As before, there is a common structural element to replace this:
+                    <literal>common.Functions()</literal>. And as before, it calls the same
+                    <literal>Function</literal> we defined with the same arguments.</para>
+            <para>The biggest issue here is the writing of the actual functions. First, we need a
+                function to compute the name of the function pointer variable we want to
+                declare:</para>
+            <programlisting>local function GetFuncPtrName(func, spec, options)
+  return options.prefix .. "_testc_".. spec.FuncNamePrefix() .. func.name
+end</programlisting>
+            <para>Here, we actually need to prefix the variable name; otherwise linker errors could
+                occur. We also apply spec-based decoration, as well as a fixed string based on this
+                particular generator.</para>
+            <para>The usual method of writing function pointers would involve creating typedefs for
+                the function pointer types. You may have seen some
+                        <quote><literal>PFNGLVERTEXATTRIBPOINTERPROC</literal></quote>-kind of
+                things. We won't be doing that.</para>
+            <para>We still need a function to build a string containing the full function pointer
+                definition.</para>
+            <programlisting>local function GetFuncPtrDef(hFile, func, typemap, spec, options)
+  return string.format("%s (%s *%s)(%s)",
+    common.GetFuncReturnType(func, typemap),
+    spec.GetCodegenPtrType(),
+    GetFuncPtrName(func, spec, options),
+    common.GetFuncParamList(func, typemap))
+end</programlisting>
+            <para>This function calls a lot of things. Functions use types, for parameter types and
+                return types. Resolving these into the actual GL types is a non-trivial process, so
+                    <literal>common.GetFuncReturnType</literal> and
+                    <literal>common.GetFuncParamList</literal> are used to get the return type and
+                parameter list respectively. If you want the parameter names for the function
+                parameter list, pass <literal>true</literal> for a third parameter to the
+                function.</para>
+            <para>The <literal>spec.GetCodegenPtrType()</literal> part is very much <emphasis>not
+                    optional.</emphasis> It adds an important modifier to the function pointer,
+                which is needed on some systems (Windows). Without it, bad things happen.</para>
+            <programlisting>function hdr.WriteFunction(hFile, func, typemap, spec, options, funcSeen)
+  if(funcSeen[func.name]) then return end
+
+  hFile:fmt("extern %s;\n",
+    GetFuncPtrDef(hFile, func, typemap, spec, options))
+
+  hFile:fmt("#define %s %s\n",
+    common.GetOpenGLFuncName(func, spec),
+    GetFuncPtrName(func, spec, options))
+end</programlisting>
+            <para>After checking to see if the pointer has been written before, we get down to
+                business. We write an extern declaration for our function pointer with that type.
+                Then we write a <literal>#define</literal> statement, which effectively aliases the
+                name. This is a common tactic when dealing with function pointers and OpenGL
+                loaders: the pointer is given an innocuous name to avoid conflicting with user code,
+                and a <literal>#define</literal> is used to map it to the actual OpenGL function
+                name. That's what <literal>common.GetOpenGLFuncName</literal> returns.</para>
+        </section>
+        <section>
+            <title>Main loader</title>
+            <para>The last step for our header is to write the function prototype for our function
+                that actually loads everything. It will just be a simple <literal>write</literal>
+                statement:</para>
+            <programlisting>{ type="block", name="Extern(hFile)",
+  ...
+  common.Functions(),
+  { type="blank" },
+  { type="write", name="MainLoaderFunc(hFile, specData, spec, options)",},
+},</programlisting>
+            <para>The <literal>hdr</literal> portion of our structure is now complete. In total, it
+                looks like this (using the <literal>common</literal> structure elements):</para>
+            <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    { type="block", name="IncludeGuard",
+      { type="write", name="Guards(hFile, spec, options)", },
+      { type="blank" },
+      { type="write", name="Typedefs(hFile, specData, spec, options)",},
+      { type="blank" },
+      { type="block", name="Extern(hFile)",
+        { type="ext-iter",
+          { type="write", name="Extension(hFile, extName, spec, options)", },
+        },
+        { type="blank" },
+        common.Enumerators(),
+        { type="blank" },
+        common.Functions(),
+        { type="blank" },
+        { type="write", name="MainLoaderFunc(hFile, spec, options)",},
+      },
+    },
+  },
+}</programlisting>
+            <para>Reasonably compact and quite powerful.</para>
+            <para>The <literal>WriteMainLoaderFunc</literal> style function needs a function to get
+                the name of the function to write.</para>
+            <programlisting>local function GetMainLoaderFuncName(spec, options)
+  return options.prefix .. spec.DeclPrefix() .. "LoadFunctions"
+end</programlisting>
+            <para>Note that our loader function name is prefixed with both the user-specified prefix
+                and the spec-defined declaration prefix.</para>
+            <para>The actual function to write the prototype requires a small bit of
+                explanation:</para>
+            <programlisting>function hdr.WriteMainLoaderFunc(hFile, spec, options)
+  hFile:fmt("int %s(%s);\n",
+    GetMainLoaderFuncName(spec, options),
+    spec.GetLoaderParams())
+end</programlisting>
+            <para>The function loader has parameters, but the specific parameters they take depends
+                on the specification. The reason for this is that
+                    <literal>wglGetExtensionStringARB</literal> and
+                    <literal>glXQueryExtensionsString</literal> both take parameters. The former
+                takes a <literal>HDC</literal> device context that has a pixel format on it, while
+                the latter takes a <literal>Display</literal> and a screen number.</para>
+            <para>Our loader will load extensions based on what is advertised. As such, we need to
+                call those functions to see what is advertised. So our loader function needs to take
+                those parameters and pass them along.</para>
+        </section>
+    </section>
+    <section>
+        <title>Source</title>
+        <para>The header was the easy part. The source file is where things get tricky.</para>
+        <para>Since we're making a new file, we need to make a new <literal>file</literal> action in
+            our structure:</para>
+        <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    ...
+  },
+  { type="file", style="src", name="GetFilename(basename, spec, options)",
+  },
+}</programlisting>
+        <para>We're switching to the <literal>src</literal> substyle table here. So we need a
+            function to produce a filename for our source file:</para>
+        <programlisting>local src = {}
+my_style.src = src
+
+function src.GetFilename(basename, spec, options)
+  return basename .. ".c"
+end</programlisting>
+        <para>If you run this, you'll see a blank source file.</para>
+        <section>
+            <title>Source preamble</title>
+            <para>Next step: we need to <literal>#include</literal> the things our source file
+                needs. Since we'll be doing some string comparisons, we need
+                    <literal>string.h</literal>, among others. Also, we need to include our own
+                header, which we will assume is in the include path of the project.</para>
+            <para>First, we need to augment our structure with an include writer:</para>
+            <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    ...
+  },
+  { type="file", style="src", name="GetFilename(basename, spec, options)",
+    { type="write", name="Includes(hFile, basename, spec, options)", },
+  },
+}</programlisting>
+            <para>In our structure, we add an appropriate <literal>WriteIncludes</literal>
+                function:</para>
+            <programlisting>function src.WriteIncludes(hFile, basename, spec, options)
+  hFile:writeblock([[
+#include &lt;stdlib.h>
+#include &lt;string.h>
+]])
+  local base = util.ParsePath(hdr.GetFilename(basename, spec, options))
+  hFile:fmt('#include "%s"\n', base)
+end</programlisting>
+            <para>The <literal>util.ParsePath</literal> function takes a path and breaks it up into
+                a filename and a directory. We write the filename produced by the header as an
+                include statement in our source file.</para>
+            <para>After this, we need to write the function that actually loads a function pointer.
+                This is very platform specific; fortunately, the system has a simple way around all
+                of that junk (well, for C/C++, at least).</para>
+            <para>In our structure, we add a <literal>write</literal> action for it:</para>
+            <programlisting>{ type="file", style="src", name="GetFilename(basename, spec, options)",
+  { type="write", name="Includes(hFile, basename, spec, options)", },
+  { type="blank" },
+  { type="write", name="LoaderFunc(hFile, spec, options)", },
+},</programlisting>
+            <para>And in our style, we add this:</para>
+            <programlisting>function src.WriteLoaderFunc(hFile, spec, options)
+  hFile:writeblock(spec.GetLoaderFunc())
+end</programlisting>
+            <para>All very easy. Everything is statically defined, so there will be no interference
+                across different files.</para>
+        </section>
+        <section>
+            <title>Extension variables</title>
+            <para>We wrote <literal>extern</literal> declarations for our extension variables in the
+                header; now we need to write proper definitions for them. So we need to iterate over
+                the extensions again; we can use the exact same code as we did in the header:</para>
+            <programlisting>{ type="file", style="src", name="GetFilename(basename, spec, options)",
+  { type="write", name="Includes(hFile, basename, spec, options)", },
+  { type="blank" },
+  { type="write", name="LoaderFunc(hFile, spec, options)", },
+  { type="blank" },
+  { type="ext-iter",
+    { type="write", name="Extension(hFile, extName, spec, options)", },
+  },
+},</programlisting>
+            <para>The <literal>src</literal> table needs its own version of
+                    <literal>Extension</literal> which defines the variable and initializes it to
+                0:</para>
+            <programlisting>function src.WriteExtension(hFile, extName, spec, options)
+  hFile:fmt("int %s = 0;\n", GetExtensionVarName(extName, spec, options));
+end</programlisting>
+            <para>You can run that and get extension variable definitions in your source file. That
+                was easy.</para>
+        </section>
+        <section>
+            <title>Functions</title>
+            <para>We now need to define the extension function pointers and initialize them to
+                NULL.</para>
+            <para>We'll use our handy common structure element for iterating over all
+                functions:</para>
+            <programlisting>{ type="ext-iter",
+  { type="write", name="Extension(hFile, extName, spec, options)", },
+},
+{ type="blank" },
+common.Functions(),</programlisting>
+            <para>This means we need a <literal>WriteFunction</literal> function in our
+                    <literal>src</literal> table:</para>
+            <programlisting>function src.WriteFunction(hFile, func, typemap, spec, options, funcSeen)
+  if(funcSeen[func.name]) then return end
+  hFile:fmt("%s = NULL;\n", GetFuncPtrDef(hFile, func, typemap, spec, options));
+end</programlisting>
+            <para>You can run that and get function pointer definitions in your source file. That
+                was easy too. Good thing we have <literal>GetFuncPtrDef</literal> lying
+                around.</para>
+        </section>
+        <section>
+            <title>Function loaders</title>
+            <para>Before we can proceed further, we need to talk a bit about what it is we're
+                actually trying to achieve here.</para>
+            <para>When the user calls our function to load the function pointers with actual
+                functions, our code needs to do the following:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>For each extension that the user asked us to export, if it is in the
+                        extension string:</para>
+                    <itemizedlist>
+                        <listitem>
+                            <para>Set its extension variable.</para>
+                        </listitem>
+                        <listitem>
+                            <para>If it has functions, load its function pointers.</para>
+                        </listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem>
+                    <para>Load all of the functions associated with the version of OpenGL we were
+                        asked to export.</para>
+                </listitem>
+            </itemizedlist>
+            <para>In order to do this, we need a few things. For every extension the user asked for,
+                we need a function that will load its function pointers. And we need a function that
+                will load the function pointers for the OpenGL version.</para>
+            <para>So let's do that.</para>
+            <para>The first step is one of those <quote>for each extension</quote> things, so
+                obviously we need an extension iterator in our structure:</para>
+            <programlisting>{ type="blank" },
+common.Functions(),
+{ type="ext-iter",
+},</programlisting>
+            <para>We need to write a function to load an extension's function pointers. These
+                functions have a beginning, a series of load commands for each function, and an
+                ending. That sounds like a block surrounding a function iterator:</para>
+            <programlisting>{ type="blank" },
+common.Functions(),
+{ type="ext-iter",
+  { type="block", name="ExtFuncLoader(hFile, extName, spec, options)",
+    { type="func-iter",
+    },
+  }
+},</programlisting>
+            <para>We don't need a <literal>func-seen</literal> here, because we're not interested in
+                duplicates. Or rather, we're not interested in doing things differently for
+                duplicate functions. It's fine to load the same function twice (and we will
+                certainly do that later).</para>
+            <para>There is one problem with this. We will generate loader functions for extensions
+                that <emphasis>don't have functions.</emphasis> Now, this would just be a function
+                that's empty, but it's a bit sloppy to deal with. We can do better.</para>
+            <para>We avoid this by using the <literal>cond</literal> attribute on our
+                    <literal>block</literal>:</para>
+            <programlisting>{ type="blank" },
+common.Functions(),
+{ type="ext-iter",
+  { type="block", name="ExtFuncLoader(hFile, extName, spec, options)", cond="func-iter",
+    { type="func-iter",
+    },
+  }
+},</programlisting>
+            <para>The <literal>cond</literal> attribute means that the action (and its children)
+                will only be executed if the condition is true. And the <literal>func-iter</literal>
+                condition is only true if using a function iterator will iterate over at least one
+                element.</para>
+            <para>Within the function iterator, we need to write some code for each function to do
+                the actual loading:</para>
+            <programlisting>{ type="ext-iter",
+  { type="block", name="ExtFuncLoader(hFile, extName, spec, options)", cond="func-iter",
+    { type="func-iter",
+      { type="write", name="LoadFunction(hFile, func, typemap, spec, options)", },
+    },
+  },
+  { type="blank", cond="func-iter",},
+},</programlisting>
+            <para>We also add a blank line after each function, just to make it nicer to
+                read.</para>
+            <para>That's good enough for the structure for now. Time to do the style code. First, we
+                need a function to get the name of the function we intend to write:</para>
+            <programlisting>local function GetExtFuncLoaderName(extName, spec, options)
+  return "Load_" .. extName;
+end</programlisting>
+            <para>Next comes the two functions for our block:</para>
+            <programlisting>function src.WriteBlockBeginExtFuncLoader(hFile, extName, spec, options)
+  hFile:fmt("static void %s()\n", GetExtFuncLoaderName(extName, spec, options))
+  hFile:write("{\n")
+  hFile:inc()
+end
+
+function src.WriteBlockEndExtFuncLoader(hFile, extName, spec, options)
+  hFile:dec()
+  hFile:write("}\n")
+end</programlisting>
+            <para>Since this is a <literal>static</literal> function, we don't have to worry about
+                name conflicts (except for within this file, of course). The
+                    <literal>hFile:inc()</literal> and <literal>hFile:dec()</literal> calls are for
+                incrementing and decrementing the tab count inserted by the various
+                    <literal>hFile</literal> writing commands. It helps us properly format our
+                generated code.</para>
+            <para>For each function, we need to load a pointer into the appropriate function
+                pointer. However, there's one problem: standard C does not allow implicit conversion
+                between pointers-to-variables (like <literal>void*</literal>) and
+                pointers-to-functions (like <literal>void(*)())</literal>). It also doesn't allow
+                implicit conversions from different kinds of function pointers. So we need an
+                explicit cast to our function pointer type.</para>
+            <para>To make this easier, we need a function to return the function pointer
+                type:</para>
+            <programlisting>local function GetFuncPtrType(hFile, func, typemap, spec, options)
+  return string.format("%s (%s *)(%s)",
+    common.GetFuncReturnType(func, typemap),
+    spec.GetCodegenPtrType(),
+    common.GetFuncParamList(func, typemap))
+end</programlisting>
+            <para>Now armed with that, we can write our function pointer loading code:</para>
+            <programlisting>function src.WriteLoadFunction(hFile, func, typemap, spec, options)
+  hFile:fmt('%s = (%s)%s("%s%s");\n',
+    GetFuncPtrName(func, spec, options),
+    GetFuncPtrType(hFile, func, typemap, spec, options),
+    spec.GetPtrLoaderFuncName(),
+    spec.FuncNamePrefix(),
+    func.name)
+end</programlisting>
+            <para>The function <literal>spec.GetPtrLoaderFuncName()</literal> gets the name of the
+                function pointer loading function written by
+                <literal>spec.GetLoaderFunc()</literal>. <literal>spec.FuncNamePrefix()</literal> is
+                the prefix used by OpenGL/WGL/GLX for its function names.</para>
+            <para>You can run that and get static functions that load any extensions that have added
+                functions.</para>
+            <para>We still need one more thing: a function that loads all core function pointers.
+                This will be a slightly more difficult to build. We first need a block that
+                represents the function itself:</para>
+            <programlisting>{ type="ext-iter",
+  ...
+},
+{ type="block", name="CoreLoader(hFile, spec, options)", cond="core-funcs",
+},</programlisting>
+            <para>Here, we see the use of another <literal>cond</literal>,
+                    <literal>core-funcs</literal>. This one doesn't have an iterator analog. It is
+                true if the specification has any core functions (which basically means if the
+                specification is OpenGL and not WGL/GLX).</para>
+            <para>Inside, we must iterate over each version and print all of the functions. This
+                requires the core extension trick we used before, but with one big
+                difference:</para>
+            <programlisting>{ type="block", name="CoreLoader(hFile, spec, options)", cond="core-funcs",
+  { type="version-iter",
+    { type="core-ext-iter",
+      {type="func-iter",
+        { type="write", name="LoadFunction(hFile, func, typemap, spec, options)", },
+      },
+    },
+    {type="func-iter",
+      { type="write", name="LoadFunction(hFile, func, typemap, spec, options)", },
+    },
+  },
+},</programlisting>
+            <para>Notice the use of <literal>core-ext-iter</literal> instead of
+                    <literal>core-ext-cull-iter</literal>. This iterates over
+                    <emphasis>all</emphasis> of the core extensions in that version, whether or not
+                the user asked for them.</para>
+            <para>That means if the user asked for a core extension, we may load the function twice:
+                once if it is in the extension list and once with all of the other core functions in
+                this version. That's fine.</para>
+            <para>We already have a <literal>WriteLoadFunction</literal>, so all we need in the
+                style is the block defining the function:</para>
+            <programlisting>function src.WriteBlockBeginCoreLoader(hFile, spec, options)
+  hFile:write("static void Load_Version()\n")
+  hFile:write("{\n")
+  hFile:inc()
+end
+
+function src.WriteBlockEndCoreLoader(hFile, version, spec, options)
+  hFile:dec()
+  hFile:write("}\n")
+end</programlisting>
+            <para>The name doesn't need to change, since there is only ever one of them.</para>
+        </section>
+    </section>
+    <section>
+        <title>Main loader</title>
+        <para>The most complex part is the generation of the main loading function. This is
+            complicated because there are a <emphasis>lot</emphasis> of things you need to take into
+            account. The easiest part of this is the structure. We simply need a
+                <literal>write</literal> action to call into our <literal>src</literal>
+            style:</para>
+        <programlisting>local my_struct = 
+{
+  { type="file", style="hdr", name="GetFilename(basename, spec, options)",
+    ...
+  },
+  { type="file", style="src", name="GetFilename(basename, spec, options)",
+    ...
+    { type="blank", },
+    { type="write", name="MainLoaderFunc(hFile, specData, spec, options)",},
+  },
+}</programlisting>
+        <para>That's the only part of this that is easy.</para>
+        <para>A detailed breakdown of our loading algorithm is as follows:</para>
+        <orderedlist>
+            <listitem>
+                <para>Clear the extension variables. This will allow the user to call our loader
+                    multiple times. Resetting the function pointers is not necessary, since the user
+                    shouldn't be calling non-core function pointers if the extension variable is not
+                    set. And we'll be re-loading all the core functions anyway.</para>
+            </listitem>
+            <listitem>
+                <para>Iterate over the extensions the context provides. For each extension, if it is
+                    among the extensions we care about:</para>
+                <orderedlist>
+                    <listitem>
+                        <para>Set its extension variable to non-zero.</para>
+                    </listitem>
+                    <listitem>
+                        <para>If that extension has functions, call the function to load all of the
+                            function pointers.</para>
+                    </listitem>
+                </orderedlist>
+            </listitem>
+            <listitem>
+                <para>Load all of the functions for the OpenGL version, if any.</para>
+            </listitem>
+        </orderedlist>
+        <para>This tells us right away that we need some helper functions. So let's make some. Our
+                <literal>WriteMainLoaderFunc</literal> will be broken up into two steps: the writing
+            of helper functions/definitions and the writing of the main function:</para>
+        <programlisting>local function WriteHelpers(hFile, specData, spec, options)
+end
+
+function src.WriteMainLoaderFunc(hFile, specData, spec, options)
+  WriteHelpers(hFile, specData, spec, options)
+  hFile:write("\n")
+
+  hFile:fmt("int %s(%s)\n",
+    GetMainLoaderFuncName(spec, options),
+    spec.GetLoaderParams())
+  hFile:write("{\n")
+  hFile:inc()
+  hFile:dec()
+  hFile:write("}\n")
+end</programlisting>
+        <para>Running this will create an empty function definition.</para>
+        <section>
+            <title>Clear extension variables</title>
+            <para>We could have used the structure to help us build this (ie: used its
+                    <literal>ext-iter</literal> functionality), but it's simpler at this point to do
+                this task ourselves.</para>
+            <programlisting>local function WriteHelpers(hFile, specData, spec, options)
+  common.WriteCClearExtensionVarsFunc(hFile, specData, spec, options,
+    GetExtensionVarName, "0")
+end</programlisting>
+            <para>This will write a static function called <literal>ClearExtensionVars</literal>; it
+                will walk through <literal>options.extensions</literal>, writing a line that sets
+                the value to <literal>"0"</literal>. To get the extension name, it calls the
+                function we provided, which takes <literal>(extName, spec,
+                options)</literal>.</para>
+        </section>
+        <section>
+            <title>Load extensions</title>
+            <para>Well, that was the last easy part; now it all gets incredibly complicated. There
+                are two big problems when dealing with trying to load the extensions.</para>
+            <orderedlist>
+                <listitem>
+                    <para>The function used to get the extensions string is a function which in many
+                        cases must be loaded.</para>
+                </listitem>
+                <listitem>
+                    <para>OpenGL (but not WGL/GLX) changed how you get the list of available
+                        extensions in GL 3.0.</para>
+                </listitem>
+            </orderedlist>
+            <para>That last problem is the most devious (we will solve #1 by just trying to load the
+                function. If it's not there, we exit with a failure). Let's investigate
+                further.</para>
+            <para>In OpenGL 2.1 and below, you use <literal>glGetString(GL_EXTENSIONS)</literal> to
+                get a space-separated list of extensions. This was fairly simple, but people kept
+                screwing it up. So in GL 3.0, they added <literal>glGetStringi</literal>, which gets
+                a string by an enum name and an index. So you use
+                    <literal>glGetIntegerv(GL_NUM_EXTENSIONS)</literal> to get the number of
+                extensions, then iterate through that number, calling
+                    <literal>glGetStringi(GL_EXTENSIONS, i)</literal> for each.</para>
+            <para>The problem is that in OpenGL 3.1, they <emphasis>removed</emphasis> the old
+                space-separated list of extensions from core OpenGL. So if you create a core OpenGL
+                3.2 context, you have to use the new style. However, if you're dealing with a 2.1 or
+                below context, <literal>glGetStringi</literal> doesn't exist, so we have to use the
+                old way. If you create a 3.2 compatibility context, you can use either.</para>
+            <para>Incidentally, this is why GLEW has problems with core contexts; it only knows how
+                to use the old way, and it doesn't bother to implement the machinery needed to
+                actually test at runtime which to use.</para>
+            <para>If we wanted, we could write the code to process things both ways, then pick which
+                one to use based on what the actual context is. However, for the sake of simplicity,
+                we won't be doing that. We will instead do what <literal>pointer_c</literal> and
+                    <literal>pointer_cpp</literal> do: they expect you to actually be serious about
+                the version number. If you create an OpenGL 3.3 header, then you expect to be using
+                OpenGL 3.3 or greater, and the loader is allowed to fail if that's not
+                available.</para>
+            <para>Therefore, if the user asks for OpenGL 3.0 or above, we will use the new-style
+                functions; if the user asks for a lower version, we use the old style. Oh, and while
+                we're doing this, remember that this code generator needs to work with WGL and GLX,
+                which <emphasis>only</emphasis> use old-style. So we only use the new-style if we're
+                writing OpenGL <emphasis>and</emphasis> version 3.0 or above is requested.</para>
+            <para>Is that complicated enough?</para>
+            <section>
+                <title>Extension Mapping Table</title>
+                <para>Well, let's get the simple part out of the way first. In both cases, we search
+                    the extension list, and if we find one of our extensions in the list, we set the
+                    extension variable and load those functions, if any. In order to do this, we
+                    need some way to map extension string names to extension variables and loading
+                    functions.</para>
+                <para>We do this with a mapping table. There is actually a nice common bit of code
+                    to do this all for us in <literal>common.WriteCMappingTable</literal>. But we'll
+                    do it by ourselves, just to show off what needs to be done.</para>
+                <para>First, we need a typedef for the function pointer type, because those are
+                    annoying to write without one. All of the loaders use the same prototype:</para>
+                <programlisting>local function WriteHelpers(hFile, specData, spec, options)
+  common.WriteCClearExtensionVarsFunc(hFile, specData, spec, options,
+    GetExtensionVarName, "0")
+  hFile("\n")
+  hFile:write("typedef void (*PFN_LOADFUNCPOINTERS)();\n")
+end</programlisting>
+                <para>After this, we need to write a struct that serves as an entry in the mapping
+                    table. So we need a function to get the name of the struct:</para>
+                <programlisting>local function GetMappingTableStructName(spec, options)
+  return string.format("%s%sStringToExtMap",
+    options.prefix, spec.DeclPrefix())
+end</programlisting>
+                <para>Each entry in the table has a string literal (the name of the extension), a
+                    pointer to the extension variable, and a function pointer to call to load the
+                    extensions (or <literal>NULL</literal>):</para>
+                <programlisting>hFile:write("typedef void (*PFN_LOADFUNCPOINTERS)();\n")
+hFile:fmt("typedef struct %s_s\n",
+  GetMappingTableStructName(spec, options))
+hFile:write("{\n")
+hFile:inc()
+hFile:writeblock [[
+char *extensionName;
+int *extensionVariable;
+PFN_LOADFUNCPOINTERS LoadExtension;
+]]
+hFile:dec()
+hFile:fmt("} %s;\n", GetMappingTableStructName(spec, options))
+hFile:write "\n"</programlisting>
+                <para>Because struct definitions can't be file-static, we have to prefix them with
+                    our specification and options prefixes.</para>
+                <para>We then need to declare a static global variable that represents our mapping
+                    table. So again, we need a function to compute that. However, since this will be
+                    file-static, there's no need to prefix it:</para>
+                <programlisting>local function GetMappingTableVarName()
+  return "g_stringToExtMap"
+end</programlisting>
+                <para>This will just be a global array of these structures, one for each
+                    extension.</para>
+                <programlisting>hFile:write "\n" --From last line of previous code.
+hFile:fmt("static %s %s[] = {\n",
+  GetMappingTableStructName(spec, options),
+  GetMappingTableVarName())
+hFile:inc()
+for _, extName in ipairs(options.extensions) do
+  if(#specData.extdefs[extName].funcs > 0) then
+    hFile:fmt('{"%s", &amp;%s, %s},\n',
+      spec.ExtNamePrefix() .. extName,
+      GetExtensionVarName(extName, spec, options),
+      GetExtFuncLoaderName(extName, spec, options))
+  else
+    hFile:fmt('{"%s", &amp;%s, NULL},\n',
+      spec.ExtNamePrefix() .. extName,
+      GetExtensionVarName(extName, spec, options))
+  end
+end
+hFile:dec()
+hFile:write("};\n")</programlisting>
+                <para><literal>options.extensions</literal> contains the list of extensions the user
+                    asked for. So we iterate over each one. We also check to see if the named
+                    extension has actual functions; if not, we put <literal>NULL</literal> instead
+                    of a loader function.</para>
+                <para>Now it's time to think ahead. We're creating this table so that we can iterate
+                    through it and find an extension by name. In order to iterate through it, we
+                    need to know how big it is. While we could play some games with
+                        <literal>sizeof</literal> to compute it, there's no point, since we already
+                    know it: <literal>#options.extensions</literal>. So we write that as a
+                        <literal>static</literal> integer:</para>
+                <programlisting>hFile:write("};\n") --From last line of previous code
+hFile:write("\n")
+hFile:fmt("static int g_extensionMapSize = %i;\n", #options.extensions);</programlisting>
+                <para>Run it and see what you get.</para>
+                <para>Both the old-style algorithm and the new-style one are dependent on iterating
+                    through the table, looking for an extension by name. So we will create a
+                    function that does exactly that: it takes a string name of an extension and
+                    returns a pointer to an entry for that extension. Or <literal>NULL</literal> if
+                    none is available. Since that's mostly boiler-plate code, we'll do it by using a
+                    common method:</para>
+                <programlisting>hFile:fmt("static int g_extensionMapSize = %i;\n", #options.extensions);
+hFile:write("\n")
+common.WriteCFindExtEntryFunc(hFile, specData, spec, options,
+  GetMappingTableStructName(spec, options),
+  GetMappingTableVarName())</programlisting>
+                <para>This creates a function named <literal>FindExtEntry</literal>.</para>
+                <para>One last thing. Both algorithms will call this <literal>FindExtEntry</literal>
+                    with a string name. Both algorithms will set the extension variable to 1 if it
+                    is found. And both will call the loader function if it exists. Therefore, we
+                    should write a function to do that. There isn't quite one of those in the common
+                    system (there's something close), so we'll have to write the boiler-plate
+                    ourselves:</para>
+                <programlisting>hFile:write("\n")
+
+hFile:fmtblock([[
+static void LoadExtByName(const char *extensionName)
+{
+	%s *entry = NULL;
+	entry = FindExtEntry(extensionName);
+	if(entry)
+	{
+		if(entry->LoadExtension)
+		{
+			int numFailed = entry->LoadExtension();
+			if(numFailed == 0)
+			{
+				*(entry->extensionVariable) = 1;
+			}
+			else
+			{
+				*(entry->extensionVariable) = 1;
+			}
+		}
+		else
+		{
+			*(entry->extensionVariable) = 1;
+		}
+	}
+}
+]], GetMappingTableStructName(spec, options))</programlisting>
+            </section>
+            <section>
+                <title>Old style</title>
+                <para>This is where it gets complicated. Since WGL/GLX and many uses of OpenGL will
+                    use the old style, let's handle that one first.</para>
+                <para>To tell which is which, we could check the <literal>spec</literal> and the
+                        <literal>options</literal> against expected values. However, a certain bit
+                    of setup work has to be done to make the new style loader work out. The
+                        <literal>spec</literal> will provide part of it, and it will do the
+                    detection for us.</para>
+                <para>Thus, our next bit of code looks like this:</para>
+                <programlisting>local indexed = spec.GetIndexedExtStringFunc(options);
+if(not indexed) then
+  --Old style
+else
+  --New style
+end</programlisting>
+                <para>We'll talk more about exactly what goes on in <literal>indexed</literal>
+                    later.</para>
+                <para>We're still writing helper functions. Remember that old-style extension
+                    processing deals with a single string containing space-separated extension
+                    names. So obviously, we need a way to walk this list, break it up into
+                    extensions, and run our <literal>LoadExtByName</literal> function. So let's
+                    write that function.</para>
+                <para>Actually, let's not; that's tedious. Let's just use the
+                        <literal>common</literal> code version:</para>
+                <programlisting>local indexed = spec.GetIndexedExtStringFunc(options);
+if(not indexed) then
+  common.WriteProcessExtsFromStringFunc(hFile, "LoadExtByName(%s)")
+else
+  --New style
+end</programlisting>
+                <para>The second parameter to <literal>WriteProcessExtsFromStringFunc</literal> is
+                    the name of the function to call for each extension. That's the function we just
+                    wrote.</para>
+                <para>Now, we need to do one more thing: our helper writing function needs to return
+                        <literal>indexed</literal>, because we're about to shift to our main loader
+                    function:</para>
+                <programlisting>hFile:write("\n")
+local indexed = spec.GetIndexedExtStringFunc(options);
+if(not indexed) then
+  common.WriteProcessExtsFromStringFunc(hFile, "LoadExtByName(%s)")
+else
+  --New style
+end
+
+return indexed</programlisting>
+                <para>Now, for our main loader, we have another if-statement:</para>
+                <programlisting>function src.WriteMainLoaderFunc(hFile, specData, spec, options)
+  local indexed = WriteHelpers(hFile, specData, spec, options)
+  hFile:write("\n")
+
+  hFile:fmt("int %s(%s)\n",
+    GetMainLoaderFuncName(spec, options),
+    spec.GetLoaderParams())
+  hFile:write("{\n")
+  hFile:inc()
+
+  if(not indexed) then
+  else
+  end
+
+  hFile:dec()
+  hFile:write("}\n")
+end</programlisting>
+                <para/>
+            </section>
+        </section>
+        <section>
+            <title>Load version</title>
+            <para/>
+        </section>
+    </section>
+</article>

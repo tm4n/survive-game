@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Common Extension Files</title>
+    <para><link xlink:href="Extension_Files">Extension files</link> are a good mechanism for
+        collating useful sets of extensions for easy referencing. The LoadGen system comes with a
+        small library of pre-built extension files which you may find useful.</para>
+    <para>To include these names from the command-line, you should use the
+            <literal>-stdext</literal> option, instead of <literal>-extfile</literal>. The
+        difference is where they search; <literal>extfile</literal> is always relative to the
+        directory you're currently in, while <literal>stdext</literal> will search the
+            <filename>extfiles/</filename> directory of where LoadGen is stored.</para>
+    <para>To include these names from an extension file, you should use <literal>#include
+            &lt;></literal> instead of <literal>#include ""</literal>, for the same reasons as
+        above.</para>
+    <para>All of these extension files are located in the directory <filename>extfiles</filename> of
+        LoadGen's directory. However, you don't need to prefix the name with
+            <literal>extfiles/</literal> Therefore, any inclusion of them should be as this:
+            <literal>-stdext=extfiles/&lt;include filename></literal> or <literal>#include
+            &lt;extfiles/&lt;include filename>></literal>.</para>
+    <para>Here is a list of the files and what they include:</para>
+    <glosslist>
+        <glossentry>
+            <glossterm>gl_ubiquitous.txt</glossterm>
+            <glossdef>
+                <para>For <link xlink:href="http://www.opengl.org/wiki/Ubiquitous_Extension">the
+                        kinds of extensions that should be core OpenGL, but aren't for IP
+                        reasons</link>. Namely, anisotropic filtering, and the extensions needed for
+                    S3TC.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>gl_core_post_3_3.txt</glossterm>
+            <glossdef>
+                <para>Core extensions that are widely available on OpenGL 3.3, but aren't part of GL
+                    3.3 itself. These are for post-3.3 API improvements, like internalformat_query,
+                    shading_language_420pack, separate_shader_objects, and so forth.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>gl_plat_3_3.txt</glossterm>
+            <glossdef>
+                <para>Vendor-specific extensions that are implemented by multiple vendors for
+                    3.x-class hardware. Things like NV_texture_barrier.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>gl_AMD_3_3.txt</glossterm>
+            <glossdef>
+                <para>AMD's HD-2xxx, 3xxx, and 4xxx line of hardware all support GL 3.3. However,
+                    they also support some features of 4.x-class hardware via non-core extensions.
+                    This file includes those extensions (transform_feedback2/3, draw_buffers_blend,
+                    etc).</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>gl_macosx_3_2.txt</glossterm>
+            <glossdef>
+                <para>All of the extensions allowed by core 3.2 profiles in MacOSX, as of version
+                    MacOSX 10.8.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>wgl_common.txt</glossterm>
+            <glossdef>
+                <para>Commonly useful non-vendor-specific WGL extensions. The basic stuff: getting
+                    extensions_string, create_context, swap_control, various pixel-format
+                    extensions, etc.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>wgl_AMD.txt</glossterm>
+            <glossdef>
+                <para>Useful AMD vendor WGL extensions.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>wgl_NV.txt</glossterm>
+            <glossdef>
+                <para>Useful NVIDIA vendor WGL extensions.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>glx_common.txt</glossterm>
+            <glossdef>
+                <para>Commonly useful non-vendor-specific GLX extensions. The basic stuff:
+                    fbconfig_float, framebuffer_sRGB, multisample, etc.</para>
+            </glossdef>
+        </glossentry>
+    </glosslist>
+</article>

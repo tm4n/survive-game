@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Style Creation</title>
+    <para>The style system is designed to be extensible. But it is also somewhat complex. There are
+        two concepts that are important: a style and a structure.</para>
+    <para>A <literal>structure</literal> is a Lua table that effectively defines the basic layout of
+        where information goes in the generated files. It also defines which files are generated. In
+        a structure, you can do things like loop over all the extensions and/or versions. The
+        structure system is very flexible, allowing you to create virtually any kind of output you
+        could imagine.</para>
+    <para>The structure defines the basic layout of everything, but it doesn't define the actual
+        words and characters that get written. This is defined by the <literal>style</literal>.
+        Styles and structures interact; structures can say things like, <quote>Loop over all
+            extensions and call this style function for each.</quote> The particular style function
+        will decide what to do with the extension it is given. Because of this, different styles can
+            <emphasis>share</emphasis> the same structure. <literal>pointer_c</literal> and
+            <literal>pointer_cpp</literal> both use the style defined in
+            <literal>StyleCommon</literal>, even though they do very different things.</para>
+    <para>For example, let's say you have part of a code generation system, where you need to
+        iterate over each extension and create a function for it. In that function, you iterate over
+        all of the function pointers within that extension, writing loading code for each one. The
+        part of the structure that provides this would look like this:</para>
+    <programlisting>{ type="ext-iter",
+  { type="block", name="ExtensionFunctionDef(hFile, extName, spec, options),
+    { type="func-iter",
+      { type="write", name="LoadFunctionPtr(hFile, func, typemap, spec, options)", },
+    },
+  },
+},</programlisting>
+    <para>The first section has an <literal>ext-iter</literal>, which iterates all of the extensions
+        the user asked for. It will perform all of the contents once for each extension. Within that
+        is a user-written <literal>block</literal> that defines the beginning and end of the
+        function. Inside of the block is a <literal>func-iter</literal>, which iterates over all of
+        the functions inside of the current extension. So it's like a nested for-loop. Inside of the
+        function iterator is a <literal>write</literal> statement that writes something for each
+        function.</para>
+    <para>The stuff in the <literal>name</literal> tags represent (part of) the name of functions
+        stored within the <emphasis>style</emphasis>. Exactly how this is interpreted depends on the
+        particular statement. For example, the <literal>write</literal> statement above will call a
+        function named <literal><emphasis>Write</emphasis>LoadFunctionPtr</literal>, because the
+        write statement always appends <literal>Write</literal> to its statements.</para>
+    <para>The <literal>block</literal> statement is a bit more complex, as it will call two separate
+        functions: <literal>WriteBlockBeginExtensionFunctionDef</literal> and
+            <literal>WriteBlockEndExtensionFunctionDef</literal>. It calls the first one before
+        executing any of its containing statements, and it calls the second after executing its
+        contents. Thus the block's contents are bound.</para>
+    <para>The style should have functions with the appropriate names; if it does not, a runtime
+        error will occur, providing information that the function name couldn't be called.</para>
+    <para>The parameter list is actually quite special. Each parameter name has a very specific
+        meaning and stores very specific data (which you must <emphasis>never modify</emphasis>).
+        But different parameters are available at different times. For example,
+            <literal>extName</literal> represents the name of the current extension. But there can
+        only be a <quote>current extension</quote> when you are iterating over a group of
+        extensions. Likewise, <literal>func</literal> is a function loaded from the appropriate spec
+        file, but it is only available while iterating over a set of functions.</para>
+    <para>As with function names, if a parameter is specified in a place where it is not made
+        available (such as providing <literal>func</literal> to
+            <literal>ExtensionFunctionDef</literal>), a runtime error explaining the problem will
+        occur.</para>
+    <para>This is a simple overview of the process. There is a rather lot more complexity than
+        that.</para>
+    <para>In general, a style and a structure are created in tandem; if a structure is to be used in
+        multiple styles, then the structure can be created first. But it's much easier to make part
+        of a structure, implement enough style functions to use it, then expand on it.</para>
+    <para>There are two documents available to help you learn about making styles. The first is a
+            <link xlink:href="New_Style_Step_By_Step">step-by-step guide to making a new style and
+            structure</link>. The second is a <link xlink:href="Structure_Reference">reference
+            manual for the structure system</link>.</para>
+    <section>
+        <title>Responsibilities</title>
+        <para>Your style may create global definitions and so forth. In C/C++, definitions in one
+            source file can come into conflict with definitions in another. Here are the rules that
+            the system expects new styles to follow when creating such definitions:</para>
+        <itemizedlist>
+            <listitem>
+                <para>The user should be able to use different specs with the same style and link
+                    them together in the same program without conflicts. Files generated like this
+                    should coexist. This effectively means that you need to make sure that your
+                    names are prefixed with something spec-specific. The <literal>spec</literal>
+                    table has functions to get an appropriate prefix; the
+                        <literal>spec.DeclPrefix()</literal> function is the general prefix for
+                    declaration/definitions of things that can conflict at link time.</para>
+            </listitem>
+            <listitem>
+                <para>The user should be able to supply a prefix with the <literal>-prefix</literal>
+                    option. The user should be able to generate two separate source/header files
+                    with the <emphasis>exact same options</emphasis> with the exception of the
+                    prefixes. That is, the user can supply the same specification, version,
+                    extensions list, etc. And both files should be able to be linked together into a
+                    single program entirely without incident. Both loaders should be able to
+                    co-exist peacefully; loading function pointers for one should not impact the
+                    loading of function pointers for another</para>
+                <para>Note: if your style does static linking, such as for Linux or OSX, then the
+                    part about loading pointers for one not impacting the other can be
+                    ignored.</para>
+                <para>This rule effectively means that you must prefix every non-static definition.
+                    Namespace scoping would also work, if you use the prefix as the namespace (or
+                    prefix the namespace with it).</para>
+                <para>The prefix string is in <literal>options.prefix</literal>. Note that it will
+                    always be present; if you want to test for a user-defined prefix, test it
+                    against the empty string.</para>
+            </listitem>
+        </itemizedlist>
+        <para>So decorate names that can conflict with the user-prefix <emphasis>and</emphasis> the
+            spec's prefix. In C, you'll have to prefix the actual names.</para>
+    </section>
+</article>

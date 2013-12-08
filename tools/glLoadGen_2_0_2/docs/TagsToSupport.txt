@@ -1,0 +1,12 @@
+
+
+
+* orderedlist, itemizedlist, listitem
+* glosslist and its ilk.
+* programlisting
+
+
+inlines:
+* filename
+* literal
+* pg:pagelink, from the namespace https://bitbucket.org/alfonse/glloadgen

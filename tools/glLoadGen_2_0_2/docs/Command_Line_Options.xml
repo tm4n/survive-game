@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<?oxygen SCHSchema="http://docbook.org/xml/5.0/rng/docbookxi.rng"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:pg="https://bitbucket.org/alfonse/glloadgen"
+    version="5.0">
+    <title>Command Line Options</title>
+    <para>The command-line options for the code generation tools are explained here. They work more
+        or less like the standard command-line options for typical Linux/Windows programs. Options
+        that have a single value can take their parameters as either
+            <literal>-opt_name=parameter</literal> or <literal>-opt_name parameter</literal>.</para>
+    <para>With Lua on the path, the command-line should be specified as follows:</para>
+    <programlisting>lua pathToLoadgen/LoadGen.lua &lt;output filename> &lt;options></programlisting>
+    <para>The <literal>&lt;output filename></literal> must be specified. The path provided is
+        relative to the current directory. The base filename of the path (everything after the last
+        directory separator) will be decorated as appropriate for generating the output files. You
+        should not provide an extension; the system will provide those as needed. The generated
+        files will append an appropriate prefix, depending on which specifications you are
+        generating (OpenGL, WGL, or GLX), so you can provide the same base filename for all of
+        these.</para>
+    <para>The output filename should be specified before any of the options. You can specify it
+        after the options or even between options, but if you specify it after the
+            <literal>-exts</literal> option (but before any subsequent options), the system will
+        mistake it for an extension name. Just specify it first to be safe.</para>
+    <glosslist>
+        <glossentry>
+            <glossterm>-spec</glossterm>
+            <glossdef>
+                <para>Defines the particular specification to generate loading code for. It must be
+                    one of the following values:</para>
+                <itemizedlist>
+                    <listitem>
+                        <para><literal>gl</literal>: default</para>
+                    </listitem>
+                    <listitem>
+                        <para><literal>glX</literal></para>
+                    </listitem>
+                    <listitem>
+                        <para><literal>wgl</literal></para>
+                    </listitem>
+                </itemizedlist>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-prefix</glossterm>
+            <glossdef>
+                <para>The code generation system will try to minimize the number of non-static
+                    global variables it defines as much as possible. However, it will have to use
+                    some non-static variables for various things.</para>
+                <para>Code generated from the different specifications are guaranteed not to have
+                    name collisions. However, if you generate code from the
+                        <emphasis>same</emphasis> specification, with different sets of extensions
+                    or versions, collisions will occur.</para>
+                <para>The prefix option allows you to define a string that will be prepended to any
+                    non-static (or otherwise hidden) global variables, where possible. As such, the
+                    prefix should start with characters that are valid for C/C++ identifiers. The
+                    prefix will be used as the style decides, so a prefix could just as well be a
+                    namespace as an actual name prefix.</para>
+                <para>If the option is not specified, no prefix will be used.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-version</glossterm>
+            <glossdef>
+                <para>The highest version of OpenGL to export. You may <emphasis>only</emphasis> use
+                    this when <literal>-spec</literal> is <literal>gl</literal>. And you must use it
+                    when the specification is <literal>gl</literal>. You can specify a valid OpenGL
+                    version number, or your can specify <quote>max</quote>. This means to use the
+                    highest available OpenGL version.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-profile</glossterm>
+            <glossdef>
+                <para>The OpenGL profile to export. It must be one of the following values:</para>
+                <itemizedlist>
+                    <listitem>
+                        <para><literal>core</literal>: default</para>
+                    </listitem>
+                    <listitem>
+                        <para><literal>compatibility</literal>: It is an error to specify this for
+                            OpenGL versions that do not have the core/compatibility
+                            distinction.</para>
+                    </listitem>
+                </itemizedlist>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-style</glossterm>
+            <glossdef>
+                <para>The code generation suite has a number of different ways of outputting the
+                    functions and enumerators that define OpenGL. This option allows the user to
+                    select between these particular mechanisms.</para>
+                <para>The specific meaning of these parameters is <link xlink:href="Styles"
+                        >explained elsewhere.</link> Note that the system is designed to be
+                    user-extensible; new styles can be added by creating an appropriate script and
+                    hooking it into the right place in
+                    <filename>modules/Styles.lua</filename>.</para>
+                <para>It must be one of the following values:</para>
+                <itemizedlist>
+                    <listitem>
+                        <para><link xlink:href="Style_Pointer_C"
+                            ><literal>pointer_c</literal></link>: Used for C-style header
+                            generation.</para>
+                    </listitem>
+                    <listitem>
+                        <para><link xlink:href="Style_Pointer_CPP"
+                                ><literal>pointer_cpp</literal></link>: Used for creating C++-style
+                            loaders, wrapping as much as possible in namespaces.</para>
+                    </listitem>
+                    <listitem>
+                        <para><link xlink:href="Style_No_Load_CPP"
+                                ><literal>noload_cpp</literal></link>: Used for creating C++-style
+                            loaders that you don't need to call an initialization function on to get
+                            function pointers.</para>
+                    </listitem>
+                    <listitem>
+                        <para><literal>glload</literal>: For internal use only.</para>
+                    </listitem>
+                </itemizedlist>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-indent</glossterm>
+            <glossdef>
+                <para>The indentation style for the output text. It must be one of the
+                    following:</para>
+                <itemizedlist>
+                    <listitem>
+                        <para><literal>tab</literal>: default</para>
+                    </listitem>
+                    <listitem>
+                        <para><literal>space</literal>: Will use 2 spaces to indent.</para>
+                    </listitem>
+                </itemizedlist>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-exts</glossterm>
+            <glossdef>
+                <para>Defines a list of extensions to the given specification to export. Every
+                    argument that doesn't start with a "-" following this option will be assumed to
+                    be an extension name. You do not need to prefix the extensions with GL_, WGL_,
+                    or GLX_, but you may do so if you wish.</para>
+                <para>This argument can be specified multiple times. It is fine to specify an
+                    extension name more than once.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-ext</glossterm>
+            <glossdef>
+                <para>Defines a single extension to export. It adds the given parameter to the list
+                    of extensions.</para>
+                <para>This argument can be specified multiple times. It is fine to specify an
+                    extension name more than once.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-extfile</glossterm>
+            <glossdef>
+                <para>Specifying dozens of extensions on the command line can be exceedingly
+                    tedious. Therefore, the system can be instructed to read a list of extensions
+                    from a file with this option. <link xlink:href="Extension Files">The format is
+                        fairly simple</link>, but it does have an inclusion mechanism to include
+                    other extension files.</para>
+                <para>This argument can be specified multiple times. It is fine to specify an
+                    extension name more than once, either in the file or on the command line.</para>
+                <para>The file's directory is relative to the path where the command line was
+                    invoked.</para>
+            </glossdef>
+        </glossentry>
+        <glossentry>
+            <glossterm>-stdext</glossterm>
+            <glossdef>
+                <para>Works like <literal>extfile</literal>, except that the directory for the file
+                    is relative to the <filename>extfiles</filename> directory, just under the
+                    directory where the <filename>LoadGen.lua</filename> file is. These are used
+                    primarily for working with <link xlink:href="Common_Extension_Files">the library
+                        of common extension files</link>.</para>
+            </glossdef>
+        </glossentry>
+    </glosslist>
+</article>
