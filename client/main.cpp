@@ -1,7 +1,10 @@
 #include "SDL.h"
+#include "SDL_timer.h"
+#undef main
 #include "gameRenderer.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int main(int argc, char **argv)
 {
 
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) exit(1);
@@ -10,8 +13,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	gameRenderer *renderer = new gameRenderer();
 
+
+
 	while (!quit)
 	{
+		Uint32 t = SDL_GetTicks();
 		SDL_Event evt;
 		while( SDL_PollEvent(&evt) )
 		{
@@ -23,6 +29,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		renderer->drawFrame();
+
+		printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
 	}
 
 	delete renderer;

@@ -1,18 +1,447 @@
-#ifndef __MESH_CPP__
-#define __MESH_CPP__
+#include "Mesh.h"
+#include <iostream>
+#include <fstream>
+#include <glm/gtc/matrix_transform.hpp>
+
+// base header
+typedef struct {
+  char version[4]; // "MDL3", "MDL4", or "MDL5"
+  long unused1;    // not used
+  float scale[3];  // 3D position scale factors.
+  float offset[3]; // 3D position offset.
+  long unused2;    // not used
+  float unused3[3];// not used
+  long numskins;   // number of skin textures
+  long skinwidth;  // width of skin texture, for MDL3 and MDL4;
+  long skinheight; // height of skin texture, for MDL3 and MDL4;
+  long numverts;   // number of 3d wireframe vertices
+  long numtris;    // number of triangles surfaces
+  long numframes;  // number of frames
+  long numskinverts; // number of 2D skin vertices
+  long flags;     // always 0
+  long unused4;   // not used
+} mdl_header;
+
+// skin header
+typedef struct {
+  long skintype; // 2 for 565 RGB, 3 for 4444 ARGB, 10 for 565 mipmapped, 11 for 4444 mipmapped (bpp = 2),
+                 // 12 for 888 RGB mipmapped (bpp = 3), 13 for 8888 ARGB mipmapped (bpp = 4)
+  long width,height; // size of the texture
+  /*byte skin[bpp*width*height]; // the texture image
+  byte skin1[bpp*width/2*height/2]; // the 1st mipmap (if any)
+  byte skin2[bpp*width/4*height/4]; // the 2nd mipmap (if any)
+  byte skin3[bpp*width/8*height/8]; // the 3rd mipmap (if any)*/
+} mdl5_skin_t;
+
+// tex coords
+typedef struct
+{
+  short u; // position, horizontally in range 0..skinwidth-1
+  short v; // position, vertically in range 0..skinheight-1
+} mdl_uvvert_t;
+
+// triangles
+typedef struct {
+  short index_xyz[3]; // Index of 3 3D vertices in range 0..numverts
+  short index_uv[3]; // Index of 3 skin vertices in range 0..numskinverts
+} mdl_triangle_t;
+
+typedef struct {
+	unsigned short rawposition[3]; // X,Y,Z coordinate, packed on 0..65536
+	unsigned char lightnormalindex; // index of the vertex normal
+	unsigned char unused;
+} mdl_trivertxs_t;
+
+typedef struct {
+	long type; // 0 for byte-packed positions, and 2 for word-packed positions
+	mdl_trivertxs_t bboxmin,bboxmax; // bounding box of the frame
+	char name[16]; // name of frame, used for animation
+} mdl_frame_t;
+
+
 
 Mesh::Mesh(const char *mesh_file, const char *tex_file)
 {
-		int[] textures = new int[1];
-        glGenTextures(1, textures, 0);
-        mTextureID = textures[0];
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureID);
+	loaded = false;
+
+	// local storage vars
+	mdl_header header;
+	mdl5_skin_t *skins;
+	mdl_uvvert_t *skinverts;
+	mdl_triangle_t *tris;
+
+	filename.assign(mesh_file);
+
+
+	// open file
+	std::ifstream file (mesh_file, std::ios::in|std::ios::binary);
+	if (!file.is_open()) return;
+
+	// read header
+	file.read((char*)&header, sizeof(mdl_header));
+
+	if (header.version[3] != '5') return; // only handle mdl5 for now
+
+	numskins = header.numskins;
+	numverts = header.numverts;
+	numtris = header.numtris;
+	numframes = header.numframes;
+
+	if (tex_file)
+	{
+	    //////////////////////////////////////////////////
+	    // TODO: load texture from external file
+
+		//glCompressedTexImage2D(GL_TEXTURE_2D, 0, ETC1.ETC1_RGB8_OES, tex.getWidth(), tex.getHeight(), 0, tex.getData().limit(), tex.getData());  
+
+		// TODO: skip internally stored skins
+    }
+	else
+	{
+		skins = new mdl5_skin_t[numskins];
+
+		mTextureID = new GLuint[numskins];
+		glGenTextures(numskins, mTextureID);
+
+		// read skins
+		for (int i = 0; i < numskins; i++)
+		{
+			// bind current texture
+			glBindTexture(GL_TEXTURE_2D, mTextureID[i]);
         
-        // When MAGnifying the image (no bigger mipmap available), use LINEAR filtering
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_LINEAR_MIPMAP_LINEAR);
-        // When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_LINEAR);
+			// When MAGnifying the image (no bigger mipmap available), use LINEAR filtering
+			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+			// When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
+			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+			// read skin header
+			file.read((char*)&(skins[i]), sizeof(mdl5_skin_t));
+
+			int hpp = 0;
+			if (skins[i].skintype == 1) return; // 8 bit texture, not supported
+			if (skins[i].skintype == 2 || skins[i].skintype == 3) hpp = 2;
+			if (skins[i].skintype == 4) hpp = 3;
+			if (skins[i].skintype == 5) hpp = 4;
+			if (skins[i].skintype > 10) return; // mimapping not yet supported
+
+			int imgsize = skins[i].width*skins[i].height*hpp;
+			if (header.skinheight == 0) header.skinheight = skins[i].height;
+			if (header.skinwidth == 0) header.skinwidth = skins[i].width;
+
+			char *texture = new char[imgsize];
+			file.read(texture, imgsize);
+
+			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, texture);
+        	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_SHORT_4_4_4_4, texture);
+        	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
+        	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);
+        		
+        	glGenerateMipmap(GL_TEXTURE_2D);
+
+			delete[] texture;
+		}
+
+		delete[] skins;
+	}
+
+	// load skin vertices
+	skinverts = new mdl_uvvert_t[header.numskinverts];
+	file.read((char*)skinverts, sizeof(mdl_uvvert_t)*header.numskinverts);
+
+	// read triangles
+	tris = new mdl_triangle_t[numtris];
+	file.read((char*)tris, sizeof(mdl_triangle_t)*numtris);
+
+	// transform texture coordinates
+	float *texCoordBuffer = new float[numtris*3*2];
+	int index;
+	for (int i = 0; i < numtris; i++)
+	{
+		index = tris[i].index_uv[0];
+		texCoordBuffer[i*3*2 + 0*2 + 0] = ((float)skinverts[index].u) / ((float)header.skinwidth);
+		texCoordBuffer[i*3*2 + 0*2 + 1] = ((float)skinverts[index].v) / ((float)header.skinheight);
+
+		index = tris[i].index_uv[1];
+		texCoordBuffer[i*3*2 + 1*2 + 0] = ((float)skinverts[index].u) / ((float)header.skinwidth);
+		texCoordBuffer[i*3*2 + 1*2 + 1] = ((float)skinverts[index].v) / ((float)header.skinheight);
+
+		index = tris[i].index_uv[2];
+		texCoordBuffer[i*3*2 + 2*2 + 0] = ((float)skinverts[index].u) / ((float)header.skinwidth);
+		texCoordBuffer[i*3*2 + 2*2 + 1] = ((float)skinverts[index].v) / ((float)header.skinheight);
+	}
+
+    glGenBuffers(1, &mTexCoordBuffer);
+	// upload texture corrdinates
+	glBindBuffer(GL_ARRAY_BUFFER, mTexCoordBuffer);
+	glBufferData(GL_ARRAY_BUFFER, numtris * 2 * 3 * 4, texCoordBuffer, GL_STATIC_DRAW);  
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	delete[] skinverts;
+	delete[] texCoordBuffer;
+
+
+
+	///////////////////////////////////////////////////////
+	// read frames
+
+	// vertex buffer for upload
+	float *vertexBuffer = new float[numtris*3*3];
+	// vertex buffer for inbetween storage
+	float *vertexPosBuffer = new float[numverts*3];
+
+	// generate buffers
+    mVertexBuffer = new GLuint[numframes];
+    glGenBuffers(numframes, mVertexBuffer);
+
+	for (int f = 0; f < numframes; f++)
+	{
+		mdl_frame_t frameheader;
+		mdl_trivertxs_t trivert;
+		file.read((char*)&frameheader, sizeof(mdl_frame_t));
+		if (frameheader.type == 0) return; // not supporting byte packed frames!
+
+		for (int i = 0; i < numverts; i++)
+		{
+			// read one entry
+			file.read((char*)&trivert, sizeof(mdl_trivertxs_t));
+			
+			// safe into vertexPosBuffer
+			// x, y, z
+			vertexPosBuffer[i*3 + 0] = (header.scale[0] * (float)trivert.rawposition[0]) + header.offset[0];
+			vertexPosBuffer[i*3 + 1] = (header.scale[1] * (float)trivert.rawposition[1]) + header.offset[1];
+			vertexPosBuffer[i*3 + 2] = (header.scale[2] * (float)trivert.rawposition[2]) + header.offset[2];
+		}
+
+		// transform gathered information to a vertex list, for uploading
+		for (int i = 0; i < numtris; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				int ind = tris[i].index_xyz[j];
+				vertexBuffer[i*3*3 + j*3 + 0] = vertexPosBuffer[3*ind + 0];
+				vertexBuffer[i*3*3 + j*3 + 1] = vertexPosBuffer[3*ind + 1];
+				vertexBuffer[i*3*3 + j*3 + 2] = vertexPosBuffer[3*ind + 2];
+			}
+		}
+
+		// upload vertex list for one frame
+	    glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[f]);
+	    glBufferData(GL_ARRAY_BUFFER, numtris * 3 * 3 * 4, vertexBuffer, GL_STATIC_DRAW);  
+	    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	delete[] tris;
+
+	delete[] vertexBuffer;
+	delete[] vertexPosBuffer;
+
+	loaded = true;
+
 }
 
+void Mesh::draw(glm::mat4 mVPMatrix)
+{
+    // Add program to OpenGLenvironment
+    glUseProgram(mProgram);
 
-#endif
+
+    // get texture mapping into gpu
+    glBindBuffer(GL_ARRAY_BUFFER, mTexCoordBuffer);
+    glEnableVertexAttribArray(mTexCoordHandle);
+    glVertexAttribPointer(mTexCoordHandle, 2, 
+        						GL_FLOAT, GL_FALSE, 
+        						2*4, 0); 
+        
+    // int mtexUniform = glGetUniformLocation(mProgram, "Texture");
+    //glActiveTexture(GL_TEXTURE0); - activating texture unit 0
+    glBindTexture(GL_TEXTURE_2D, mTextureID[0]);
+    //glUniform1i(mtexUniform, 0); - setting texture unit 0
+
+    for (RenderObject *obj : objectList) {
+        	
+        // get vertex positions into gpu
+        // Bind vertex buffer object for triangle vertices
+        glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[obj->animFrame]);
+            
+        // Enable a handle to the triangle vertices
+        glEnableVertexAttribArray(mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        glVertexAttribPointer(mPositionHandle, 3,
+                                        GL_FLOAT, GL_FALSE,
+                                        0, 0);
+
+		int err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after Pos data" << std::endl;
+		}
+
+		// Enable a handle to the triangle vertices
+		glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[obj->animNextFrame]);
+		glEnableVertexAttribArray(mNextPositionHandle);
+
+		// Prepare the triangle coordinate data
+		glVertexAttribPointer(mNextPositionHandle, 3,
+										GL_FLOAT, GL_FALSE,
+										0, 0);
+            
+		err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after NextPos data" << std::endl;
+		}
+        	
+        	
+	    // calculate translation and movement
+
+		// set Matrix to identity
+	    mTransformationMatrix = glm::mat4();
+	        
+	    // move
+		mTransformationMatrix = glm::translate(mTransformationMatrix, obj->translation);
+	        
+	    //turn
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[0], glm::vec3(0.f, 0.f, 1.f));
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[1], glm::vec3(0.f, 1.f, 0.f));
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[2], glm::vec3(1.f, 0.f, 0.f));
+	        
+	    //scale
+	    mTransformationMatrix = glm::scale(mTransformationMatrix, obj->scale);
+	        
+	
+	    // Multiply with translation
+	    mFinalMatrix = mVPMatrix * mTransformationMatrix;
+	
+	    // Apply the projection and view transformation
+	    glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, &mFinalMatrix[0][0]);
+	        
+	    // Upload blend values
+	    glUniform1f(mAnimProgressHandle, obj->animProgress);
+
+		err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after all uploads" << std::endl;
+		}
+	        
+	    // Draw the triangles
+	    glDrawArrays(GL_TRIANGLES, 0, numtris*3);
+
+		err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after drawing" << std::endl;
+		}
+
+    }
+
+    // Disable vertex array
+    glDisableVertexAttribArray(mTexCoordHandle);
+        
+    glDisableVertexAttribArray(mPositionHandle);
+        
+    glDisableVertexAttribArray(mNextPositionHandle);
+        
+    // unbind buffers
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        
+    int err = glGetError();
+    if (err != 0) {
+        std::cout << "OGL error code: " << err << " on drawing after disabling" << std::endl;
+	}  
+        
+}
+    
+void Mesh::initShader() {
+	// Set shader content
+	vertexShaderCode =
+            // This matrix member variable provides a hook to manipulate
+            // the coordinates of the objects that use this vertex shade
+			"#version 130 \n"
+            "uniform mat4 uMVPMatrix; \n"
+            "uniform float animProgress; \n"
+
+            "attribute vec4 vPosition; \n"
+            "attribute vec4 vNextPosition; \n"
+            "attribute vec2 TexCoordIn; \n" 
+            "varying vec2 TexCoordOut; \n"
+            "void main() { \n"
+            // the matrix must be included as a modifier of gl_Position
+            " gl_Position = uMVPMatrix * mix(vPosition, vNextPosition, animProgress); \n"
+            " TexCoordOut = TexCoordIn; \n" 
+            "}";
+
+    fragmentShaderCode =
+			"#version 130 \n"
+            "varying lowp vec2 TexCoordOut; \n" 
+            "uniform sampler2D Texture; \n"
+            "void main() { \n" 
+            //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+            "  gl_FragColor = texture2D(Texture, TexCoordOut); \n" 
+            "}";
+
+    // initialize shaders
+    int vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderCode);
+    int fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderCode);
+
+    mProgram = glCreateProgram();             // create empty OpenGL ES Program
+    glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
+    glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
+    glLinkProgram(mProgram);                  // creates OpenGL ES program executables
+        
+    // get handle to fragment shader's TexCoord member
+    mTexCoordHandle = glGetAttribLocation(mProgram, "TexCoordIn");
+        
+    // get handle to vertex shader's vPosition member
+    mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
+        
+    // get handle to vertex shader's vNextPosition member
+    mNextPositionHandle = glGetAttribLocation(mProgram, "vNextPosition");
+        
+    // get handle to vertex shader's vNextPosition member
+    mAnimProgressHandle = glGetUniformLocation(mProgram, "animProgress");
+        
+    // get handle to shape's transformation matrix
+    mMVPMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");
+        
+    int err = glGetError();
+    if (err != 0) {
+        std::cout << "OGL error code: " << err << " on drawing" << std::endl;
+    }
+}
+    
+    
+int Mesh::loadShader(int type, const char *shaderCode) {
+    // create a vertex shader type (GL_VERTEX_SHADER)
+    // or a fragment shader type (GL_FRAGMENT_SHADER)
+    int shader = glCreateShader(type);
+
+    // add the source code to the shader and compile it
+	int len = strlen(shaderCode);
+    glShaderSource(shader, 1, &shaderCode, &len);
+    glCompileShader(shader);
+        
+    // Get the compilation status.
+    int compileStatus;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
+     
+    // If the compilation failed, delete the shader.
+    if (compileStatus == 0)
+    {
+		GLint infoLogLength;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
+		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
+        std::cout << "Shader compile error: " << strInfoLog << std::endl;
+		delete[] strInfoLog;
+    }
+
+    return shader;
+}
+    
+void Mesh::addRenderObject(RenderObject *obj) {
+    objectList.push_back(obj);
+}
+    
+void Mesh::removeRenderObject(RenderObject *obj) {
+    return objectList.remove(obj);
+}
