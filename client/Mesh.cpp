@@ -116,10 +116,12 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			glBindTexture(GL_TEXTURE_2D, mTextureID[i]);
         
 			// When MAGnifying the image (no bigger mipmap available), use LINEAR filtering
-			// glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR); WITH MIMAPS
-			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+			//glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			// When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
 			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+			
+			glTexParameteri(GL_TEXTURE_2D,GL_GENERATE_MIPMAP,GL_TRUE);  // not in 3.x
 
 			// read skin header
 			file.read((char*)&(skins[i]), sizeof(mdl5_skin_t));
