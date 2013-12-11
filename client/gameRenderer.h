@@ -25,8 +25,5 @@ private:
 	glm::mat4 mVPMatrix;
 	glm::mat4 mProjMatrix;
 	glm::mat4 mVMatrix;
-
-	//DEBHUG
-	RenderObject *soldiers;
 };
 

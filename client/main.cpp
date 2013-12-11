@@ -13,6 +13,31 @@ int main(int argc, char **argv)
 
 	gameRenderer *renderer = new gameRenderer();
 
+	//display stuff
+	RenderObject *objTerrain = new RenderObject();
+    renderer->resources.getMesh(ResourceLoader::meshType::Terrain)->addRenderObject(objTerrain);
+        
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 50; j++) {
+        RenderObject *tmp = new RenderObject();
+        	
+        tmp->translation[1] += i*50.f;
+        tmp->translation[2] += j*50.f;
+        	
+        renderer->resources.getMesh(ResourceLoader::meshType::Crate)->addRenderObject(tmp);
+        }
+    }
+        
+    
+	RenderObject *soldiers = new RenderObject[30];
+    for (int i = 0; i < 30; i++) {       	
+        soldiers[i].rotation[0] += i*180.f;
+        	
+        soldiers[i].translation[1] += i*80.f;
+        soldiers[i].translation[0] += -200;
+        	
+        renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(&soldiers[i]);
+    }
 
 
 	while (!quit)
@@ -27,6 +52,20 @@ int main(int argc, char **argv)
 			/* process other events you want to handle here */
 			}
 		}
+		
+		// animation test
+		for (int i = 0; i < 30; i++) {
+				
+			if (soldiers[i].animProgress > 1.0f) {
+				soldiers[i].animProgress -= 1.0f;
+				soldiers[i].animFrame = soldiers[i].animNextFrame;
+				soldiers[i].animNextFrame += 1;
+				soldiers[i].animNextFrame %= 65;
+			}
+			soldiers[i].animProgress += 0.1f;
+				
+		}
+		
 
 		renderer->drawFrame();
 

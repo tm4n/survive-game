@@ -48,6 +48,8 @@ typedef struct {
   int16_t index_uv[3]; // Index of 3 skin vertices in range 0..numskinverts
 } mdl_triangle_t;
 
+#define CPYTRIS(A,B) A.index_xyz[0] = B.index_xyz[0]; A.index_xyz[1] = B.index_xyz[1]; A.index_xyz[2] = B.index_xyz[2]; A.index_uv[0] = B.index_uv[0]; A.index_uv[1] = B.index_uv[1]; A.index_uv[2] = B.index_uv[2]; 
+
 typedef struct {
 	uint16_t rawposition[3]; // X,Y,Z coordinate, packed on 0..65536
 	uint8_t lightnormalindex; // index of the vertex normal
@@ -89,7 +91,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	numtris = header.numtris;
 	numframes = header.numframes;
 	
-	std::cout << "Opened "<< mesh_file << "with " << numskins << " skins, " << numverts << " vertices, " << numtris << " triangles, " << numframes<< " frames." << std::endl;
+	std::cout << "Opened "<< mesh_file << " with " << numskins << " skins, " << numverts << " vertices, " << numtris << " triangles, " << numframes<< " frames." << std::endl;
 
 	if (tex_file)
 	{
