@@ -1,32 +1,34 @@
 #include "Mesh.h"
 #include <iostream>
 #include <fstream>
+#include <string.h>
+#include <stdint.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 // base header
 typedef struct {
-  char version[4]; // "MDL3", "MDL4", or "MDL5"
-  long unused1;    // not used
+  int8_t version[4]; // "MDL3", "MDL4", or "MDL5"
+  int32_t unused1;    // not used
   float scale[3];  // 3D position scale factors.
   float offset[3]; // 3D position offset.
-  long unused2;    // not used
+  int32_t unused2;    // not used
   float unused3[3];// not used
-  long numskins;   // number of skin textures
-  long skinwidth;  // width of skin texture, for MDL3 and MDL4;
-  long skinheight; // height of skin texture, for MDL3 and MDL4;
-  long numverts;   // number of 3d wireframe vertices
-  long numtris;    // number of triangles surfaces
-  long numframes;  // number of frames
-  long numskinverts; // number of 2D skin vertices
-  long flags;     // always 0
-  long unused4;   // not used
+  int32_t numskins;   // number of skin textures
+  int32_t skinwidth;  // width of skin texture, for MDL3 and MDL4;
+  int32_t skinheight; // height of skin texture, for MDL3 and MDL4;
+  int32_t numverts;   // number of 3d wireframe vertices
+  int32_t numtris;    // number of triangles surfaces
+  int32_t numframes;  // number of frames
+  int32_t numskinverts; // number of 2D skin vertices
+  int32_t flags;     // always 0
+  int32_t unused4;   // not used
 } mdl_header;
 
 // skin header
 typedef struct {
-  long skintype; // 2 for 565 RGB, 3 for 4444 ARGB, 10 for 565 mipmapped, 11 for 4444 mipmapped (bpp = 2),
+  int32_t skintype; // 2 for 565 RGB, 3 for 4444 ARGB, 10 for 565 mipmapped, 11 for 4444 mipmapped (bpp = 2),
                  // 12 for 888 RGB mipmapped (bpp = 3), 13 for 8888 ARGB mipmapped (bpp = 4)
-  long width,height; // size of the texture
+  int32_t width,height; // size of the texture
   /*byte skin[bpp*width*height]; // the texture image
   byte skin1[bpp*width/2*height/2]; // the 1st mipmap (if any)
   byte skin2[bpp*width/4*height/4]; // the 2nd mipmap (if any)
@@ -36,26 +38,26 @@ typedef struct {
 // tex coords
 typedef struct
 {
-  short u; // position, horizontally in range 0..skinwidth-1
-  short v; // position, vertically in range 0..skinheight-1
+  int16_t u; // position, horizontally in range 0..skinwidth-1
+  int16_t v; // position, vertically in range 0..skinheight-1
 } mdl_uvvert_t;
 
 // triangles
 typedef struct {
-  short index_xyz[3]; // Index of 3 3D vertices in range 0..numverts
-  short index_uv[3]; // Index of 3 skin vertices in range 0..numskinverts
+  int16_t index_xyz[3]; // Index of 3 3D vertices in range 0..numverts
+  int16_t index_uv[3]; // Index of 3 skin vertices in range 0..numskinverts
 } mdl_triangle_t;
 
 typedef struct {
-	unsigned short rawposition[3]; // X,Y,Z coordinate, packed on 0..65536
-	unsigned char lightnormalindex; // index of the vertex normal
-	unsigned char unused;
+	uint16_t rawposition[3]; // X,Y,Z coordinate, packed on 0..65536
+	uint8_t lightnormalindex; // index of the vertex normal
+	uint8_t unused;
 } mdl_trivertxs_t;
 
 typedef struct {
-	long type; // 0 for byte-packed positions, and 2 for word-packed positions
+	int32_t type; // 0 for byte-packed positions, and 2 for word-packed positions
 	mdl_trivertxs_t bboxmin,bboxmax; // bounding box of the frame
-	char name[16]; // name of frame, used for animation
+	int8_t name[16]; // name of frame, used for animation
 } mdl_frame_t;
 
 
@@ -75,7 +77,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	// open file
 	std::ifstream file (mesh_file, std::ios::in|std::ios::binary);
-	if (!file.is_open()) return;
+	if (!file.is_open()) {std::cout << "ERROR on ifstream" << std::endl;  return;}
 
 	// read header
 	file.read((char*)&header, sizeof(mdl_header));
@@ -86,6 +88,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	numverts = header.numverts;
 	numtris = header.numtris;
 	numframes = header.numframes;
+	
+	std::cout << "Opened "<< mesh_file << "with " << numskins << " skins, " << numverts << " vertices, " << numtris << " triangles, " << numframes<< " frames." << std::endl;
 
 	if (tex_file)
 	{
@@ -110,7 +114,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			glBindTexture(GL_TEXTURE_2D, mTextureID[i]);
         
 			// When MAGnifying the image (no bigger mipmap available), use LINEAR filtering
-			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+			// glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR); WITH MIMAPS
+			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			// When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
 			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
@@ -136,7 +141,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
         	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
         	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);
         		
-        	glGenerateMipmap(GL_TEXTURE_2D);
+        	//glGenerateMipmap(GL_TEXTURE_2D); // not in opengl 2.1
 
 			delete[] texture;
 		}
@@ -355,7 +360,7 @@ void Mesh::initShader() {
 	vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shade
-			"#version 130 \n"
+			"#version 120 \n"
             "uniform mat4 uMVPMatrix; \n"
             "uniform float animProgress; \n"
 
@@ -370,8 +375,8 @@ void Mesh::initShader() {
             "}";
 
     fragmentShaderCode =
-			"#version 130 \n"
-            "varying lowp vec2 TexCoordOut; \n" 
+			"#version 120 \n"
+            "varying vec2 TexCoordOut; \n" 
             "uniform sampler2D Texture; \n"
             "void main() { \n" 
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
@@ -433,6 +438,8 @@ int Mesh::loadShader(int type, const char *shaderCode) {
 		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
         std::cout << "Shader compile error: " << strInfoLog << std::endl;
 		delete[] strInfoLog;
+		
+		exit(-3);
     }
 
     return shader;

@@ -3,7 +3,8 @@
 
 #include "RenderObject.h"
 #include <list>
-#include "gl_opengl_3_2.h"
+#include <string>
+#include "gl_core_2_1.h"
 #include "glm/glm.hpp"
 
 class Mesh

@@ -7,8 +7,8 @@ gameRenderer::gameRenderer()
 {
 	// not sure if this is needed!
 	// request OGL 3.2 context (default to SDL core profile)
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
     // turn on double buffering with a 24 bit Z buffer
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

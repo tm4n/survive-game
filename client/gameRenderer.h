@@ -1,7 +1,7 @@
 
-#include "gl_opengl_3_2.h"
-#include "SDL.h"
-#include "SDL_opengl.h"
+#include "gl_core_2_1.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_opengl.h"
 #include "ResourceLoader.h"
 #include "glm/glm.hpp"
 
