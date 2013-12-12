@@ -24,6 +24,7 @@ public:
 	void draw(glm::mat4 mVPMatrix);
 
 	void initShader();
+	void setShader();
 
 	void addRenderObject(RenderObject *obj);
     

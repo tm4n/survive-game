@@ -358,8 +358,8 @@ void Mesh::draw(glm::mat4 mVPMatrix)
 	}  
         
 }
-    
-void Mesh::initShader() {
+
+void Mesh::setShader() {
 	// Set shader content
 	vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -386,6 +386,11 @@ void Mesh::initShader() {
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
             "  gl_FragColor = texture2D(Texture, TexCoordOut); \n" 
             "}";
+}
+
+void Mesh::initShader() {
+	
+	setShader();
 
     // initialize shaders
     int vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderCode);
