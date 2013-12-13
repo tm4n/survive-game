@@ -9,7 +9,7 @@
 class ResourceLoader
 {
 public:
-	enum class meshType : int { Crate = 1, Terrain = 2, Soldier = 3 };
+	enum class meshType : int { Crate = 1, Terrain = 2, Tree = 3, Shrub = 4, Soldier = 10 };
 
 	ResourceLoader();
 

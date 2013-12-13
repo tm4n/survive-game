@@ -250,6 +250,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 void Mesh::draw(glm::mat4 mVPMatrix)
 {
+	if (objectList.empty()) return;
+
     // Add program to OpenGLenvironment
     glUseProgram(mProgram);
 

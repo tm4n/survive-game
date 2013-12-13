@@ -16,10 +16,21 @@ void ResourceLoader::load()
 	if (meshes[(int)meshType::Terrain]->loaded == false) {std::cout << "ERROR loading model for terrain" << std::endl; exit(-1);}
 	meshes[(int)meshType::Terrain]->initShader();
 
-	meshes[(int)meshType::Soldier] = new Mesh("assets/models/soldier.mdl", NULL);
-	if (meshes[(int)meshType::Soldier]->loaded == false) {std::cout << "ERROR loading model for terrain" << std::endl; exit(-1);}
+
+	meshes[(int)meshType::Tree] = new Mesh("assets/models/tree1.mdl", NULL);
+	if (meshes[(int)meshType::Tree]->loaded == false) {std::cout << "ERROR loading model for tree1" << std::endl; exit(-1);}
+	meshes[(int)meshType::Tree]->initShader();
+
+	meshes[(int)meshType::Shrub] = new Mesh("assets/models/shrub1.mdl", NULL);
+	if (meshes[(int)meshType::Shrub]->loaded == false) {std::cout << "ERROR loading model for shrub" << std::endl; exit(-1);}
+	meshes[(int)meshType::Shrub]->initShader();
+
+
+		meshes[(int)meshType::Soldier] = new Mesh("assets/models/soldier.mdl", NULL);
+	if (meshes[(int)meshType::Soldier]->loaded == false) {std::cout << "ERROR loading model for soldier" << std::endl; exit(-1);}
 	meshes[(int)meshType::Soldier]->initShader();
 }
+
 
 Mesh* ResourceLoader::getMesh(meshType m)
 {

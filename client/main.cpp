@@ -1,4 +1,4 @@
-#include "SDL2/SDL.h"
+﻿#include "SDL2/SDL.h"
 #include "SDL2/SDL_timer.h"
 #undef main
 #include "gameRenderer.h"
@@ -15,6 +15,7 @@ int main(int argc, char **argv)
 
 	//display stuff
 	RenderObject *objTerrain = new RenderObject();
+	objTerrain->scale = glm::vec3(2.0f, 2.0f, 2.0f);
     renderer->resources.getMesh(ResourceLoader::meshType::Terrain)->addRenderObject(objTerrain);
         
     for (int i = 0; i < 20; i++) {
@@ -39,7 +40,21 @@ int main(int argc, char **argv)
         renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(&soldiers[i]);
     }
 
+	// create trees at their location
+	RenderObject *tmp = new RenderObject();
+	tmp->translation = glm::vec3(-328.0f, -1400.0f, -312.0f);
+	tmp->rotation[0] = 200.0f;
+	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
+	tmp = new RenderObject();
+	tmp->translation = glm::vec3(800.0f, 1296.0f, -300.0f);
+	tmp->rotation[0] = 36.0f;
+	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
+	tmp = new RenderObject();
+	tmp->rotation[0] = 6.0f;
+	tmp->translation = glm::vec3(-1440.0f, -784.0f, -300.0f);
+	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
 
+	int fct = 0;
 	while (!quit)
 	{
 		Uint32 t = SDL_GetTicks();
@@ -69,7 +84,8 @@ int main(int argc, char **argv)
 
 		renderer->drawFrame();
 
-		printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
+		if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
+		fct++;
 	}
 
 	delete renderer;
