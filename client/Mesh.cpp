@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "SDL2/SDL.h"
 
 // base header
 typedef struct {
@@ -78,11 +79,11 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 
 	// open file
-	std::ifstream file (mesh_file, std::ios::in|std::ios::binary);
-	if (!file.is_open()) {std::cout << "ERROR on ifstream" << std::endl;  return;}
+	SDL_RWops *file = SDL_RWFromFile(mesh_file, "rb");
+	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening file: " << mesh_file << std::endl;  return;}
 
 	// read header
-	file.read((char*)&header, sizeof(mdl_header));
+	SDL_RWread(file, &header, sizeof(mdl_header), 1);
 
 	if (header.version[3] != '5') return; // only handle mdl5 for now
 
@@ -124,7 +125,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			glTexParameteri(GL_TEXTURE_2D,GL_GENERATE_MIPMAP,GL_TRUE);  // not in 3.x
 
 			// read skin header
-			file.read((char*)&(skins[i]), sizeof(mdl5_skin_t));
+			SDL_RWread(file,&(skins[i]), sizeof(mdl5_skin_t), 1);
 
 			int hpp = 0;
 			if (skins[i].skintype == 1) return; // 8 bit texture, not supported
@@ -138,7 +139,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			if (header.skinwidth == 0) header.skinwidth = skins[i].width;
 
 			char *texture = new char[imgsize];
-			file.read(texture, imgsize);
+			SDL_RWread(file, texture, imgsize, 1);
 
 			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, texture);
         	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_SHORT_4_4_4_4, texture);
@@ -155,11 +156,11 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	// load skin vertices
 	skinverts = new mdl_uvvert_t[header.numskinverts];
-	file.read((char*)skinverts, sizeof(mdl_uvvert_t)*header.numskinverts);
+	SDL_RWread(file, skinverts, sizeof(mdl_uvvert_t), header.numskinverts);
 
 	// read triangles
 	tris = new mdl_triangle_t[numtris];
-	file.read((char*)tris, sizeof(mdl_triangle_t)*numtris);
+	SDL_RWread(file, tris, sizeof(mdl_triangle_t), numtris);
 
 	// transform texture coordinates
 	float *texCoordBuffer = new float[numtris*3*2];
@@ -206,13 +207,13 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	{
 		mdl_frame_t frameheader;
 		mdl_trivertxs_t trivert;
-		file.read((char*)&frameheader, sizeof(mdl_frame_t));
+		SDL_RWread(file, &frameheader, sizeof(mdl_frame_t), 1);
 		if (frameheader.type == 0) return; // not supporting byte packed frames!
 
 		for (int i = 0; i < numverts; i++)
 		{
 			// read one entry
-			file.read((char*)&trivert, sizeof(mdl_trivertxs_t));
+			SDL_RWread(file, &trivert, sizeof(mdl_trivertxs_t), 1);
 			
 			// safe into vertexPosBuffer
 			// x, y, z
@@ -238,6 +239,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	    glBufferData(GL_ARRAY_BUFFER, numtris * 3 * 3 * 4, vertexBuffer, GL_STATIC_DRAW);  
 	    glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
+
+	SDL_RWclose(file);
 
 	delete[] tris;
 

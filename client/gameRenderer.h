@@ -3,6 +3,7 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengl.h"
 #include "ResourceLoader.h"
+#include "GUI.h"
 #include "glm/glm.hpp"
 
 
@@ -10,6 +11,7 @@ class gameRenderer
 {
 public:
 	ResourceLoader resources;
+	GUI *gui;
 
 	gameRenderer();
 	~gameRenderer();

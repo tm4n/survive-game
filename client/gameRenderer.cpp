@@ -6,6 +6,8 @@
 
 gameRenderer::gameRenderer()
 {
+	int ss_x = 800, ss_y = 480;
+
 	// not sure if this is needed!
 	// request OGL 2.1 context (default to SDL core profile)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -15,7 +17,7 @@ gameRenderer::gameRenderer()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	window = SDL_CreateWindow("Survive!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Survive!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ss_x, ss_y, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (window == NULL)
 	{
 		std::cout << "SDL Error on window opening: " << SDL_GetError() << std::endl;
@@ -53,10 +55,16 @@ gameRenderer::gameRenderer()
 
 	// load all resources
 	resources.load();
+
+	// initialize gzu
+	gui = new GUI();
+	gui->setScreensize(ss_x, ss_y);
 }
 
 gameRenderer::~gameRenderer()
 {
+	if (gui) delete gui;
+
 	SDL_GL_DeleteContext(glcontext);
 
 	SDL_DestroyWindow(window);
@@ -81,6 +89,9 @@ void gameRenderer::drawFrame()
 		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
         if (m != NULL) m->draw(mVPMatrix);
     }
+
+	// draw gui over it
+	gui->draw();
 
 
 	SDL_GL_SwapWindow(window);
