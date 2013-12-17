@@ -6,7 +6,7 @@
 Texture::Texture(const char* filename)
 {
 	tgaFile = new tga_file;
-    unsigned char ucharBad;
+    unsigned char ucharBad, imagedescriptor;
     short int sintBad;
     long imageSize;
     int colorMode;
@@ -50,7 +50,7 @@ Texture::Texture(const char* filename)
     SDL_RWread(file, &tgaFile->bitCount, sizeof(uint8_t), 1);
 
     // Read one byte of data we don't need.
-    SDL_RWread(file, &ucharBad, sizeof(uint8_t), 1);
+    SDL_RWread(file, &imagedescriptor, sizeof(uint8_t), 1);
 
     // Color mode -> 3 = BGR, 4 = BGRA.
     colorMode = tgaFile->bitCount / 8;
@@ -59,8 +59,24 @@ Texture::Texture(const char* filename)
     // Allocate memory for the image data.
     tgaFile->imageData = new uint8_t[imageSize];
 
-    // Read the image data.
-    SDL_RWread(file, tgaFile->imageData, sizeof(uint8_t), imageSize);
+	if( (imagedescriptor & 0x0020) == 0 )
+	{
+		// read image data from back to front
+		int index = (tgaFile->imageHeight-1) * tgaFile->imageWidth;
+        for (int y = (tgaFile->imageHeight-1); y >= 0; y--)
+		{
+			for (int x = 0; x < tgaFile->imageWidth; x++)
+			{
+				SDL_RWread(file, &(tgaFile->imageData[colorMode*(index + x)]), colorMode, 1);
+			}
+			index -= tgaFile->imageWidth;
+        }
+	}
+	else
+	{
+		// Read the image data normally
+		SDL_RWread(file, tgaFile->imageData, sizeof(uint8_t), imageSize);
+	}
 
     // Change from BGR to RGB so OpenGL can read the image data.
     /*for (int imageIdx = 0; imageIdx < imageSize; imageIdx += colorMode)

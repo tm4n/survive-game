@@ -6,7 +6,7 @@
 
 gameRenderer::gameRenderer()
 {
-	int ss_x = 800, ss_y = 480;
+	int ss_x = 1366, ss_y = 768;
 
 	// not sure if this is needed!
 	// request OGL 2.1 context (default to SDL core profile)
@@ -50,7 +50,7 @@ gameRenderer::gameRenderer()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	float ratio = 800.f/600.f;
+	float ratio = 16.f/9.f;
 	mProjMatrix = glm::perspective(80.f, ratio, 2.f, 4000.f);
 
 	// load all resources

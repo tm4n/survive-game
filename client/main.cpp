@@ -3,6 +3,7 @@
 #undef main
 #include "gameRenderer.h"
 #include "GUI.h"
+#include "Menu.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char **argv)
@@ -55,9 +56,8 @@ int main(int argc, char **argv)
 	tmp->translation = glm::vec3(-1440.0f, -784.0f, -300.0f);
 	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
 
-	int menu_bg = renderer->gui->addPanel(renderer->resources.getTex(ResourceLoader::texType::MenuBackground), 1, 0.5f, 0.5f);
-	renderer->gui->setCentered(menu_bg, true);
-
+	// create menu
+	Menu *menu = new Menu(renderer->gui, &renderer->resources);
 
 	int fct = 0;
 	while (!quit)
@@ -72,7 +72,14 @@ int main(int argc, char **argv)
 			/* process other events you want to handle here */
 
 			case SDL_MOUSEBUTTONDOWN:
-				renderer->gui->setVisible(menu_bg, false);
+
+				if (menu->visible)
+					renderer->gui->event_mouse(&evt);
+				else
+				{
+					// TODO:
+				}
+
 				break;
 			}
 		}

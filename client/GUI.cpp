@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include <iostream>
+#include "SDL2/SDL.h"
 
 float GUI::squareCoords[] = { // in counterclockwise order:
         -1.0f,  1.0f, 0.0f,   // top left
@@ -136,8 +137,53 @@ void GUI::setScreensize(int x, int y)
 }
 
 
+void GUI::event_mouse(SDL_Event *evt)
+{
+	for(GUIObject *obj : elements)
+	{
+		if (obj->type == GUIObject::Types::button && obj->visible == true)
+		{
+			// check if mouse is in object area
+			if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+				evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+			{
+				puts("Button clicked");
+				//obj->callback();
+			}
+		}
+	}
+}
+
+
 void GUI::draw()
 {
+	// animate buttons
+	int raw_x, raw_y;
+	SDL_GetMouseState(&raw_x, &raw_y);
+
+	for(GUIObject *obj : elements)
+	{
+		if (obj->type == GUIObject::Types::button && obj->visible == true)
+		{
+			// check if mouse is in object area
+			if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+				raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+			{
+				obj->current_tex = 1;
+			}
+			else
+			{
+				obj->current_tex = 0;
+			}
+		}
+	}
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	// drawing
+
 	// Disable Depth Testing and activate other polygon order
 	glDisable(GL_DEPTH_TEST);  
 	glFrontFace(GL_CCW);
@@ -171,13 +217,11 @@ void GUI::draw()
 	        if (elem->layer == layer && elem->visible == true)
 	        {
 	        	// bind texture of this element
-	        	glBindTexture(GL_TEXTURE_2D, elem->tex->mTextureID);
+				glBindTexture(GL_TEXTURE_2D, elem->textures[elem->current_tex]->mTextureID);
 	        		
 	        	// calculate and upload size and position
-		        //float size_x = (float)elem->size_x/((float)screensize_x);
-				//float size_y = (float)elem->size_y/((float)screensize_y);
-				float size_x = (float)elem->size_x;
-				float size_y = (float)elem->size_y;
+		        float size_x = (float)elem->size_x/((float)screensize_x) * elem->scale_x;
+				float size_y = (float)elem->size_y/((float)screensize_y) * elem->scale_y;
 		        float trans_x = ((float)elem->x*2.f)-1.f;
 		        float trans_y = ((float)elem->y*2.f)-1.f;
 		        if (elem->centered == false) {trans_x += size_x; trans_y += size_y;}
@@ -211,12 +255,27 @@ void GUI::draw()
 
 int GUI::addPanel(Texture *tex, int layer, float x, float y)
 {
-	GUIObject *elem = new GUIObject(tex, layer, x, y);
+	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, x, y, NULL);
 		
 	elements.push_back(elem);
 		
 	return elements.size()-1;
 }
+
+int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, void *callback)
+{
+	std::vector<Texture*> v;
+
+	v.push_back(tex);
+	v.push_back(tex_sel);
+
+	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, x, y, callback);
+
+	elements.push_back(elem);
+		
+	return elements.size()-1;
+}
+
 
 void GUI::setVisible(int id, bool vis)
 {

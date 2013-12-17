@@ -1,10 +1,11 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
-#include "gl_core_2_1.h";
+#include "gl_core_2_1.h"
 #include <vector>
 #include "Texture.h"
 #include "GUIObject.h"
+#include "SDL2/SDL.h"
 
 class GUI
 {
@@ -16,6 +17,7 @@ public:
 	void setScreensize(int x, int y);
 
 	int addPanel(Texture *tex, int layer, float x, float y);
+	int addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, void *callback);
 	void clear();
 
 	void setVisible(int id, bool vis);
@@ -30,11 +32,11 @@ public:
 	void setAlpha(int id, float alpha);
 
 	void draw();
-
-
-private:
+	void event_mouse(SDL_Event *evt);
 
 	int screensize_x, screensize_y;
+
+private:
 
 	GLuint mProgram;
 	GLuint mPositionHandle;

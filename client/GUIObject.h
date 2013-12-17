@@ -3,6 +3,8 @@
 
 #include "Texture.h"
 
+#include <vector>
+
 class GUIObject
 {
 public:
@@ -10,7 +12,9 @@ public:
 
 	Types type;
 
-	Texture *tex;
+	std::vector<Texture*> textures;
+
+	void *callback;
 
 	int layer;
 	float x,y;
@@ -18,10 +22,13 @@ public:
 	float scale_x, scale_y;
 	float alpha;
 
+	int current_tex;
+
 	bool visible;
 	bool centered;
 
-	GUIObject(Texture *tex, int layer, float x, float y);
+	GUIObject(GUIObject::Types, Texture *tex, int layer, float x, float y, void *);
+	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, float x, float y, void *);
 };
 
 
