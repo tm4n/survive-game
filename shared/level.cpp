@@ -25,13 +25,11 @@ level::level(const char *afilename)
 // Destructor
 level::~level()
 {
-	delete[] tiles;
-	delete[] props;
 }
 
 
 
-void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
+/*void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
 {
     for (uint i = 0; i < actorlist.size; i++)
     {
@@ -46,4 +44,4 @@ void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
 
         }
     }
-}
+}*/

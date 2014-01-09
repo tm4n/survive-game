@@ -13,6 +13,7 @@ struct s_peer_data
     char player_name[32];
 };
 
+
 ///////////////////////////////////////////////
 // special send functions for server
 

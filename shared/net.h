@@ -15,7 +15,8 @@
 
 #define NET_SYNC_SERVER 9
 #define NET_SYNC_PLAYER 10
-#define NET_REMOVE_PLAYER 11 // needed?
+#define NET_SYNC_FINISH 11
+#define NET_REMOVE_PLAYER 12 // needed?
 
 #define NET_CREATE_ACTOR 12
 #define NET_REMOVE_ACTOR 13
@@ -84,6 +85,9 @@ struct s_net_update_health
     float health;
 };
 
+///////////////////////////////////////////////
+// global variables
+extern bool net_local_only;
 
 
 ////////////////////////////////////////////////

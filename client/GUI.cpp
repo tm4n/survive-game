@@ -139,6 +139,7 @@ void GUI::setScreensize(int x, int y)
 
 void GUI::event_mouse(SDL_Event *evt)
 {
+	int i = 0;
 	for(GUIObject *obj : elements)
 	{
 		if (obj->type == GUIObject::Types::button && obj->visible == true)
@@ -147,10 +148,11 @@ void GUI::event_mouse(SDL_Event *evt)
 			if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
 				evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
 			{
-				puts("Button clicked");
-				//obj->callback();
+				if (obj->callback != NULL) obj->callback->callback(i);
+					else puts("No callback registered for clicked button");
 			}
 		}
+		i++;
 	}
 }
 
@@ -262,7 +264,7 @@ int GUI::addPanel(Texture *tex, int layer, float x, float y)
 	return elements.size()-1;
 }
 
-int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, void *callback)
+int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, GUICallback *callback)
 {
 	std::vector<Texture*> v;
 

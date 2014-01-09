@@ -1,0 +1,126 @@
+# depslib dependency file v1.0
+1389279060 source:/home/tilman/projects/survive/shared/game.cpp
+	"game.h"
+
+1389279044 /home/tilman/projects/survive/shared/game.h
+	"defs.h"
+	"enet/enet.h"
+	"level.h"
+	<vector>
+
+1349825398 /home/tilman/projects/survive/shared/defs.h
+	"vec.h"
+	"stdio.h"
+
+1335814052 /home/tilman/projects/survive/shared/vec.h
+
+1389278571 /home/tilman/projects/survive/shared/level.h
+	"defs.h"
+	"flist.h"
+	<list>
+
+1347230598 /home/tilman/projects/survive/shared/flist.h
+	"defs.h"
+	"stdio.h"
+
+1349825398 source:/home/tilman/projects/survive/shared/helper.cpp
+	"helper.h"
+	<cstdio>
+	<cstdlib>
+	<sstream>
+	"backends/b_game.h"
+	"unistd.h"
+	<windows.h>
+	<Shlobj.h>
+	<Shlwapi.h>
+	<malloc.h>
+
+1349825398 /home/tilman/projects/survive/shared/helper.h
+	<vector>
+	<string>
+
+1348020329 /home/tilman/projects/survive/shared/backends/b_game.h
+	"defs.h"
+	<string>
+
+1389278611 source:/home/tilman/projects/survive/shared/level.cpp
+	"level.h"
+	"string.h"
+	<cmath>
+	<iostream>
+	<fstream>
+	"helper.h"
+
+1389280244 source:/home/tilman/projects/survive/shared/net.cpp
+	"net.h"
+	"string.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1389280231 /home/tilman/projects/survive/shared/net.h
+	"defs.h"
+	"enet/enet.h"
+	"vec.h"
+
+1335815642 source:/home/tilman/projects/survive/shared/vec.cpp
+	"vec.h"
+	<math.h>
+
+1334872270 source:/home/tilman/projects/survive/server/base85.cpp
+	<stdio.h>
+
+1389280141 source:/home/tilman/projects/survive/server/gameServer.cpp
+	"include/gameServer.h"
+	"SDL/SDL.h"
+	"include/Timer.h"
+	<pthread.h>
+	<cmath>
+	<ctime>
+	<iostream>
+	<sstream>
+	"helper.h"
+	"include/net_sv.h"
+	"include/level_sv.h"
+
+1389279322 /home/tilman/projects/survive/server/include/gameServer.h
+	<game.h>
+	"enet/enet.h"
+	"level_sv.h"
+	<string>
+	<list>
+	<set>
+
+1389278691 /home/tilman/projects/survive/server/include/level_sv.h
+	"level.h"
+	"game.h"
+	<list>
+
+1306739856 /home/tilman/projects/survive/server/include/Timer.h
+
+1387377720 /home/tilman/projects/survive/server/include/net_sv.h
+	"net.h"
+	"actor.h"
+
+1389278560 /home/tilman/projects/survive/shared/actor.h
+	"defs.h"
+	"level.h"
+
+1389279291 source:/home/tilman/projects/survive/server/level_sv.cpp
+	"include/level_sv.h"
+
+1385745520 source:/home/tilman/projects/survive/server/main.cpp
+	<string>
+	<sstream>
+	<iostream>
+	"include/gameServer.h"
+
+1389279458 source:/home/tilman/projects/survive/server/net_sv.cpp
+	"include/net_sv.h"
+	"vec.h"
+	"string.h"
+
+1306740034 source:/home/tilman/projects/survive/server/Timer.cpp
+	"include/Timer.h"
+	"SDL/SDL.h"
+

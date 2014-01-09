@@ -1,6 +1,6 @@
 #include "GUIObject.h"
 
-GUIObject::GUIObject(Types t, Texture *tex, int layer, float x, float y, void *ptr)
+GUIObject::GUIObject(Types t, Texture *tex, int layer, float x, float y, GUICallback *ptr)
 {
 	this->type = t;
 
@@ -22,7 +22,7 @@ GUIObject::GUIObject(Types t, Texture *tex, int layer, float x, float y, void *p
 	size_y = tex->size_y;
 }
 
-GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, float x, float y, void *ptr)
+GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, float x, float y, GUICallback *ptr)
 {
 	this->type = t;
 

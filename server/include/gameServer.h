@@ -7,9 +7,6 @@
 #include "enet/enet.h"
 
 #include "level_sv.h"
-#include "SimpleConnectionPool.h"
-
-#include "backends/b_skills.h"
 
 #include <string>
 #include <list>
@@ -20,12 +17,6 @@
 #define LOG_DEBUG 2
 #define LOG_WARNING 3
 #define LOG_ERROR 4
-
-#define QUERY_LOGIN 1
-#define QUERY_REGISTER 2
-#define QUERY_SAVE 3
-#define QUERY_ZONES 4
-#define QUERY_SAVE_LAST_LOGIN 5
 
 class level_sv;
 
@@ -42,14 +33,29 @@ public:
     level_sv *lvl_sv;
 
     gameServer(bool);
+    virtual ~gameServer();
 
     void synchronizeClient(ENetPeer *receiver);
 	void handle_netevent(ENetEvent *event);
 
 	void log(int, const char *);
+	
+	
+	int sv_spawned_npcs = 0;  // number of spawned npcs this round
+	int sv_amount_npcs = 0;  // number of npcs to spawn this round
+	int sv_num_npcs = 0;  // number of npcs currently alive
+
+	int sv_num_barriers = 0;
+
+	float sv_spawn_timer = 0;
+	float sv_spawn_cap = 0;
+	float sv_barrier_timer = 0;
 
 private:
     bool init();
+    
+    void next_wave();
+    
     void clean_up();
 };
 

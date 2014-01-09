@@ -6,19 +6,18 @@ using namespace std;
 
 #include "include/Timer.h"
 
-#include <mysql++.h>
-
 #include <pthread.h>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
 
 #include <ctime>
+#include <iostream>
+#include <sstream>
 
 #include "helper.h"
 
 #include "include/net_sv.h"
-#include "include/player_sv.h"
 #include "include/level_sv.h"
 
 
@@ -112,7 +111,7 @@ gameServer::gameServer(bool networked) // todo: server settings
     //////////////////////////////////////////////////////////
     // load level
 
-    lvl_sv = new level_sv();
+    lvl_sv = new level_sv("desert");
     lvl = lvl_sv;
 
 
@@ -124,7 +123,7 @@ gameServer::gameServer(bool networked) // todo: server settings
     /* enet_address_set_host (& address, "x.x.x.x"); */
     address.host = ENET_HOST_ANY;
     /* Bind the server to port 1234. */
-    address.port = (*it)->result[0]["port"];
+    address.port = 1201;
 
     Ehost = enet_host_create (&address /* the address to bind the server host to */,
                                  8      /* allow up to x clients and/or outgoing connections */,
@@ -159,6 +158,31 @@ gameServer::gameServer(bool networked) // todo: server settings
 
         while (enet_host_service (Ehost, & event, 0) > 0)
             handle_netevent(&event);
+            
+            
+            
+		//////////////////////////////////////////////////
+		// Game logic
+		if (state == GAME_STATE_WAITING)
+		{
+			// check if a player wants to start
+		}
+		if (state == GAME_STATE_RUNNING)
+		{
+			// game logic
+			//sv_spawner();
+		
+			// check if the generator has been destroyed
+			//if (game_generator == ANET_ERROR) game_state = GAME_STATE_END;
+			
+			// check if there are still players connected!
+			//if (enet_connected_clients() <= 0) game_state = GAME_STATE_END;
+			
+		}
+		if (state == GAME_STATE_END)
+		{
+			// Timeout, then switch to GAME_STATE_WAITING
+		}
 
 
         //////////////////////////////////////////////////
@@ -186,7 +210,7 @@ gameServer::gameServer(bool networked) // todo: server settings
         {
 
             //Calculate the frames per second and create the string
-            //cout << "Average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
+            std::cout << "Average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
 
             //Restart the update timer
             update.start();
@@ -205,6 +229,55 @@ gameServer::gameServer(bool networked) // todo: server settings
 }
 
 
+/////////////////////////////////////
+// Start next wave
+void gameServer::next_wave()
+{
+	puts("Waiting for next wave.");
+	
+	// set waiting timer
+	//game_wait_timer = 45 + game_wave*10;
+	//game_wait_timer = minv(game_wait_timer, 200);
+	wait_timer = 5; 	//DEBUG: waves immediately
+	
+	//enet_sendto(&game_wait_timer, sizeof(int), BROADCAST);
+	
+	if (wait_timer > 0 && state == GAME_STATE_RUNNING)
+	{
+		/*wait(-1);
+		game_wait_timer -= 1;
+		enet_sendto(&game_wait_timer, sizeof(int), BROADCAST);*/
+	}
+	else
+	{
+		sv_spawned_npcs = 0;
+		sv_spawn_timer = 0;
+		sv_barrier_timer = 0;
+		
+		wave += 1;
+		
+		// set number of npcs to spawn
+		//sv_amount_npcs = 5 + (int)(log(wave+1)*(5 + game_num_players*3));
+		
+		// set number of barriers to spawn
+		//sv_barrier_probability -= sv_barrier_probability/4; don't lower anymore in current versions
+		
+		//if (wave > 15) sv_wave_bonus += 0.1;
+		
+		
+		// update the players
+		//enet_sendto(&game_wave, sizeof(int), BROADCAST);
+		
+		std::cout << "Wave " << wave << " started" << std::endl;
+	}
+}
+
+//////////////////////////////////////
+// destructor
+gameServer::~gameServer()
+{
+	
+}
 
 
 
@@ -251,7 +324,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             /* Store any relevant client information here. */
             event->peer->data = new s_peer_data;
             ((s_peer_data*)event->peer->data)->game_state = 0;
-            ((s_peer_data*)event->peer->data)->player_id = -1;
+            ((s_peer_data*)event->peer->data)->player_actor_id = -1;
             ((s_peer_data*)event->peer->data)->player_name[0] = '\0';
 
 
@@ -261,8 +334,8 @@ void gameServer::handle_netevent(ENetEvent *event)
             break;
 
         case ENET_EVENT_TYPE_RECEIVE:
-
-            printf ("A packet of length %u, event %d, was received on channel %u.\n",
+		{
+            printf ("A packet of length %lu, event %d, was received on channel %u.\n",
                     event->packet -> dataLength,
                     *((short*) event->packet->data),
                     event->channelID);
@@ -323,6 +396,8 @@ void gameServer::handle_netevent(ENetEvent *event)
 
                     /////////////////////////////////////////
                     // TODO: player input
+                    
+                }
 
 
             }
@@ -332,6 +407,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 
 
             break;
+		}
 
         case ENET_EVENT_TYPE_DISCONNECT:
             printf ("%s disconnected.\n", (char*)(event->peer -> data));
@@ -344,18 +420,18 @@ void gameServer::handle_netevent(ENetEvent *event)
             {
 
                 // delete player
-                player_sv * pl = (player_sv *)lvl->actorlist.elem[pd->player_id];
+                //player_sv * pl = (player_sv *)lvl->actorlist.elem[pd->player_id];
 
 
-                if (pl != NULL)
+                if (1 != NULL)
                 {
                     // sending LEAVE message
                     std::string s(pd->player_name);
-                    s.append(" has left this region.");
+                    s.append(" has left the game.");
                     net_broadcast_chat(s.c_str(), s.length()+1, Ehost);
 
                     // remove player
-                    delete(pl); // will also remove player from actorlist
+                    //delete(pl); // will also remove player from actorlist
 
                 }
             }

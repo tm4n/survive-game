@@ -3,8 +3,6 @@
 
 #include "defs.h"
 #include "level.h"
-#include "item_cont.h"
-#include "bufflist.h"
 
 #define ACTOR_TYPE_NPC 1
 #define ACTOR_TYPE_PLAYER 2
@@ -21,9 +19,6 @@
 #define ACTOR_STATE_DEAD 10
 
 
-// interaction types, might be moves somewhere else
-#define ACTOR_INTERACT_TYPE_LOOT 1
-
 
 class level;
 
@@ -34,30 +29,21 @@ class actor
 
         level *lvl;
         uint id;    //  id in level
-        ushort faction;
-        uint current_tile;
 
         vec position, angle;
 
         // Attributes, either read from file or dynamically created
         float max_health;
         float health;
-        float mana;
-        float max_mana;
         uint chlevel;
         float bounty_xp;
 
         float att_dmg_min;
         float att_dmg_max;
-        float defence;
         float att_range;
         float att_speed;
         float att_cooldown;
         float move_speed;
-
-        bufflist *buffl;
-
-		item_cont *inv;
 
         float move_force;
         double timer_attack;

@@ -17,7 +17,7 @@ public:
 	void setScreensize(int x, int y);
 
 	int addPanel(Texture *tex, int layer, float x, float y);
-	int addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, void *callback);
+	int addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, GUICallback *callback);
 	void clear();
 
 	void setVisible(int id, bool vis);

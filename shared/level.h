@@ -3,7 +3,6 @@
 
 #include "defs.h"
 #include "flist.h"
-#include "actor.h"
 #include <list>
 
 class actor;

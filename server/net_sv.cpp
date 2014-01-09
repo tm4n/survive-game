@@ -1,9 +1,6 @@
 #include "include/net_sv.h"
 #include "vec.h"
 
-#include "include/player_sv.h"
-#include "include/npc_sv.h"
-
 #include "string.h" // for memcpy, strcpy
 
 
@@ -42,7 +39,6 @@ int net_send_sync_player(uint actor_id, const char *name, ENetPeer *receiver)
 {
     s_net_sync_player s;
 
-    s.actor_id = actor_id;
     strncpy(s.name, name, 32);
     s.name[31] = '\0';
 
@@ -57,7 +53,6 @@ int net_broadcast_sync_player(uint actor_id, const char *name, ENetHost *host)
     // TODO: broadcast only to synchronized players?
     s_net_sync_player s;
 
-    s.actor_id = actor_id;
     strncpy(s.name, name, 32);
     s.name[31] = '\0';
 
@@ -67,12 +62,17 @@ int net_broadcast_sync_player(uint actor_id, const char *name, ENetHost *host)
 
 }
 
+int net_send_sync_finish(ENetPeer *receiver)
+{
+	return net_send_event(NET_SYNC_FINISH, NULL, 0, receiver);
+}
+
 int net_broadcast_remove_player(uint actor_id, ENetHost *host)
 {
     // TODO: broadcast only to synchronized players?
     s_net_remove_player s;
 
-    s.actor_id = actor_id;
+	// no input yet
 
     printf("net_sync_remove_broadcast mit actor_id=%u\n", actor_id);
 

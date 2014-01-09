@@ -5,6 +5,14 @@
 
 #include <vector>
 
+class GUICallback {
+
+	public:
+		virtual void callback(int obj_id) = 0;
+
+};
+
+
 class GUIObject
 {
 public:
@@ -14,7 +22,7 @@ public:
 
 	std::vector<Texture*> textures;
 
-	void *callback;
+	GUICallback *callback;
 
 	int layer;
 	float x,y;
@@ -27,8 +35,8 @@ public:
 	bool visible;
 	bool centered;
 
-	GUIObject(GUIObject::Types, Texture *tex, int layer, float x, float y, void *);
-	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, float x, float y, void *);
+	GUIObject(GUIObject::Types, Texture *tex, int layer, float x, float y, GUICallback *);
+	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, float x, float y, GUICallback *);
 };
 
 

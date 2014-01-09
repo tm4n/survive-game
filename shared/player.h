@@ -2,12 +2,6 @@
 #define __PLAYER_H__
 
 #include "actor.h"
-#include "inventory.h"
-#include "questlog.h"
-#include "skill_cont.h"
-
-class level;
-class inventory;
 
 class player : public actor
 {

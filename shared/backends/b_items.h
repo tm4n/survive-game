@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include <list>
-#include "item.h"
 
 #define B_ITEMS_ENTRIES 256
 

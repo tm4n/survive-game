@@ -32,6 +32,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
 			<Add directory="/usr/include/mysql++" />
@@ -42,83 +43,33 @@
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
-			<Add library="../libraries/enet-1.3.5/.libs/libenet.a" />
+			<Add library="../libs/enet/.libs/libenet.a" />
 			<Add library="mysqlpp" />
 			<Add library="mysqlclient_r" />
 			<Add library="SDL" />
 		</Linker>
-		<Unit filename="../libraries/tinyxml/tinystr.cpp" />
-		<Unit filename="../libraries/tinyxml/tinystr.h" />
-		<Unit filename="../libraries/tinyxml/tinyxml.cpp" />
-		<Unit filename="../libraries/tinyxml/tinyxml.h" />
-		<Unit filename="../libraries/tinyxml/tinyxmlerror.cpp" />
-		<Unit filename="../libraries/tinyxml/tinyxmlparser.cpp" />
-		<Unit filename="../shared/actor.cpp" />
-		<Unit filename="../shared/actor.h" />
-		<Unit filename="../shared/backends/b_classes.cpp" />
-		<Unit filename="../shared/backends/b_classes.h" />
-		<Unit filename="../shared/backends/b_dropsets.cpp" />
-		<Unit filename="../shared/backends/b_dropsets.h" />
-		<Unit filename="../shared/backends/b_items.cpp" />
-		<Unit filename="../shared/backends/b_items.h" />
-		<Unit filename="../shared/backends/b_npcs.cpp" />
-		<Unit filename="../shared/backends/b_npcs.h" />
-		<Unit filename="../shared/backends/b_quests.cpp" />
-		<Unit filename="../shared/backends/b_quests.h" />
-		<Unit filename="../shared/backends/b_skills.cpp" />
-		<Unit filename="../shared/backends/b_skills.h" />
-		<Unit filename="../shared/bufflist.cpp" />
-		<Unit filename="../shared/bufflist.h" />
-		<Unit filename="../shared/container.cpp" />
-		<Unit filename="../shared/container.h" />
 		<Unit filename="../shared/defs.h" />
 		<Unit filename="../shared/flist.h" />
 		<Unit filename="../shared/game.cpp" />
 		<Unit filename="../shared/game.h" />
 		<Unit filename="../shared/helper.cpp" />
 		<Unit filename="../shared/helper.h" />
-		<Unit filename="../shared/inventory.cpp" />
-		<Unit filename="../shared/inventory.h" />
-		<Unit filename="../shared/item.cpp" />
-		<Unit filename="../shared/item.h" />
-		<Unit filename="../shared/item_cont.cpp" />
-		<Unit filename="../shared/item_cont.h" />
 		<Unit filename="../shared/level.cpp" />
 		<Unit filename="../shared/level.h" />
 		<Unit filename="../shared/net.cpp" />
 		<Unit filename="../shared/net.h" />
-		<Unit filename="../shared/npc.cpp" />
-		<Unit filename="../shared/npc.h" />
-		<Unit filename="../shared/player.cpp" />
-		<Unit filename="../shared/player.h" />
-		<Unit filename="../shared/questlog.cpp" />
-		<Unit filename="../shared/questlog.h" />
-		<Unit filename="../shared/skill_cont.cpp" />
-		<Unit filename="../shared/skill_cont.h" />
 		<Unit filename="../shared/vec.cpp" />
 		<Unit filename="../shared/vec.h" />
 		<Unit filename="Timer.cpp" />
 		<Unit filename="base85.cpp" />
-		<Unit filename="container_sv.cpp" />
 		<Unit filename="gameServer.cpp" />
 		<Unit filename="include/Timer.h" />
-		<Unit filename="include/container_sv.h" />
 		<Unit filename="include/gameServer.h" />
 		<Unit filename="include/level_sv.h" />
 		<Unit filename="include/net_sv.h" />
-		<Unit filename="include/npc_ai.h" />
-		<Unit filename="include/npc_sv.h" />
-		<Unit filename="include/path.h" />
-		<Unit filename="include/player_sv.h" />
-		<Unit filename="include/pqueue.h" />
 		<Unit filename="level_sv.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="net_sv.cpp" />
-		<Unit filename="npc_ai.cpp" />
-		<Unit filename="npc_sv.cpp" />
-		<Unit filename="path.cpp" />
-		<Unit filename="player_sv.cpp" />
-		<Unit filename="pqueue.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

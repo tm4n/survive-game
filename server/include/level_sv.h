@@ -3,12 +3,8 @@
 
 #include "level.h"
 #include "game.h"
-#include "npc_sv.h"
-#include "player_sv.h"
 #include <list>
 
-class npc_sv;
-class player_sv;
 
 
 class level_sv : public level
@@ -17,8 +13,8 @@ class level_sv : public level
         level_sv(const char *);
         ~level_sv();
 
-        player_sv *get_player(uint actor_id);
-        npc_sv *get_npc(uint actor_id);
+        //player_sv *get_player(uint actor_id);
+        //npc_sv *get_npc(uint actor_id);
 
     protected:
     private:
