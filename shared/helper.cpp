@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#ifndef ACKNEX
+#ifndef _WIN32
 
 #include "unistd.h"
 
@@ -46,7 +46,7 @@ void get_workdir(std::string *out)
     }
 }
 
-void get_savedir(const char *account_name, std::string *out)
+/*void get_savedir(const char *account_name, std::string *out)
 {
 	TCHAR appDataPath[MAX_PATH];
 
@@ -76,7 +76,7 @@ void get_savedir(const char *account_name, std::string *out)
 
 		out->assign(appDataPath);
 	}
-}
+}*/
 
 #endif
 
@@ -206,7 +206,7 @@ int str_lines(const std::string *str)
 }
 
 
-#ifdef ACKNEX
+#ifdef _WIN32
 
 #include <malloc.h>
 void check_heap(char *file, int line)
@@ -232,3 +232,8 @@ void check_heap(char *file, int line)
 
 
 #endif
+
+void log(int prop, char const* str)
+{
+	puts(str);
+}

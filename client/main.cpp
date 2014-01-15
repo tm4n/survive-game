@@ -1,6 +1,7 @@
 ﻿#include "SDL2/SDL.h"
 #include "SDL2/SDL_timer.h"
 #undef main
+#include "gameClient.h"
 #include "gameRenderer.h"
 #include "GUI.h"
 #include "Menu.h"
@@ -8,6 +9,7 @@
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char **argv)
 {
+	if (enet_initialize() != 0) exit(1);
 
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) exit(1);
 
@@ -15,46 +17,7 @@ int main(int argc, char **argv)
 
 	gameRenderer *renderer = new gameRenderer();
 
-	//display stuff
-	RenderObject *objTerrain = new RenderObject();
-	objTerrain->scale = glm::vec3(2.0f, 2.0f, 2.0f);
-    renderer->resources.getMesh(ResourceLoader::meshType::Terrain)->addRenderObject(objTerrain);
-        
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 50; j++) {
-        RenderObject *tmp = new RenderObject();
-        	
-        tmp->translation[1] += i*50.f;
-        tmp->translation[2] += j*50.f;
-        	
-        renderer->resources.getMesh(ResourceLoader::meshType::Crate)->addRenderObject(tmp);
-        }
-    }
-        
-    
-	RenderObject *soldiers = new RenderObject[30];
-    for (int i = 0; i < 30; i++) {       	
-        soldiers[i].rotation[0] += i*180.f;
-        	
-        soldiers[i].translation[1] += i*80.f;
-        soldiers[i].translation[0] += -200;
-        	
-        renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(&soldiers[i]);
-    }
-
-	// create trees at their location
-	RenderObject *tmp = new RenderObject();
-	tmp->translation = glm::vec3(-328.0f, -1400.0f, -312.0f);
-	tmp->rotation[0] = 200.0f;
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
-	tmp = new RenderObject();
-	tmp->translation = glm::vec3(800.0f, 1296.0f, -300.0f);
-	tmp->rotation[0] = 36.0f;
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
-	tmp = new RenderObject();
-	tmp->rotation[0] = 6.0f;
-	tmp->translation = glm::vec3(-1440.0f, -784.0f, -300.0f);
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
+	gameClient *cl = NULL;
 
 	// create menu
 	Menu *menu = new Menu(renderer->gui, &renderer->resources);
@@ -74,7 +37,13 @@ int main(int argc, char **argv)
 			case SDL_MOUSEBUTTONDOWN:
 
 				if (menu->visible)
+				{
+					menu->hide();
 					renderer->gui->event_mouse(&evt);
+
+					cl = new gameClient(renderer);
+					cl->connect("192.168.0.20", 1201);
+				}
 				else
 				{
 					// TODO:
@@ -85,7 +54,7 @@ int main(int argc, char **argv)
 		}
 		
 		// animation test
-		for (int i = 0; i < 30; i++) {
+		/*for (int i = 0; i < 30; i++) {
 				
 			if (soldiers[i].animProgress > 1.0f) {
 				soldiers[i].animProgress -= 1.0f;
@@ -95,8 +64,9 @@ int main(int argc, char **argv)
 			}
 			soldiers[i].animProgress += 0.1f;
 				
-		}
+		}*/
 		
+		if (cl) cl->frame(0.0);
 
 		renderer->drawFrame();
 

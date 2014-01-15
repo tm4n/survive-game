@@ -1,5 +1,6 @@
 #include "ResourceLoader.h"
 #include <iostream>
+#include "MeshTerrain.h"
 
 ResourceLoader::ResourceLoader()
 {
@@ -19,7 +20,7 @@ void ResourceLoader::load()
 
 	// Environment
 
-	meshes[(int)meshType::Terrain] = new Mesh("assets/models/terrain.mdl", NULL);
+	meshes[(int)meshType::Terrain] = new MeshTerrain("assets/models/terrain.mdl", NULL);
 	if (meshes[(int)meshType::Terrain]->loaded == false) {std::cout << "ERROR loading model for terrain" << std::endl; exit(-1);}
 	meshes[(int)meshType::Terrain]->initShader();
 

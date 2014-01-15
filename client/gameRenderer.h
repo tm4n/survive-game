@@ -1,3 +1,6 @@
+#ifndef __GAMERENDERER_H__
+#define __GAMERENDERER_H__
+
 
 #include "gl_core_2_1.h"
 #include "SDL2/SDL.h"
@@ -29,3 +32,5 @@ private:
 	glm::mat4 mVMatrix;
 };
 
+
+#endif

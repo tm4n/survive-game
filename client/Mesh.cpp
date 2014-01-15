@@ -267,9 +267,9 @@ void Mesh::draw(glm::mat4 mVPMatrix)
         						2*4, 0); 
         
     // int mtexUniform = glGetUniformLocation(mProgram, "Texture");
-    //glActiveTexture(GL_TEXTURE0); - activating texture unit 0
+    glActiveTexture(GL_TEXTURE0); //- activating texture unit 0
     glBindTexture(GL_TEXTURE_2D, mTextureID[0]);
-    //glUniform1i(mtexUniform, 0); - setting texture unit 0
+	//glUniform1i(mtexUniform, 0); //- setting texture unit 0
 
     for (RenderObject *obj : objectList) {
         	
@@ -369,7 +369,7 @@ void Mesh::setShader() {
 	vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shade
-			"#version 120 \n"
+			"#version 110 \n"
             "uniform mat4 uMVPMatrix; \n"
             "uniform float animProgress; \n"
 
@@ -384,7 +384,7 @@ void Mesh::setShader() {
             "}";
 
     fragmentShaderCode =
-			"#version 120 \n"
+			"#version 110 \n"
             "varying vec2 TexCoordOut; \n" 
             "uniform sampler2D Texture; \n"
             "void main() { \n" 

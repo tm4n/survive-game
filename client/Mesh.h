@@ -21,10 +21,10 @@ public:
 
 	Mesh(const char *mesh_file, const char *tex_file);
 
-	void draw(glm::mat4 mVPMatrix);
+	virtual void draw(glm::mat4 mVPMatrix);
 
-	void initShader();
-	void setShader();
+	virtual void initShader();
+	virtual void setShader();
 
 	void addRenderObject(RenderObject *obj);
     
@@ -36,7 +36,6 @@ protected:
 
 	std::list<RenderObject*> objectList;
 
-private:
 	glm::mat4 mTransformationMatrix;
 	glm::mat4 mFinalMatrix;
 
@@ -46,6 +45,8 @@ private:
     GLuint mPositionHandle;
     GLuint mNextPositionHandle;
     GLuint mAnimProgressHandle;
+	GLuint mTexHandle;
+
     GLuint *mVertexBuffer;
     GLuint mTexCoordBuffer;
     GLuint mMVPMatrixHandle;
