@@ -44,8 +44,6 @@
 		<Linker>
 			<Add option="`sdl-config --libs`" />
 			<Add library="../libs/enet/.libs/libenet.a" />
-			<Add library="mysqlpp" />
-			<Add library="mysqlclient_r" />
 			<Add library="SDL" />
 		</Linker>
 		<Unit filename="../shared/defs.h" />
