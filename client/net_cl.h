@@ -3,7 +3,9 @@
 
 #include "net.h"
 
-int net_send_chat(const char* msg, uint len, ENetPeer *receiver);
+int net_send_sync_client(const char *name, ENetPeer *receiver);
+
+int net_send_chat(const char *msg, uint len, ENetPeer *receiver);
 
 
 #endif

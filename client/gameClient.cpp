@@ -121,6 +121,35 @@ void gameClient::handle_netevent(ENetEvent *event)
 				{
 					case NET_VERSION:
 					{
+						s_net_version *d = (s_net_version*)data;
+
+						printf("Connected to Server, version %i\n", d->version);
+
+						if (d->version != DEF_VERSION)
+						{
+							log(LOG_ERROR, "Tried to connect to server with different version number.");
+						}
+						else
+						{
+							// send my name
+							net_send_sync_client("Player1", event->peer);
+						}
+
+						break;
+					}
+
+					case NET_SYNC_SERVER:
+					{
+						s_net_sync_server *d = (s_net_sync_server*)data;
+
+						// load level
+						//lvl = new level_cl(d->mapfile);
+
+						break;
+					}
+
+					case NET_SYNC_FINISH:
+					{
 
 						break;
 					}

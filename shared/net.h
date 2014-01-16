@@ -14,7 +14,7 @@
 #define NET_GAME_STATE 8
 
 #define NET_SYNC_SERVER 9
-#define NET_SYNC_PLAYER 10
+#define NET_SYNC_CLIENT 10
 #define NET_SYNC_FINISH 11
 #define NET_REMOVE_PLAYER 12 // needed?
 
@@ -45,7 +45,7 @@ struct s_net_sync_server
     //...
 };
 
-struct s_net_sync_player
+struct s_net_sync_client
 {
     char name[32];
 };
