@@ -290,7 +290,6 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
     net_send_sync_server(lvl->filename, receiver);
 
     // send the client to be synchronized all actors in the level
-
     for (uint i = 0; i < lvl->actorlist.size; i++)
     {
         if (lvl->actorlist.elem[i] != 0)
@@ -375,21 +374,31 @@ void gameServer::handle_netevent(ENetEvent *event)
                         break;
                     }
                     
-                    case NET_SYNC_PLAYER:
+                    case NET_SYNC_CLIENT:
                     {
-                    	s_net_sync_player *ps = (s_net_sync_player *)data;
-                    	
+                    	// char *data contains name as string
                     	// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
                     	
-                    	// save player name in it
-                    	ps->name[31] = '\0';
-                    	strncpy(pd->player_name, ps->name, 32);
+                    	size_t length = strlen(data);
                     	
-                    	// start syncing player
-                    	synchronizeClient(event->peer);
+                    	if (length <= PLAYERNAME_LENGTH)
+						{
+							// safe player
+							pd->player_name = malloc(length+1);
+							strncpy(pd->player_name, data, PLAYERNAME_LENGTH);
+							
+							// start syncing player
+							synchronizeClient(event->peer);
+							
+							pd->state = 1;
+						}
+						else
+						{
+							// TODO: malicious client!
+						}
                     	
-                    	pd->game_state = 1;
+
                     	
                     	break;
                     }
@@ -446,149 +455,6 @@ void gameServer::handle_netevent(ENetEvent *event)
 }
 
 
-
-
-
-
-/////////////////////////////////////////////////////
-// mysql stuff
-
-/*void gameServer::handle_query(mysqlRequest* req)
-{
-
-                log (LOG_DEBUG, "Client successfully logged in, Syncronizing");
-
-                // sychronize actors with client
-                synchronizeClient(req->peer);
-
-
-                    vec vpos;
-
-                    log (LOG_DEBUG, "Creating Player");
-
-                    player_sv * pl = new player_sv(zone_id, gateway_id, lvl_sv, &zonelist, Ehost, &vpos, &gt->ang,
-                                               req->result[0]["account_id"], // account id
-                                               req->peer,               // owner peer
-                                               req->result[0]["class"], // class_id
-                                               req->result[0]["username"].c_str(), // name
-                                               req->result[0]["level"], // level
-                                               req->result[0]["health"], // health
-                                               req->result[0]["mana"], // mana
-                                               req->result[0]["strength"], // strength
-                                               req->result[0]["agility"], // agility
-                                               req->result[0]["intelligence"], // intelligence
-                                               req->result[0]["points_remain"], // skill points to distribute
-                                               req->result[0]["xp"], // xp points
-                                               req->result[0]["gold"],
-                                               req->result[0]["respawn_timer"],
-                                               inv_ch, // inventory in char*
-                                               quests_ch, // quests in char*
-                                               skills_ch); // skills in char*
-
-                    //  save player in peer data
-                    s_peer_data *pd = (s_peer_data *)req->peer->data;
-
-                    pd->player_id = pl->id;
-                    pd->game_state = 1;
-
-                    // send additional data thats not transfered to all clients, only to owner
-                    net_send_update_gold(pl->id, pl->gold, pl->id, req->peer);
-                    net_send_update_xp(pl->id, pl->xp, pl->id, req->peer);
-                    net_send_update_points_remain(pl->id, pl->points_remain, req->peer);
-                    net_send_update_strength(pl->id, pl->strength, req->peer);
-                    net_send_update_agility(pl->id, pl->agility, req->peer);
-                    net_send_update_intelligence(pl->id, pl->intelligence, req->peer);
-
-                    // send loaded inventory
-                    log (LOG_DEBUG, "Sending inventory");
-
-                    net_send_it_full(pl->id, pl->inv, req->peer);
-
-                    pl->recalc_equip();
-
-
-                    // send loaded questlog
-                    log (LOG_DEBUG, "Sending questlog");
-
-                    net_send_qe_full(pl->id, pl->quests, req->peer);
-
-
-
-                    // Sending skills and skillbar
-                    log (LOG_DEBUG, "Sending skills and skillbar");
-
-
-                    net_send_sk_full(pl->id, pl->skills, req->peer);
-                    net_send_skbar_full(pl->id, skillbar_ch, req->peer);
-
-                    log (LOG_DEBUG, "Giving controll to player");
-
-
-                    // send finish with own actor id
-                    net_send_sync_finish(pl->id, req->peer);
-
-
-                    // sending ENTER message
-                    std::string s(pl->name);
-                    s.append(" has entered this region.");
-                    net_broadcast_chat(s.c_str(), s.length()+1, Ehost);
-
-
-
-                    //////////////////////////////
-                    //set last_logout to 0 to avoid several logins at once
-
-                    mysqlpp::Connection *cp = mysqlpool->grab();
-                    mysqlpp::Query query(cp->query());
-
-                    query << "UPDATE accounts SET last_logout = " << 0l
-                    << " WHERE account_id = " << pl->account_id << " LIMIT 1";
-                    // log query
-                    log (LOG_DEBUG_VERBOSE, query.str().c_str());
-
-                    mysqlpool->release(cp);
-                    // use query_mysql to do query
-                    query_mysql(QUERY_SAVE_LAST_LOGIN, query.str(), NULL);
-
-                }
-                else
-                {
-                    log (LOG_ERROR, "ERROR on creating player: did not find player gateway_id in level");
-
-                    if (net_send_event(NET_LOGIN_FAILED, NULL, 0, req->peer) != 0)
-                    log (LOG_ERROR, "Failed to send login fail message!");
-                }
-
-                delete[] inv_ch;
-                delete[] quests_ch;
-                delete[] skills_ch;
-                delete[] skillbar_ch;
-
-            }
-            else
-            {
-                log (LOG_ERROR, "Client failed to log in. Player was already logged in");
-
-                // TODO: send different message
-                if (net_send_event(NET_LOGIN_FAILED, NULL, 0, req->peer) != 0)
-                log (LOG_ERROR, "Failed to send login fail message!");
-            }
-
-
-        }
-        else
-        {
-            log (LOG_DEBUG, "Client failed to log in. Wrong password/username");
-            // fail!
-
-            // TODO: send why there was a fail
-            if (net_send_event(NET_LOGIN_FAILED, NULL, 0, req->peer) != 0)
-                log (LOG_ERROR, "Failed to send login fail message!");
-        }
-
-        break;
-
-*/
 
 ///////////////////////////////7
 // log data to console

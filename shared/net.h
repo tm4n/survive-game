@@ -15,7 +15,13 @@
 
 #define NET_SYNC_SERVER 9
 #define NET_SYNC_CLIENT 10
-#define NET_SYNC_FINISH 11
+
+#define NET_SYNC_PLAYER 11
+#define NET_SYNC_BOX 12
+#define NET_SYNC_CONTAINER 13
+#define NET_SYNC_NPC 14
+
+#define NET_SYNC_FINISH 15
 #define NET_REMOVE_PLAYER 12 // needed?
 
 #define NET_CREATE_ACTOR 12
@@ -45,9 +51,12 @@ struct s_net_sync_server
     //...
 };
 
-struct s_net_sync_client
+// s_net_sync_client not there
+
+struct s_net_sync_actor
 {
-    char name[32];
+	char actor_type;
+	
 };
 
 struct s_net_remove_player

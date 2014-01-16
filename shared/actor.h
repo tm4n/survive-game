@@ -4,9 +4,10 @@
 #include "defs.h"
 #include "level.h"
 
-#define ACTOR_TYPE_NPC 1
-#define ACTOR_TYPE_PLAYER 2
+#define ACTOR_TYPE_PLAYER 1
+#define ACTOR_TYPE_BOX 2
 #define ACTOR_TYPE_CONTAINER 3
+#define ACTOR_TYPE_NPC 4
 
 #define ACTOR_STATE_IDLE 1
 #define ACTOR_STATE_WALKING 2
