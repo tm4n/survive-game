@@ -17,7 +17,6 @@ public:
 
 	// actors in level
 	flist<actor> actorlist;
-    uint actorlist_fixed; // the number of fixed actors that never change
 
 	level(const char *);
 	virtual ~level();

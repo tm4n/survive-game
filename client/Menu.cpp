@@ -3,7 +3,7 @@
 #include "ResourceLoader.h"
 
 
-Menu::Menu(GUI *agui, ResourceLoader *aresources)
+Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb)
 {
 	gui = agui;
 	resources = aresources;
@@ -18,7 +18,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources)
 	//gui->setScaleY(bg_id, 0.01f);
 
 	// add buttons
-	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, 0.653f, 0.20f, NULL);
+	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, 0.653f, 0.20f, playCb);
 	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, 0.655f, 0.34f, NULL);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, 0.651f, 0.49f, NULL);
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, 0.653f, 0.645f, NULL);

@@ -32,7 +32,7 @@ void MeshTerrain::setShader()
 			"uniform sampler2D Texture2; \n"
             "void main() { \n" 
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-			"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100)) / 1.5 ;\n" 
+			"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100.0)) / 1.5 ;\n" 
             "}";
 }
 

@@ -6,12 +6,13 @@
 
 #include "GUI.h"
 #include "ResourceLoader.h"
+#include "gameClient.h"
 
 class Menu
 {
 public:
 
-	Menu(GUI* gui, ResourceLoader *resources);
+	Menu(GUI* gui, ResourceLoader *resources, GUICallback *playCb);
 
 	void show();
 	void hide();

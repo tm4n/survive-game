@@ -8,6 +8,9 @@ class gameClient : public game
 {
 public:
 	ENetPeer *serverpeer;
+	
+	// testing
+	RenderObject *soldiers;
 
 
 	gameClient(gameRenderer *arenderer);

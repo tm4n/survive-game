@@ -44,7 +44,7 @@ gameClient::gameClient(gameRenderer *arenderer)
     }
         
     
-	RenderObject *soldiers = new RenderObject[30];
+	soldiers = new RenderObject[30];
     for (int i = 0; i < 30; i++) {       	
         soldiers[i].rotation[0] += i*180.f;
         	
@@ -185,4 +185,18 @@ void gameClient::frame(double time_delta)
 	ENetEvent event;
 	while (enet_host_service (Ehost, &event, 0) > 0)
 			handle_netevent(& event);
+			
+			
+	// animation test
+	for (int i = 0; i < 30; i++) {
+			
+		if (soldiers[i].animProgress > 1.0f) {
+			soldiers[i].animProgress -= 1.0f;
+			soldiers[i].animFrame = soldiers[i].animNextFrame;
+			soldiers[i].animNextFrame += 1;
+			soldiers[i].animNextFrame %= 65;
+		}
+		soldiers[i].animProgress += 0.1f;
+			
+	}
 }

@@ -6,6 +6,28 @@
 #include "GUI.h"
 #include "Menu.h"
 
+
+gameClient *cl = NULL;
+gameRenderer *renderer = NULL;
+Menu *menu = NULL;
+
+// Callback classes
+class playCallback : public GUICallback {
+
+	public:
+		void callback(int obj_id);
+
+};
+
+
+void playCallback::callback(int obj_id)
+{
+	menu->hide();
+	
+	cl = new gameClient(renderer);
+	cl->connect("192.168.0.20", 1201);
+}
+
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char **argv)
 {
@@ -15,12 +37,11 @@ int main(int argc, char **argv)
 
 	bool quit = false;
 
-	gameRenderer *renderer = new gameRenderer();
-
-	gameClient *cl = NULL;
+	renderer = new gameRenderer();
 
 	// create menu
-	Menu *menu = new Menu(renderer->gui, &renderer->resources);
+	playCallback *pcb = new playCallback();
+	menu = new Menu(renderer->gui, &renderer->resources, pcb);
 
 	int fct = 0;
 	while (!quit)
@@ -35,36 +56,10 @@ int main(int argc, char **argv)
 			/* process other events you want to handle here */
 
 			case SDL_MOUSEBUTTONDOWN:
-
-				if (menu->visible)
-				{
-					menu->hide();
-					renderer->gui->event_mouse(&evt);
-
-					cl = new gameClient(renderer);
-					cl->connect("192.168.0.20", 1201);
-				}
-				else
-				{
-					// TODO:
-				}
-
+				renderer->gui->event_mouse(&evt);
 				break;
 			}
 		}
-		
-		// animation test
-		/*for (int i = 0; i < 30; i++) {
-				
-			if (soldiers[i].animProgress > 1.0f) {
-				soldiers[i].animProgress -= 1.0f;
-				soldiers[i].animFrame = soldiers[i].animNextFrame;
-				soldiers[i].animNextFrame += 1;
-				soldiers[i].animNextFrame %= 65;
-			}
-			soldiers[i].animProgress += 0.1f;
-				
-		}*/
 		
 		if (cl) cl->frame(0.0);
 
