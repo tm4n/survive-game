@@ -98,7 +98,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 		case ENET_EVENT_TYPE_RECEIVE:
 		{
-			printf ("A packet of length %u, event %d, was received from %s on channel %u.\n",
+			printf ("A packet of length %lu, event %d, was received from %s on channel %u.\n",
 					event->packet -> dataLength,
 					*((short*) event->packet->data),
 					(char*)(event->peer -> data),

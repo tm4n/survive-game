@@ -15,7 +15,7 @@ Menu *menu = NULL;
 class playCallback : public GUICallback {
 
 	public:
-		void callback(int obj_id);
+		virtual void callback(int obj_id);
 
 };
 
