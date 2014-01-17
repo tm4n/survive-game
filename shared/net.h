@@ -16,16 +16,15 @@
 #define NET_SYNC_SERVER 9
 #define NET_SYNC_CLIENT 10
 
+// SYNC also used for creation
 #define NET_SYNC_PLAYER 11
 #define NET_SYNC_BOX 12
 #define NET_SYNC_CONTAINER 13
 #define NET_SYNC_NPC 14
 
 #define NET_SYNC_FINISH 15
-#define NET_REMOVE_PLAYER 12 // needed?
 
-#define NET_CREATE_ACTOR 12
-#define NET_REMOVE_ACTOR 13
+#define NET_REMOVE_ACTOR 19
 
 
 // #define NET_INPUT
@@ -36,6 +35,8 @@
 #define NET_UPDATE_HEALTH 53
 #define NET_UPDATE_WEAPON 54
 
+
+extern ENetHost *gEhost;
 
 ////////////////////////////////////////////////
 // syncronization data
@@ -53,15 +54,22 @@ struct s_net_sync_server
 
 // s_net_sync_client not there
 
-struct s_net_sync_actor
+struct s_net_sync_player
 {
-	char actor_type;
-	
+	uint actor_id;
+	//...
 };
 
-struct s_net_remove_player
+struct s_net_sync_box
 {
+	uint actor_id;
+	vec pos;
+	uint health;
+};
 
+struct s_net_remove_actor
+{
+	uint actor_id;
 };
 
 struct s_net_sync_finish

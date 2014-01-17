@@ -9,17 +9,6 @@
 #define ACTOR_TYPE_CONTAINER 3
 #define ACTOR_TYPE_NPC 4
 
-#define ACTOR_STATE_IDLE 1
-#define ACTOR_STATE_WALKING 2
-#define ACTOR_STATE_ATTACKING 5
-#define ACTOR_STATE_ATTACK_PAUSE 6 //needed for cooldown
-#define ACTOR_STATE_CASTING 6 // TODO: casting: use timer, reset timer on damage
-//#define ACTOR_STATE_INTERACTING 7 // talking to ppl, pickup up stuff.. might be needed to
-// not allow too ppl access one container
-
-#define ACTOR_STATE_DEAD 10
-
-
 
 class level;
 
@@ -36,45 +25,20 @@ class actor
         // Attributes, either read from file or dynamically created
         float max_health;
         float health;
-        uint chlevel;
-        float bounty_xp;
 
-        float att_dmg_min;
-        float att_dmg_max;
-        float att_range;
-        float att_speed;
-        float att_cooldown;
         float move_speed;
 
         float move_force;
-        double timer_attack;
-        double timer_attack_cooldown;
 
         uint target; // either next node to walk to or entity to attack now
 
         ushort state;
 
         actor(level *, uint type, vec *, vec *);
-		actor(level *, uint actor_id, uint type);
+		actor(level *, uint actor_id, uint type, vec *, vec *);
         virtual ~actor();
 
-        virtual float get_damage();
-        virtual float calc_max_damage();
-        virtual float calc_min_damage();
-
-        virtual float calc_defence();
-        virtual float calc_att_range();
-        virtual float calc_att_speed();
-        virtual float calc_att_cooldown();
-        virtual float calc_move_speed();
-
-        virtual float calc_max_health();
-        virtual float calc_max_mana();
-
         virtual void change_health(float);
-        virtual void change_mana(float);
-
-        virtual bool do_damage(uint target_actor, float damage);
 
         void move(vec *);
         void move_rel(vec *);

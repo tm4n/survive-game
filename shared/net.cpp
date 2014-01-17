@@ -7,8 +7,13 @@
 #include <sstream>
 #include <string>
 
-// global variable
+
+
+// global variables
 bool net_local_only = false;
+
+// ehost
+ENetHost *gEhost = NULL;
 
 int net_send_event(short evtype, const char *data, int size, ENetPeer *peer)
 {

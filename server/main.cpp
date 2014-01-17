@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-#include "include/gameServer.h"
+#include "gameServer.h"
 
 
 int main( int argc, char* argv[] )

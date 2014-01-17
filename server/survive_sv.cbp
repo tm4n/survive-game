@@ -46,6 +46,8 @@
 			<Add library="../libs/enet/.libs/libenet.a" />
 			<Add library="SDL" />
 		</Linker>
+		<Unit filename="../shared/actor.cpp" />
+		<Unit filename="../shared/actor.h" />
 		<Unit filename="../shared/defs.h" />
 		<Unit filename="../shared/flist.h" />
 		<Unit filename="../shared/game.cpp" />

@@ -16,8 +16,6 @@ class game
 
 public:
 	game();
-	
-	ENetHost *Ehost;
 
     level *lvl;
 

@@ -1,10 +1,10 @@
-#include "include/gameServer.h"
+#include "gameServer.h"
 
 using namespace std;
 
 #include "SDL/SDL.h"
 
-#include "include/Timer.h"
+#include "Timer.h"
 
 #include <pthread.h>
 
@@ -17,14 +17,13 @@ using namespace std;
 
 #include "helper.h"
 
-#include "include/net_sv.h"
-#include "include/level_sv.h"
+#include "net_sv.h"
+#include "level_sv.h"
 
 
 // base85 functions from base95.cpp
 void encode_85(char *buf, const unsigned char *data, int bytes);
 int decode_85(char *dst, const char *buffer, int len);
-
 
 
 
@@ -108,13 +107,6 @@ gameServer::gameServer(bool networked) // todo: server settings
     //printf("Size of short: %lu, Size of int: %lu, Size of float: %lu, sizeof double: %lu, size of long: %lu \n", sizeof(short), sizeof(int), sizeof(float), sizeof(double), sizeof(long));
 
 
-    //////////////////////////////////////////////////////////
-    // load level
-
-    lvl_sv = new level_sv("desert");
-    lvl = lvl_sv;
-
-
     ///////////////////////////////////////////////////////////
     // Initialize Enet server
     ENetAddress address;
@@ -125,18 +117,27 @@ gameServer::gameServer(bool networked) // todo: server settings
     /* Bind the server to port 1234. */
     address.port = 1201;
 
-    Ehost = enet_host_create (&address /* the address to bind the server host to */,
+    gEhost = enet_host_create (&address /* the address to bind the server host to */,
                                  8      /* allow up to x clients and/or outgoing connections */,
                                   1      /* allow up to 1 channel to be used, 0 */,
                                   0      /* assume any amount of incoming bandwidth */,
                                   0      /* assume any amount of outgoing bandwidth */);
-    if (Ehost == NULL)
+    if (gEhost == NULL)
     {
         fprintf (stderr,
                  "An error occurred while trying to create an ENet gameServer host.\n");
         exit (EXIT_FAILURE);
     }
     printf("ENet gameServer created!\n");
+    
+    
+	//////////////////////////////////////////////////////////
+    // load level
+
+    lvl_sv = new level_sv("desert");
+    lvl = lvl_sv;
+    
+    lvl_sv->spawn_starters();
 
 
     //Start the update timer
@@ -156,7 +157,7 @@ gameServer::gameServer(bool networked) // todo: server settings
         // While there's events from enet to handle
         ENetEvent event;
 
-        while (enet_host_service (Ehost, & event, 0) > 0)
+        while (enet_host_service (gEhost, & event, 0) > 0)
             handle_netevent(&event);
             
             
@@ -220,7 +221,7 @@ gameServer::gameServer(bool networked) // todo: server settings
     }
 
     // destroy enet_server
-    enet_host_destroy(Ehost);
+    enet_host_destroy(gEhost);
 
     //Clean up
     clean_up();
@@ -299,6 +300,11 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
                 player *pl = (player*)lvl->actorlist.elem[i];
                 net_send_sync_player(i, pl->class_id, pl->name, receiver);
             }*/
+            if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
+            {
+                box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
+                net_send_sync_box(i, &bo->position, bo->health, receiver);
+            }
         }
     }
     
@@ -322,9 +328,9 @@ void gameServer::handle_netevent(ENetEvent *event)
 
             /* Store any relevant client information here. */
             event->peer->data = new s_peer_data;
-            ((s_peer_data*)event->peer->data)->game_state = 0;
+            ((s_peer_data*)event->peer->data)->clstate = 0;
             ((s_peer_data*)event->peer->data)->player_actor_id = -1;
-            ((s_peer_data*)event->peer->data)->player_name[0] = '\0';
+            ((s_peer_data*)event->peer->data)->player_name = NULL;
 
 
             // send my version information
@@ -358,7 +364,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                         // add player name
                         s_peer_data *pd = (s_peer_data *)event->peer->data;
 
-                        if (pd->game_state > 0 && strnlen(pd->player_name, 32) > 0)
+                        if (pd->clstate > 0 && pd->player_name != NULL)
                         {
                             std::string s(pd->player_name);
                             s.append(": ");
@@ -367,7 +373,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                             log(LOG_DEBUG, s.c_str());
 
                             // resend to everyone
-                            net_broadcast_chat(s.c_str(), s.length()+1, Ehost);
+                            net_broadcast_chat(s.c_str(), s.length()+1);
                             
                         } else log (LOG_ERROR, "NET_CHAT: received message from unsynced player!");
 
@@ -385,13 +391,13 @@ void gameServer::handle_netevent(ENetEvent *event)
                     	if (length <= PLAYERNAME_LENGTH)
 						{
 							// safe player
-							pd->player_name = malloc(length+1);
+							pd->player_name = (char*)malloc(length+1);
 							strncpy(pd->player_name, data, PLAYERNAME_LENGTH);
 							
 							// start syncing player
 							synchronizeClient(event->peer);
 							
-							pd->state = 1;
+							pd->clstate = 1;
 						}
 						else
 						{
@@ -425,19 +431,19 @@ void gameServer::handle_netevent(ENetEvent *event)
             // get player (TODO: external function, pl sanity check) data
             s_peer_data *pd = (s_peer_data *)event->peer->data;
 
-            if (pd->game_state == 2) // player created
+            if (pd->clstate == 2) // player created
             {
 
                 // delete player
                 //player_sv * pl = (player_sv *)lvl->actorlist.elem[pd->player_id];
 
 
-                if (1 != NULL)
+                if (1 != 0)
                 {
                     // sending LEAVE message
                     std::string s(pd->player_name);
                     s.append(" has left the game.");
-                    net_broadcast_chat(s.c_str(), s.length()+1, Ehost);
+                    net_broadcast_chat(s.c_str(), s.length()+1);
 
                     // remove player
                     //delete(pl); // will also remove player from actorlist

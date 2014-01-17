@@ -1,4 +1,4 @@
-#include "include/net_sv.h"
+#include "net_sv.h"
 #include "vec.h"
 
 #include "string.h" // for memcpy, strcpy
@@ -29,9 +29,9 @@ int net_send_sync_server(const char *mapfile, ENetPeer *receiver)
     return net_send_event(NET_SYNC_SERVER, (const char *)&s, sizeof(s_net_sync_server), receiver);
 }
 
-int net_broadcast_chat(const char* msg, uint len, ENetHost *host)
+int net_broadcast_chat(const char* msg, uint len)
 {
-	return net_broadcast_event(NET_CHAT, msg, len, host);
+	return net_broadcast_event(NET_CHAT, msg, len, gEhost);
 }
 
 
@@ -39,8 +39,7 @@ int net_send_sync_player(uint actor_id, const char *name, ENetPeer *receiver)
 {
     s_net_sync_player s;
 
-    strncpy(s.name, name, 32);
-    s.name[31] = '\0';
+	// ..
 
     printf("net_sync_player mit actor_id=%u, name=%s \n", actor_id, name);
 
@@ -53,12 +52,39 @@ int net_broadcast_sync_player(uint actor_id, const char *name, ENetHost *host)
     // TODO: broadcast only to synchronized players?
     s_net_sync_player s;
 
-    strncpy(s.name, name, 32);
-    s.name[31] = '\0';
+    /// ..
 
     printf("net_sync_player_broadcast mit actor_id=%u, name=%s \n", actor_id,  name);
 
     return net_broadcast_event(NET_SYNC_PLAYER, (const char *)&s, sizeof(s_net_sync_player), host);
+}
+
+int net_send_sync_box(uint actor_id, vec *pos, uint health, ENetPeer *receiver)
+{
+    s_net_sync_box s;
+
+    s.actor_id = actor_id;
+    s.pos.set(pos);
+    s.health = health;
+
+    printf("net_sync_box mit actor_id=%un", actor_id);
+
+    return net_send_event(NET_SYNC_BOX, (const char *)&s, sizeof(s_net_sync_box), receiver);
+
+}
+
+int net_broadcast_sync_box(uint actor_id, vec *pos, uint health)
+{
+    // TODO: broadcast only to synchronized players?
+    s_net_sync_box s;
+
+    s.actor_id = actor_id;
+    s.pos.set(pos);
+    s.health = health;
+
+    printf("net_sync_box broadcast mit actor_id=%u\n", actor_id);
+
+    return net_broadcast_event(NET_SYNC_BOX, (const char *)&s, sizeof(s_net_sync_box), gEhost);
 
 }
 
@@ -67,16 +93,16 @@ int net_send_sync_finish(ENetPeer *receiver)
 	return net_send_event(NET_SYNC_FINISH, NULL, 0, receiver);
 }
 
-int net_broadcast_remove_player(uint actor_id, ENetHost *host)
+int net_broadcast_remove_actor(uint actor_id)
 {
     // TODO: broadcast only to synchronized players?
-    s_net_remove_player s;
+    s_net_remove_actor s;
 
 	// no input yet
 
     printf("net_sync_remove_broadcast mit actor_id=%u\n", actor_id);
 
-    return net_broadcast_event(NET_REMOVE_PLAYER, (const char *)&s, sizeof(s_net_remove_player), host);
+    return net_broadcast_event(NET_REMOVE_ACTOR, (const char *)&s, sizeof(s_net_remove_actor), gEhost);
 }
 
 int net_send_sync_finish(uint own_actor_id, ENetPeer *receiver)
