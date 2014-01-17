@@ -46,6 +46,13 @@ void vec::set(vec *v)
     z = v->z;
 }
 
+void vec::set(float ax, float ay, float az)
+{
+    x = ax;
+    y = ay;
+    z = az;
+}
+
 void vec::zero()
 {
     x = 0.f;

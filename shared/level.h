@@ -14,6 +14,11 @@ class level
 {
 public:
     char filename[256];
+    
+    float border_ground;
+    float border_height;
+    float border_max;
+    float border_min;
 
 	// actors in level
 	flist<actor> actorlist;

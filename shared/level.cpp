@@ -10,7 +10,6 @@ using namespace std;
 // map access macro
 #define mdim(i,j) (((i)*size)+(j))
 
-
 ///////////////////////////////////////////
 // Constructor: create a level from file
 level::level(const char *afilename)
@@ -19,7 +18,11 @@ level::level(const char *afilename)
     log(LOG_DEBUG, afilename);
 
     strncpy(this->filename, afilename, 256);
-
+    
+	border_ground = -295.f;
+	border_height = 1400.f;
+	border_max = 2000.f;
+	border_min = -2000.f;
 }
 
 // Destructor

@@ -43,7 +43,7 @@ extern ENetHost *gEhost;
 
 struct s_net_version
 {
-    int version;
+    uint32_t version;
 };
 
 struct s_net_sync_server
@@ -63,6 +63,7 @@ struct s_net_sync_player
 struct s_net_sync_box
 {
 	uint actor_id;
+	char box_type;
 	vec pos;
 	uint health;
 };

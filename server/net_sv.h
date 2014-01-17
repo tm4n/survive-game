@@ -25,7 +25,7 @@ int net_send_sync_player(uint actor_id, const char *name, ENetPeer *receiver);
 int net_broadcast_sync_player(uint actor_id, const char *name);
 
 int net_send_sync_box(uint actor_id, vec *pos, uint health, ENetPeer *receiver);
-int net_broadcast_sync_box(uint actor_id, vec *pos, uint health);
+int net_broadcast_sync_box(uint actor_id, char box_type, vec *pos, uint health);
 
 int net_send_sync_finish(ENetPeer *receiver);
 

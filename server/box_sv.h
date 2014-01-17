@@ -7,7 +7,7 @@ class box_sv : public box
 {
 
 public:
-	box_sv(level *, vec *, uint health);
+	box_sv(level *, char box_type, vec *, uint health);
 	~box_sv();
 	
 protected:

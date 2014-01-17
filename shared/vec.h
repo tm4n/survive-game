@@ -14,6 +14,7 @@ class vec
         float dist(vec *);
         float dist2d(vec *);
         void set(vec *);
+        void set(float ax, float ay, float az);
         void zero();
 		float length();
 

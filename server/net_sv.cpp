@@ -73,12 +73,13 @@ int net_send_sync_box(uint actor_id, vec *pos, uint health, ENetPeer *receiver)
 
 }
 
-int net_broadcast_sync_box(uint actor_id, vec *pos, uint health)
+int net_broadcast_sync_box(uint actor_id, char box_type, vec *pos, uint health)
 {
     // TODO: broadcast only to synchronized players?
     s_net_sync_box s;
 
     s.actor_id = actor_id;
+    s.box_type = box_type;
     s.pos.set(pos);
     s.health = health;
 
