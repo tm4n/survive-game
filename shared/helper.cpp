@@ -237,3 +237,9 @@ void log(int prop, char const* str)
 {
 	puts(str);
 }
+
+
+float toRadians(float d)
+{
+	return (d * (float)M_PI / 180.f);
+}

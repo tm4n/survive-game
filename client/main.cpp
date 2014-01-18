@@ -56,7 +56,25 @@ int main(int argc, char **argv)
 			/* process other events you want to handle here */
 
 			case SDL_MOUSEBUTTONDOWN:
-				renderer->gui->event_mouse(&evt);
+			case SDL_MOUSEBUTTONUP:
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				if (!menu->visible && cl != NULL)
+				{
+					cl->event_mouse(&evt);
+				}
+				else
+				{
+					renderer->gui->event_mouse(&evt);
+				}
+				break;
+
+			case SDL_MOUSEMOTION:
+				if (menu->visible == false && cl != NULL)
+				{
+					// give to gameClient
+					cl->event_mouse(&evt);
+				}
 				break;
 			}
 		}

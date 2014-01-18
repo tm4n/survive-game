@@ -2,36 +2,35 @@
 
 #include "net_cl.h"
 #include "helper.h"
+#include "level_cl.h"
+#include "box_cl.h"
 
 
 gameClient::gameClient(gameRenderer *arenderer)
 {
 	renderer = arenderer;
+	key_velx = 0.f;
+	key_vely = 0.f;
 
 	////////////////////////////////////////////////////
 	// Initialize enet host, no connections is done yet
     // Create enet client
 	serverpeer = NULL;
 
-    Ehost = enet_host_create (NULL /* create a client host */,
+    gEhost = enet_host_create (NULL /* create a client host */,
                 1 /* only allow 1 outgoing connection */,
                 2 /* allow up 2 channels to be used, 0 and 1 */,
                 0 /* no downstream limit */,
                 0 /* no upstream limit */);
 
-    if (Ehost == NULL)
+    if (gEhost == NULL)
     {
         puts("An error occurred while trying to create an ENet client host.\n");
         exit (EXIT_FAILURE);
     }
 
-	// todo: move to level
-
-	//display stuff
-	RenderObject *objTerrain = new RenderObject();
-	objTerrain->scale = glm::vec3(2.0f, 2.0f, 2.0f);
-    renderer->resources.getMesh(ResourceLoader::meshType::Terrain)->addRenderObject(objTerrain);
-        
+	//TEST: display stuff
+	/*        
     for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 50; j++) {
         RenderObject *tmp = new RenderObject();
@@ -41,10 +40,10 @@ gameClient::gameClient(gameRenderer *arenderer)
         	
         renderer->resources.getMesh(ResourceLoader::meshType::Crate)->addRenderObject(tmp);
         }
-    }
+    }*/
         
     
-	soldiers = new RenderObject[30];
+	/*soldiers = new RenderObject[30];
     for (int i = 0; i < 30; i++) {       	
         soldiers[i].rotation[0] += i*180.f;
         	
@@ -52,21 +51,7 @@ gameClient::gameClient(gameRenderer *arenderer)
         soldiers[i].translation[0] += -200;
         	
         renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(&soldiers[i]);
-    }
-
-	// create trees at their location
-	RenderObject *tmp = new RenderObject();
-	tmp->translation = glm::vec3(-328.0f, -1400.0f, -312.0f);
-	tmp->rotation[0] = 200.0f;
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
-	tmp = new RenderObject();
-	tmp->translation = glm::vec3(800.0f, 1296.0f, -300.0f);
-	tmp->rotation[0] = 36.0f;
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
-	tmp = new RenderObject();
-	tmp->rotation[0] = 6.0f;
-	tmp->translation = glm::vec3(-1440.0f, -784.0f, -300.0f);
-	renderer->resources.getMesh(ResourceLoader::meshType::Tree)->addRenderObject(tmp);
+    }*/
 }
 
 
@@ -143,13 +128,48 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_sync_server *d = (s_net_sync_server*)data;
 
 						// load level
-						//lvl = new level_cl(d->mapfile);
+						lvl = new level_cl(d->mapfile, renderer);
 
 						break;
 					}
 
+					case NET_SYNC_BOX:
+					{
+						s_net_sync_box *d = (s_net_sync_box*)data;
+
+						if (lvl != NULL)
+						{
+							// create a box at given position
+							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer);
+						}
+						else log(LOG_ERROR, "");
+
+					}
+
 					case NET_SYNC_FINISH:
 					{
+
+
+
+						break;
+					}
+
+					case NET_REMOVE_ACTOR:
+					{
+						s_net_remove_actor *d = (s_net_remove_actor*)data;
+
+						if (lvl != NULL)
+						{
+							// get actor at position
+							actor *ac = lvl->actorlist.at(d->actor_id);
+
+							if (ac != NULL)
+							{
+								delete ac;
+							}
+							else log (LOG_ERROR, "Received NET_REMOVE_ACTOR with invalid actor_id");
+						}
+						else log (LOG_ERROR, "Received NET_REMOVE_ACTOR without loaded level");
 
 						break;
 					}
@@ -187,7 +207,7 @@ bool gameClient::connect(const char *ip, int port)
 	log(LOG_DEBUG, "Connecting to server...");
 
     /* Initiate the connection, allocating one channel. */
-    serverpeer = enet_host_connect (Ehost, &address, 1, 0);
+    serverpeer = enet_host_connect (gEhost, &address, 1, 0);
 
     if (serverpeer == NULL)
     {
@@ -212,20 +232,69 @@ void gameClient::frame(double time_delta)
 {
 	// Handle packages
 	ENetEvent event;
-	while (enet_host_service (Ehost, &event, 0) > 0)
+	while (enet_host_service (gEhost, &event, 0) > 0)
 			handle_netevent(& event);
-			
-			
-	// animation test
-	for (int i = 0; i < 30; i++) {
-			
-		if (soldiers[i].animProgress > 1.0f) {
-			soldiers[i].animProgress -= 1.0f;
-			soldiers[i].animFrame = soldiers[i].animNextFrame;
-			soldiers[i].animNextFrame += 1;
-			soldiers[i].animNextFrame %= 65;
+
+	// move spectator camera
+	// if pl = NULL
+	renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+    renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+    renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
+
+	renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+    renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+
+}
+
+void gameClient::event_mouse(SDL_Event *evt)
+{
+	if (evt->type == SDL_MOUSEMOTION)
+	{
+		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
+		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+	}
+	if (evt->type == SDL_KEYDOWN)
+	{
+		switch( evt->key.keysym.sym )
+		{
+		case SDLK_a:
+        case SDLK_LEFT:
+            key_velx = -1;
+            break;
+		case SDLK_d:
+        case SDLK_RIGHT:
+            key_velx =  1;
+            break;
+		case SDLK_w:
+        case SDLK_UP:
+            key_vely = -1;
+            break;
+		case SDLK_s:
+        case SDLK_DOWN:
+            key_vely =  1;
+            break;
 		}
-		soldiers[i].animProgress += 0.1f;
-			
+	}
+	if (evt->type == SDL_KEYUP)
+	{
+		switch( evt->key.keysym.sym )
+		{
+			case SDLK_a:
+			case SDLK_LEFT:
+				if( key_velx < 0 ) key_velx = 0;
+				break;
+			case SDLK_d:
+			case SDLK_RIGHT:
+				if( key_velx > 0 ) key_velx = 0;
+				break;
+			case SDLK_w:
+			case SDLK_UP:
+				if( key_vely < 0 ) key_vely = 0;
+				break;
+			case SDLK_s:
+			case SDLK_DOWN:
+				if( key_vely > 0 ) key_vely = 0;
+				break;
+		}
 	}
 }

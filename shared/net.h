@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "enet/enet.h"
 #include "vec.h"
+#include <cstdint>
 
 ////////////////////////////////////////////////
 // package type defines

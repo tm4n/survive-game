@@ -1,5 +1,6 @@
 #include "gameRenderer.h"
 
+#include "helper.h"
 #include <iostream>
 #include <stdlib.h> 
 #include "glm/gtc/matrix_transform.hpp"
@@ -51,7 +52,7 @@ gameRenderer::gameRenderer()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	float ratio = 16.f/9.f;
-	mProjMatrix = glm::perspective(80.f, ratio, 2.f, 4000.f);
+	mProjMatrix = glm::perspective(80.f, ratio, 2.f, 6000.f);
 
 	// load all resources
 	resources.load();
@@ -75,9 +76,12 @@ void gameRenderer::drawFrame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// calculate matrices
+	float camx = (float) (cos(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));
+    float camy = (float) (sin(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));
+    float camz = (float) (sin(toRadians(CameraAngle.y)));
 	mVMatrix       = glm::lookAt(
-    glm::vec3(-300,0,3), // Camera in World Space
-    glm::vec3(0,0,0), // and looks at the origin
+    glm::vec3(CameraPos.x, CameraPos.y, CameraPos.z), // Camera in World Space
+    glm::vec3(CameraPos.x + camx, CameraPos.y + camy, CameraPos.z + camz), // and looks t the eye point
     glm::vec3(0,0,1)  // Head is up (set to 0,-1,0 to look upside-down)
     );
 

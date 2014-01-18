@@ -8,10 +8,6 @@ class gameClient : public game
 {
 public:
 	ENetPeer *serverpeer;
-	
-	// testing
-	RenderObject *soldiers;
-
 
 	gameClient(gameRenderer *arenderer);
 
@@ -20,10 +16,15 @@ public:
 	bool connect(const char *ip, int port);
 	void disconnect();
 
+	void event_mouse(SDL_Event *evt);
+
 	void frame(double time_delta);
 
 private:
 	gameRenderer *renderer;
+
+	float key_velx, key_vely;
+
 };
 
 #endif

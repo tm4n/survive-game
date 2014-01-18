@@ -32,4 +32,6 @@ void check_heap(char *file, int line);
 
 #endif
 
+float toRadians(float d);
+
 #endif // __HELPER_H__
