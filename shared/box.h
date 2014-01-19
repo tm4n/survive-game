@@ -13,8 +13,8 @@ class box : public actor
 {
 
 public:
-	box(level *, char box_type, vec *, uint health);
-	box(level *, uint actor_id, char box_type, vec *, uint health);
+	box(level *, char box_type, vec *, float health);
+	box(level *, uint actor_id, char box_type, vec *, float health);
 	
 	char box_type;
 

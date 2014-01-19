@@ -7,7 +7,7 @@
 class box_cl : public box
 {
 public:
-	box_cl(level *lvl, uint actor_id, char box_type, vec *, uint health, gameRenderer *arenderer);
+	box_cl(level *lvl, uint actor_id, char box_type, vec *, float health, gameRenderer *arenderer);
 	virtual ~box_cl();
 
 protected:

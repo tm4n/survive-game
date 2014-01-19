@@ -9,6 +9,9 @@ class gameClient : public game
 public:
 	ENetPeer *serverpeer;
 
+	uint local_state;
+	uint own_actor_id;
+
 	gameClient(gameRenderer *arenderer);
 
 	void handle_netevent(ENetEvent *event);

@@ -1,6 +1,6 @@
 #include "box_cl.h"
 
-box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, uint health, gameRenderer *arenderer)
+box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, gameRenderer *arenderer)
 	: box(lvl, actor_id, box_type, pos, health)
 {
 	renderer = arenderer;

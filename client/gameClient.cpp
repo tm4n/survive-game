@@ -3,12 +3,15 @@
 #include "net_cl.h"
 #include "helper.h"
 #include "level_cl.h"
+#include "player_cl.h"
 #include "box_cl.h"
 
 
 gameClient::gameClient(gameRenderer *arenderer)
 {
 	renderer = arenderer;
+	local_state = 0;
+
 	key_velx = 0.f;
 	key_vely = 0.f;
 
@@ -133,6 +136,18 @@ void gameClient::handle_netevent(ENetEvent *event)
 						break;
 					}
 
+					case NET_SYNC_PLAYER:
+					{
+						s_net_sync_player *d = (s_net_sync_player*)data;
+
+						if (lvl != NULL)
+						{
+							// create a box at given position
+							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, d->name, d->state, d->input, renderer);
+						}
+						else log(LOG_ERROR, "");
+					}
+
 					case NET_SYNC_BOX:
 					{
 						s_net_sync_box *d = (s_net_sync_box*)data;
@@ -148,8 +163,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 					case NET_SYNC_FINISH:
 					{
-
-
+						// mark client as joinable
+						local_state = 1;
 
 						break;
 					}
@@ -170,6 +185,22 @@ void gameClient::handle_netevent(ENetEvent *event)
 							else log (LOG_ERROR, "Received NET_REMOVE_ACTOR with invalid actor_id");
 						}
 						else log (LOG_ERROR, "Received NET_REMOVE_ACTOR without loaded level");
+
+						break;
+					}
+
+					case NET_JOIN:
+					{
+						s_net_join *d = (s_net_join *)data;
+
+						if (local_state != 1)
+						{
+							
+							own_actor_id = d->own_actor_id;
+							local_state = 2;
+
+						}
+						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
 
 						break;
 					}
@@ -236,13 +267,15 @@ void gameClient::frame(double time_delta)
 			handle_netevent(& event);
 
 	// move spectator camera
-	// if pl = NULL
-	renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
-    renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
-    renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
+	if (local_state == 1)
+	{
+		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
 
-	renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
-    renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+	}
 
 }
 
@@ -252,6 +285,17 @@ void gameClient::event_mouse(SDL_Event *evt)
 	{
 		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
 		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+	}
+	if (evt->type == SDL_MOUSEBUTTONDOWN)
+	{
+		if (evt->button.button == SDL_BUTTON_LEFT)
+		{
+			if (local_state == 1)
+			{
+				// send request to join
+				net_send_request_join(serverpeer);
+			}
+		}
 	}
 	if (evt->type == SDL_KEYDOWN)
 	{

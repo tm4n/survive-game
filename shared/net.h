@@ -27,6 +27,9 @@
 
 #define NET_REMOVE_ACTOR 19
 
+#define NET_REQUEST_JOIN 20
+#define NET_JOIN 21
+
 
 // #define NET_INPUT
 
@@ -58,7 +61,12 @@ struct s_net_sync_server
 struct s_net_sync_player
 {
 	uint actor_id;
-	//...
+	vec pos;
+	vec ang;
+	float health;
+    char name[32];
+	int state;
+	int input;
 };
 
 struct s_net_sync_box
@@ -66,7 +74,7 @@ struct s_net_sync_box
 	uint actor_id;
 	char box_type;
 	vec pos;
-	uint health;
+	float health;
 };
 
 struct s_net_remove_actor
@@ -74,9 +82,9 @@ struct s_net_remove_actor
 	uint actor_id;
 };
 
-struct s_net_sync_finish
+struct s_net_join
 {
-    uint own_actor_id;
+	uint own_actor_id;
 };
 
 // value updates
