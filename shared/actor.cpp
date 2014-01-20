@@ -27,7 +27,7 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
 
 actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
 {
-	printf("creating actor (type = %i) with id=%i fixed", type, actor_id);
+	printf("creating actor (type = %i) with id=%i fixed \n", type, actor_id);
 
     // register in actorlist at fixed position
     id = lvl->actorlist.add_at(this, actor_id);

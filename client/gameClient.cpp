@@ -145,7 +145,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 							// create a box at given position
 							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, d->name, d->state, d->input, renderer);
 						}
-						else log(LOG_ERROR, "");
+						else log(LOG_ERROR, "Receiver NET_SYNC_PLAYER without level");
+
+						break;
 					}
 
 					case NET_SYNC_BOX:
@@ -157,8 +159,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 							// create a box at given position
 							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer);
 						}
-						else log(LOG_ERROR, "");
+						else log(LOG_ERROR, "Received NET_SYNC_BOX without level");
 
+						break;
 					}
 
 					case NET_SYNC_FINISH:
@@ -193,9 +196,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_join *d = (s_net_join *)data;
 
-						if (local_state != 1)
+						if (local_state == 1)
 						{
-							
+							// switch to gaming mode
 							own_actor_id = d->own_actor_id;
 							local_state = 2;
 

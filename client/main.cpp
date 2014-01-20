@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
 		renderer->drawFrame();
 
-		if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
+		//if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
 		fct++;
 	}
 
