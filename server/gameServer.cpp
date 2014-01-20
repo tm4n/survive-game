@@ -294,11 +294,11 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
     {
         if (lvl->actorlist.elem[i] != 0)
         {
-            /*if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_PLAYER)
+            if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_PLAYER)
             {
                 player *pl = (player*)lvl->actorlist.elem[i];
-                net_send_sync_player(i, pl->class_id, pl->name, receiver);
-            }*/
+                net_send_sync_player(i, &pl->position, &pl->angle, pl->health, pl->name, pl->state, pl->input, receiver);
+            }
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
             {
                 box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
@@ -422,6 +422,8 @@ void gameServer::handle_netevent(ENetEvent *event)
 							vec pos(0.f, 0.f, 0.f);
 							vec ang(0.f, 0.f, 0.f);
 							player_sv * pl = new player_sv(lvl, &pos, &ang, 100.f, pd->player_name, event->peer);
+							
+							pd->player_actor_id = pl->id;
 							
 							// send update
 							net_send_join(pl->id, event->peer);

@@ -15,7 +15,7 @@ bool net_local_only = false;
 // ehost
 ENetHost *gEhost = NULL;
 
-int net_send_event(short evtype, const char *data, int size, ENetPeer *peer)
+int net_send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *peer)
 {
 	if (net_local_only)
 	{
@@ -24,7 +24,7 @@ int net_send_event(short evtype, const char *data, int size, ENetPeer *peer)
 	else
 	{
 		// create packet to send
-		ENetPacket *packet = enet_packet_create(NULL, size+sizeof(short), ENET_PACKET_FLAG_RELIABLE);
+		ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint16_t), ENET_PACKET_FLAG_RELIABLE);
 
 		if (packet == NULL)
 		{
@@ -32,8 +32,8 @@ int net_send_event(short evtype, const char *data, int size, ENetPeer *peer)
 		}
 
 
-		memcpy(packet->data, &evtype, sizeof(short));
-		if (size > 0) memcpy(packet->data + sizeof(short), data, size);
+		memcpy(packet->data, &evtype, sizeof(uint16_t));
+		if (size > 0) memcpy(packet->data + sizeof(uint16_t), data, size);
 
 		// send packet
 		if (enet_peer_send(peer, 0, packet) != 0)
@@ -46,7 +46,7 @@ int net_send_event(short evtype, const char *data, int size, ENetPeer *peer)
 	return 0;
 }
 
-int net_broadcast_event(short evtype, const char *data, int size, ENetHost *host)
+int net_broadcast_event(uint16_t evtype, const char *data, uint32_t size, ENetHost *host)
 {
 	if (net_local_only)
 	{
@@ -55,7 +55,7 @@ int net_broadcast_event(short evtype, const char *data, int size, ENetHost *host
 	else
 	{
 		// create packet to send
-		ENetPacket *packet = enet_packet_create(NULL, size+sizeof(short), ENET_PACKET_FLAG_RELIABLE);
+		ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint16_t), ENET_PACKET_FLAG_RELIABLE);
 
 		if (packet == NULL)
 		{
@@ -63,8 +63,8 @@ int net_broadcast_event(short evtype, const char *data, int size, ENetHost *host
 		}
 
 
-		memcpy(packet->data, &evtype, sizeof(short));
-		if (size > 0) memcpy(packet->data + sizeof(short), data, size);
+		memcpy(packet->data, &evtype, sizeof(uint16_t));
+		if (size > 0) memcpy(packet->data + sizeof(uint16_t), data, size);
 
 		// send packet
 		enet_host_broadcast(host, 0, packet);

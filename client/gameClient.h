@@ -3,6 +3,7 @@
 
 #include "game.h"
 #include "gameRenderer.h"
+#include "player_cl.h"
 
 class gameClient : public game
 {
@@ -22,6 +23,8 @@ public:
 	void event_mouse(SDL_Event *evt);
 
 	void frame(double time_delta);
+	
+	player_cl *get_own_player();
 
 private:
 	gameRenderer *renderer;

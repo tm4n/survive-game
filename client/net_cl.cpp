@@ -1,7 +1,7 @@
 #include "net_cl.h"
 
 #include <sstream>
-
+#include <cstring>
 
 
 // special send functions for client

@@ -131,7 +131,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_sync_server *d = (s_net_sync_server*)data;
 
 						// load level
-						lvl = new level_cl(d->mapfile, renderer);
+						lvl = new level_cl((char*)d->mapfile, renderer);
 
 						break;
 					}
@@ -143,7 +143,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (lvl != NULL)
 						{
 							// create a box at given position
-							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, d->name, d->state, d->input, renderer);
+							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, (char*)d->name, d->state, d->input, renderer);
 						}
 						else log(LOG_ERROR, "Receiver NET_SYNC_PLAYER without level");
 
@@ -344,4 +344,13 @@ void gameClient::event_mouse(SDL_Event *evt)
 				break;
 		}
 	}
+}
+
+
+player_cl *gameClient::get_own_player()
+{
+	if (local_state != 2) return NULL;
+	actor *ac = lvl->actorlist.at(own_actor_id);
+	if (ac != NULL) return (player_cl*)ac;
+	return NULL;
 }

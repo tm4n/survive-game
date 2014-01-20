@@ -52,7 +52,7 @@ struct s_net_version
 
 struct s_net_sync_server
 {
-    char mapfile[32];
+    int8_t mapfile[32];
     //...
 };
 
@@ -60,56 +60,56 @@ struct s_net_sync_server
 
 struct s_net_sync_player
 {
-	uint actor_id;
+	uint32_t actor_id;
 	vec pos;
 	vec ang;
 	float health;
-    char name[32];
-	int state;
-	int input;
+    int8_t name[32];
+	int32_t state;
+	int32_t input;
 };
 
 struct s_net_sync_box
 {
-	uint actor_id;
-	char box_type;
+	uint32_t actor_id;
+	uint8_t box_type;
 	vec pos;
 	float health;
 };
 
 struct s_net_remove_actor
 {
-	uint actor_id;
+	uint32_t actor_id;
 };
 
 struct s_net_join
 {
-	uint own_actor_id;
+	uint32_t own_actor_id;
 };
 
 // value updates
 struct s_net_update_state
 {
-    uint actor_id;
-    ushort state;
+    uint32_t actor_id;
+    uint32_t state;
 };
 
 struct s_net_update_target
 {
-    uint actor_id;
-    uint target;
+    uint32_t actor_id;
+    uint32_t target;
 };
 
 struct s_net_update_pos
 {
-    uint actor_id;
+    uint32_t actor_id;
     float x, y;
 };
 
 struct s_net_update_health
 {
     uint actor_id;
-    float health;
+    uint32_t health;
 };
 
 ///////////////////////////////////////////////
@@ -120,7 +120,7 @@ extern bool net_local_only;
 ////////////////////////////////////////////////
 // network helper functions, both client and server
 
-int net_send_event(short evtype, const char *data, int size, ENetPeer *);
-int net_broadcast_event(short evtype, const char *data, int size, ENetHost *);
+int net_send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *);
+int net_broadcast_event(uint16_t evtype, const char *data, uint32_t size, ENetHost *);
 
 #endif

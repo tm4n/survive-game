@@ -23,7 +23,7 @@ int net_send_sync_server(const char *mapfile, ENetPeer *receiver)
 {
     s_net_sync_server s;
 
-    strncpy(s.mapfile, mapfile, 32);
+    strncpy((char*)s.mapfile, mapfile, 32);
     s.mapfile[31] = '\0';
 
     return net_send_event(NET_SYNC_SERVER, (const char *)&s, sizeof(s_net_sync_server), receiver);
@@ -42,7 +42,7 @@ int net_send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const 
 	s.actor_id = actor_id;
 	s.pos.set(pos);
 	s.ang.set(ang);
-	strncpy(s.name, name, 32);
+	strncpy((char*)s.name, name, 32);
 	s.name[31] = '\0';
 	s.state = state;
 	s.input = input;
@@ -61,7 +61,7 @@ int net_broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, c
     s.actor_id = actor_id;
 	s.pos.set(pos);
 	s.ang.set(ang);
-	strncpy(s.name, name, 32);
+	strncpy((char*)s.name, name, 32);
 	s.name[31] = '\0';
 	s.state = state;
 	s.input = input;

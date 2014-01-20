@@ -35,8 +35,6 @@
 			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
-			<Add directory="/usr/include/mysql++" />
-			<Add directory="/usr/include/mysql" />
 			<Add directory="../shared" />
 			<Add directory="../libraries/tinyxml" />
 			<Add directory="../libraries/enet-1.3.5/include" />
