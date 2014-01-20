@@ -19,6 +19,7 @@ using namespace std;
 
 #include "net_sv.h"
 #include "level_sv.h"
+#include "player_sv.h"
 
 
 // base85 functions from base95.cpp
@@ -136,8 +137,6 @@ gameServer::gameServer(bool networked) // todo: server settings
 
     lvl_sv = new level_sv("desert");
     lvl = lvl_sv;
-    
-    lvl_sv->spawn_starters();
 
 
     //Start the update timer
@@ -391,8 +390,8 @@ void gameServer::handle_netevent(ENetEvent *event)
                     	if (length <= PLAYERNAME_LENGTH)
 						{
 							// safe player
-							pd->player_name = (char*)malloc(length+1);
-							strncpy(pd->player_name, data, PLAYERNAME_LENGTH);
+							pd->player_name = new char[length+1];
+							strncpy(pd->player_name, data, length);
 							
 							// start syncing player
 							synchronizeClient(event->peer);
@@ -408,9 +407,35 @@ void gameServer::handle_netevent(ENetEvent *event)
                     	
                     	break;
                     }
+                    
+                    case NET_REQUEST_JOIN:
+					{
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						// check player
+						if (1)
+						{
+							if (state == GAME_STATE_WAITING) start_match();
+							
+							// create player
+							vec pos(0.f, 0.f, 0.f);
+							vec ang(0.f, 0.f, 0.f);
+							player_sv * pl = new player_sv(lvl, &pos, &ang, 100.f, pd->player_name, event->peer);
+							
+							// send update
+							net_send_join(pl->id, event->peer);
+						}
+						else log(LOG_WARNING, "NET_REQUEST_JOIN not granted");
+						
+						break;
+					}
 
                     /////////////////////////////////////////
                     // TODO: player input
+                    
+                    default:
+						log(LOG_ERROR, "Packed with unkown/invalid type received");
                     
                 }
 
@@ -460,6 +485,16 @@ void gameServer::handle_netevent(ENetEvent *event)
 
 }
 
+
+void gameServer::start_match()
+{
+	// reset values
+	
+	// reset level (lat0r)   
+	
+	// add level starters
+    lvl_sv->spawn_starters();
+}
 
 
 ///////////////////////////////7

@@ -48,6 +48,8 @@
 		</Linker>
 		<Unit filename="../shared/actor.cpp" />
 		<Unit filename="../shared/actor.h" />
+		<Unit filename="../shared/box.cpp" />
+		<Unit filename="../shared/box.h" />
 		<Unit filename="../shared/defs.h" />
 		<Unit filename="../shared/flist.h" />
 		<Unit filename="../shared/game.cpp" />
@@ -58,18 +60,24 @@
 		<Unit filename="../shared/level.h" />
 		<Unit filename="../shared/net.cpp" />
 		<Unit filename="../shared/net.h" />
+		<Unit filename="../shared/player.cpp" />
+		<Unit filename="../shared/player.h" />
 		<Unit filename="../shared/vec.cpp" />
 		<Unit filename="../shared/vec.h" />
 		<Unit filename="Timer.cpp" />
+		<Unit filename="Timer.h" />
 		<Unit filename="base85.cpp" />
+		<Unit filename="box_sv.cpp" />
+		<Unit filename="box_sv.h" />
 		<Unit filename="gameServer.cpp" />
-		<Unit filename="include/Timer.h" />
-		<Unit filename="include/gameServer.h" />
-		<Unit filename="include/level_sv.h" />
-		<Unit filename="include/net_sv.h" />
+		<Unit filename="gameServer.h" />
 		<Unit filename="level_sv.cpp" />
+		<Unit filename="level_sv.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="net_sv.cpp" />
+		<Unit filename="net_sv.h" />
+		<Unit filename="player_sv.cpp" />
+		<Unit filename="player_sv.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

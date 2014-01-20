@@ -37,6 +37,8 @@ public:
 
     void synchronizeClient(ENetPeer *receiver);
 	void handle_netevent(ENetEvent *event);
+	
+	void start_match();
 
 	void log(int, const char *);
 	
