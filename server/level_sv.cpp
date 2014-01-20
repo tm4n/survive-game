@@ -47,7 +47,7 @@ void level_sv::spawn_starters()
 	new box_sv(this, BOX_TYPE_WOODEN, &v, 100);
 }
 
-/*player_sv *level_sv::get_player(uint actor_id)
+player_sv *level_sv::get_player(uint actor_id)
 {
     actor *ac = actorlist.at(actor_id);
     if (ac == NULL) return NULL;
@@ -56,11 +56,13 @@ void level_sv::spawn_starters()
     return NULL;
 }
 
-npc_sv *level_sv::get_npc(uint actor_id)
+box_sv *level_sv::get_box(uint actor_id)
 {
     actor *ac = actorlist.at(actor_id);
     if (ac == NULL) return NULL;
 
-    if (ac->type == ACTOR_TYPE_NPC) return (npc_sv*)ac;
+    if (ac->type == ACTOR_TYPE_BOX) return (box_sv*)ac;
     return NULL;
-}*/
+}
+
+

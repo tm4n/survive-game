@@ -432,9 +432,53 @@ void gameServer::handle_netevent(ENetEvent *event)
 						
 						break;
 					}
-
-                    /////////////////////////////////////////
-                    // TODO: player input
+					
+                    case NET_INPUT_KEYS:
+					{
+						// get send data
+						s_net_input_keys *d = (s_net_input_keys *)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								pl->input = d->input;
+							}
+							else log(LOG_ERROR, "Received NET_INPUT_KEYS for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_INPUT_KEYS for actor thats not owned by this client");
+						
+						break;
+					}
+					
+					case NET_UPDATE_ANG:
+					{
+						// get send data
+						s_net_update_ang *d = (s_net_update_ang *)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								pl->angle.x = d->ang;
+								
+								// send update to other players
+								net_send_update_ang(d->actor_id, d->ang, event->peer);
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_ANG for actor thats not owned by this client");
+						
+						break;
+					}
                     
                     default:
 						log(LOG_ERROR, "Packed with unkown/invalid type received");

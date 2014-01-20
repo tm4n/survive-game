@@ -163,8 +163,9 @@ int net_send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver)
     s_net_update_pos s;
 
     s.actor_id = actor_id;
-    s.x = pos->x;
-    s.y = pos->y;
+    s.pos.x = pos->x;
+    s.pos.y = pos->y;
+    s.pos.z = pos->z;
 
     return net_send_event(NET_UPDATE_POS, (const char*) &s, sizeof(s_net_update_pos), receiver);
 }

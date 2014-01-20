@@ -5,6 +5,8 @@
 #include "game.h"
 #include <list>
 #include "box_sv.h"
+#include "player_sv.h"
+class player_sv;
 
 
 
@@ -16,7 +18,8 @@ class level_sv : public level
         
         void spawn_starters();
 
-        //player_sv *get_player(uint actor_id);
+        player_sv *get_player(uint actor_id);
+        box_sv *get_box(uint actor_id);
         //npc_sv *get_npc(uint actor_id);
 
     protected:
