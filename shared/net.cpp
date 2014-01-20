@@ -76,3 +76,20 @@ int net_broadcast_event(uint16_t evtype, const char *data, uint32_t size, ENetHo
 
 
 // send functions used by both server and client
+int net_send_input_keys(uint actor_id, int input, ENetPeer *receiver)
+{
+	s_net_input_keys s;
+
+    s.input = input;
+
+    return net_send_event(NET_INPUT_KEYS, (const char *)&s, sizeof(s_net_input_keys), receiver);
+}
+
+int net_send_update_ang(uint actor_id, float ang, ENetPeer *receiver)
+{
+	s_net_update_ang s;
+
+    s.ang = ang;
+
+    return net_send_event(NET_UPDATE_ANG, (const char *)&s, sizeof(s_net_update_ang), receiver);
+}

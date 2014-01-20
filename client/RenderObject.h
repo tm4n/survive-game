@@ -16,6 +16,8 @@ public:
 	int animNextFrame;
 	float animProgress;
 
+	bool visible;
+
 	RenderObject();
 	RenderObject(float *translation, float *rotation);
 };

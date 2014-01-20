@@ -272,7 +272,9 @@ void Mesh::draw(glm::mat4 mVPMatrix)
 	//glUniform1i(mtexUniform, 0); //- setting texture unit 0
 
     for (RenderObject *obj : objectList) {
-        	
+        
+		if (obj->visible == false) continue;
+
         // get vertex positions into gpu
         // Bind vertex buffer object for triangle vertices
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[obj->animFrame]);

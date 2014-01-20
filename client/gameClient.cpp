@@ -12,8 +12,10 @@ gameClient::gameClient(gameRenderer *arenderer)
 	renderer = arenderer;
 	local_state = 0;
 
-	key_velx = 0.f;
-	key_vely = 0.f;
+	input = 0;
+	input_enable = true;
+	cam_bob_offset = 0.f;
+
 
 	////////////////////////////////////////////////////
 	// Initialize enet host, no connections is done yet
@@ -31,30 +33,6 @@ gameClient::gameClient(gameRenderer *arenderer)
         puts("An error occurred while trying to create an ENet client host.\n");
         exit (EXIT_FAILURE);
     }
-
-	//TEST: display stuff
-	/*        
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 50; j++) {
-        RenderObject *tmp = new RenderObject();
-        	
-        tmp->translation[1] += i*50.f;
-        tmp->translation[2] += j*50.f;
-        	
-        renderer->resources.getMesh(ResourceLoader::meshType::Crate)->addRenderObject(tmp);
-        }
-    }*/
-        
-    
-	/*soldiers = new RenderObject[30];
-    for (int i = 0; i < 30; i++) {       	
-        soldiers[i].rotation[0] += i*180.f;
-        	
-        soldiers[i].translation[1] += i*80.f;
-        soldiers[i].translation[0] += -200;
-        	
-        renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(&soldiers[i]);
-    }*/
 }
 
 
@@ -272,12 +250,36 @@ void gameClient::frame(double time_delta)
 	// move spectator camera
 	if (local_state == 1)
 	{
+		int key_vely = (input & INPUT_BACK ? 1 : 0) - (input & INPUT_FORW ? 1 : 0);
+		int key_velx = (input & INPUT_RIGHT ? 1 : 0) - (input & INPUT_LEFT ? 1 : 0);
+
 		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
 		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
 		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
 
 		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
 		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+	}
+	if (local_state == 2)
+	{
+		player_cl *pl = get_own_player();
+		if (pl == NULL) {log(LOG_ERROR, "Could not retreive own player!"); return;}
+
+		// give input to player
+		if (input != pl->input)
+		{
+			// update for this player and all others
+			pl->input = input;
+			net_send_input_keys(pl->id, input, serverpeer);
+		}
+
+
+		// stick camera to player
+		pl->ro->visible = false;
+
+		renderer->CameraPos.x = pl->position.x;
+		renderer->CameraPos.y = pl->position.y;
+		renderer->CameraPos.z = pl->position.z + CAMERA_VIEW_HEIGHT + cam_bob_offset;
 	}
 
 }
@@ -298,6 +300,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 				// send request to join
 				net_send_request_join(serverpeer);
 			}
+			if (local_state == 2)
+			{
+				// shoot
+			}
 		}
 	}
 	if (evt->type == SDL_KEYDOWN)
@@ -306,20 +312,28 @@ void gameClient::event_mouse(SDL_Event *evt)
 		{
 		case SDLK_a:
         case SDLK_LEFT:
-            key_velx = -1;
+            input |= INPUT_LEFT;
             break;
 		case SDLK_d:
         case SDLK_RIGHT:
-            key_velx =  1;
+            input |= INPUT_RIGHT;
             break;
 		case SDLK_w:
         case SDLK_UP:
-            key_vely = -1;
+            input |= INPUT_FORW;
             break;
 		case SDLK_s:
         case SDLK_DOWN:
-            key_vely =  1;
+            input |= INPUT_BACK;
             break;
+
+		case SDLK_RSHIFT:
+		case SDLK_LSHIFT:
+			input |= INPUT_SPRINT;
+			break;
+		case SDLK_SPACE:
+			input |= INPUT_JUMP;
+			break;
 		}
 	}
 	if (evt->type == SDL_KEYUP)
@@ -328,20 +342,28 @@ void gameClient::event_mouse(SDL_Event *evt)
 		{
 			case SDLK_a:
 			case SDLK_LEFT:
-				if( key_velx < 0 ) key_velx = 0;
+				input &= ~INPUT_LEFT;
 				break;
 			case SDLK_d:
 			case SDLK_RIGHT:
-				if( key_velx > 0 ) key_velx = 0;
+				input &= ~INPUT_RIGHT;
 				break;
 			case SDLK_w:
 			case SDLK_UP:
-				if( key_vely < 0 ) key_vely = 0;
+				input &= ~INPUT_FORW;
 				break;
 			case SDLK_s:
 			case SDLK_DOWN:
-				if( key_vely > 0 ) key_vely = 0;
+				input &= ~INPUT_BACK;
 				break;
+
+			case SDLK_RSHIFT:
+			case SDLK_LSHIFT:
+				input &= ~INPUT_SPRINT;
+				break;
+			case SDLK_SPACE:
+				input &= ~INPUT_JUMP;
+			break;
 		}
 	}
 }

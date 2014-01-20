@@ -7,15 +7,16 @@
 class player_cl : public player
 {
 public:
-	
+
+	RenderObject *ro;
+
 	player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
                const char *name, int state, int input, gameRenderer *arenderer);
 	virtual ~player_cl();
 
+
 protected:
 	gameRenderer *renderer;
-
-	RenderObject *ro;
 };
 
 

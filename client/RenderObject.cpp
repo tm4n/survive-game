@@ -17,6 +17,8 @@ RenderObject::RenderObject()
 	animFrame = 0;
 	animNextFrame = 0;
 	animProgress = 0.0f;
+
+	visible = true;
 }
 
 RenderObject::RenderObject(float *atranslation, float *arotation)
@@ -36,4 +38,6 @@ RenderObject::RenderObject(float *atranslation, float *arotation)
 	animFrame = 0;
 	animNextFrame = 0;
 	animProgress = 0.0f;
+
+	visible = true;
 }

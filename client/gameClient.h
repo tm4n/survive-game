@@ -5,11 +5,14 @@
 #include "gameRenderer.h"
 #include "player_cl.h"
 
+#define CAMERA_VIEW_HEIGHT 1
+
 class gameClient : public game
 {
 public:
 	ENetPeer *serverpeer;
 
+	bool input_enable;
 	uint local_state;
 	uint own_actor_id;
 
@@ -29,7 +32,8 @@ public:
 private:
 	gameRenderer *renderer;
 
-	float key_velx, key_vely;
+	int input;
+	float cam_bob_offset;
 
 };
 

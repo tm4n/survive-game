@@ -31,13 +31,14 @@
 #define NET_JOIN 21
 
 
-// #define NET_INPUT
+#define NET_INPUT_KEYS 40
 
 #define NET_UPDATE_STATE 50
 #define NET_UPDATE_TARGET 51
 #define NET_UPDATE_POS 52
-#define NET_UPDATE_HEALTH 53
-#define NET_UPDATE_WEAPON 54
+#define NET_UPDATE_ANG 53
+#define NET_UPDATE_HEALTH 54
+#define NET_UPDATE_WEAPON 55
 
 
 extern ENetHost *gEhost;
@@ -88,6 +89,13 @@ struct s_net_join
 };
 
 // value updates
+
+struct s_net_input_keys
+{
+	uint32_t actor_id;
+	int32_t input;
+};
+
 struct s_net_update_state
 {
     uint32_t actor_id;
@@ -103,12 +111,18 @@ struct s_net_update_target
 struct s_net_update_pos
 {
     uint32_t actor_id;
-    float x, y;
+    vec pos;
+};
+
+struct s_net_update_ang
+{
+    uint32_t actor_id;
+    float ang;
 };
 
 struct s_net_update_health
 {
-    uint actor_id;
+    uint32_t actor_id;
     uint32_t health;
 };
 
@@ -119,6 +133,8 @@ extern bool net_local_only;
 
 ////////////////////////////////////////////////
 // network helper functions, both client and server
+int net_send_input_keys(uint actor_id, int input, ENetPeer *);
+int net_send_update_ang(uint actor_id, float ang, ENetPeer *);
 
 int net_send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *);
 int net_broadcast_event(uint16_t evtype, const char *data, uint32_t size, ENetHost *);
