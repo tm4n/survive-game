@@ -427,6 +427,8 @@ void gameServer::handle_netevent(ENetEvent *event)
 							
 							// send update
 							net_send_join(pl->id, event->peer);
+							
+							pd->clstate = 2;
 						}
 						else log(LOG_WARNING, "NET_REQUEST_JOIN not granted");
 						
@@ -439,6 +441,8 @@ void gameServer::handle_netevent(ENetEvent *event)
 						s_net_input_keys *d = (s_net_input_keys *)data;
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						printf("input keys mit: %i und %i", d->actor_id, pd->player_actor_id);
 						
 						if (d->actor_id == pd->player_actor_id)
 						{

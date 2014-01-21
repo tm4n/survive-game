@@ -26,3 +26,9 @@ player_sv::~player_sv()
 {
     log(LOG_DEBUG_VERBOSE, "player_sv: deleting player");
 }
+
+
+void player_sv::frame(double time_delta)
+{
+	movement(time_delta);
+}

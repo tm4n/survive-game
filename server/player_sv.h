@@ -18,7 +18,7 @@ class player_sv : public player
 
         virtual ~player_sv();
 
-        //virtual void frame (double time_delta);
+        virtual void frame (double time_delta);
     protected:
 
     private:

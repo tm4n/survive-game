@@ -13,6 +13,9 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
 
     strncpy(this->name, name, 32);
     this->name[31] = '\0';
+    
+    input = 0;
+    move_force.zero();
 }
 
 
@@ -30,7 +33,9 @@ player::player(level *lvl,
     strncpy(this->name, name, 32);
     this->name[31] = '\0';
 
+	move_force.zero();
 	bb_max.x = 1;
+	bb_min.x = -1;
 }
 
 

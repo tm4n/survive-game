@@ -61,6 +61,7 @@ int net_broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, c
     s.actor_id = actor_id;
 	s.pos.set(pos);
 	s.ang.set(ang);
+	s.health = health;
 	strncpy((char*)s.name, name, 32);
 	s.name[31] = '\0';
 	s.state = state;
