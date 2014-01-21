@@ -281,6 +281,7 @@ void gameClient::frame(double time_delta)
 				// update for this player and all others
 				pl->input = input;
 				net_send_input_keys(pl->id, input, serverpeer);
+				printf("send keys for player with id=%i\n", pl->id);
 			}
 
 		}
