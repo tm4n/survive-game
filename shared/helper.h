@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#define clamp(x, a, b) (x > b ? b : (x < a ? a : b))
+
 void get_workdir(std::string *out);
 
 void get_savedir(const char *account_name, std::string *out);

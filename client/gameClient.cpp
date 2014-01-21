@@ -265,21 +265,25 @@ void gameClient::frame(double time_delta)
 		player_cl *pl = get_own_player();
 		if (pl == NULL) {log(LOG_ERROR, "Could not retreive own player!"); return;}
 
-		// give input to player
-		if (input != pl->input)
-		{
-			// update for this player and all others
-			pl->input = input;
-			net_send_input_keys(pl->id, input, serverpeer);
-		}
-
-
 		// stick camera to player
 		pl->ro->visible = false;
 
 		renderer->CameraPos.x = pl->position.x;
 		renderer->CameraPos.y = pl->position.y;
-		renderer->CameraPos.z = pl->position.z + CAMERA_VIEW_HEIGHT + cam_bob_offset;
+		renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
+
+		// only when player is alive
+		if (pl->health > 0.f)
+		{
+			// give input to player
+			if (input != pl->input)
+			{
+				// update for this player and all others
+				pl->input = input;
+				net_send_input_keys(pl->id, input, serverpeer);
+			}
+
+		}
 	}
 
 }
@@ -302,7 +306,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			}
 			if (local_state == 2)
 			{
-				// shoot
+				// TODO: shoot
 			}
 		}
 	}

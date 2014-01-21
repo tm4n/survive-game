@@ -31,6 +31,8 @@ class player : public actor
                const char *name, int state, int input);
         virtual ~player();
 
+		void movement(float time_step);
+
     protected:
     private:
 };

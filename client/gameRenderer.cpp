@@ -30,7 +30,7 @@ gameRenderer::gameRenderer()
 	{
 		std::cout << "SDL Error on creating OpenGL context: " << SDL_GetError() << std::endl;
 		std::cout << "Your graphics card may not support OpenGL Version 2.1. You might want to try to update your graphics driver." << std::endl;
-		std::cout << "NOT supported are Intel GMA graphics cards." << std::endl;
+		std::cout << "NOT supported are old Intel GMA graphics cards." << std::endl;
 		exit(-3);
 	}
 
@@ -52,7 +52,7 @@ gameRenderer::gameRenderer()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	float ratio = 16.f/9.f;
-	mProjMatrix = glm::perspective(80.f, ratio, 2.f, 6000.f);
+	mProjMatrix = glm::perspective(70.f, ratio, 2.f, 6000.f);
 
 	// load all resources
 	resources.load();

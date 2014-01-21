@@ -19,7 +19,7 @@ level::level(const char *afilename)
 
     strncpy(this->filename, afilename, 256);
     
-	border_ground = -295.f;
+	border_ground = -295.f; // -240
 	border_height = 1400.f;
 	border_max = 2000.f;
 	border_min = -2000.f;
