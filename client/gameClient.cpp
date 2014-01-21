@@ -287,6 +287,16 @@ void gameClient::frame(double time_delta)
 		}
 	}
 
+
+	if (lvl != NULL)
+	{
+		// callback to entity actions!
+		for (uint i = 0; i < lvl->actorlist.size; i++)
+		{
+			if (lvl->actorlist.elem[i] != 0) lvl->actorlist.elem[i]->frame(time_delta);
+		}
+	}
+
 }
 
 void gameClient::event_mouse(SDL_Event *evt)

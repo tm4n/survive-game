@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 			}
 		}
 		
-		if (cl) cl->frame(0.0);
+		if (cl) cl->frame(0.1);
 
 		renderer->drawFrame();
 

@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#define clamp(x, a, b) (x > b ? b : (x < a ? a : b))
+#define clamp(x, a, b) (x > b ? b : (x < a ? a : x))
 
 void get_workdir(std::string *out);
 

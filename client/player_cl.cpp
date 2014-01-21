@@ -23,3 +23,9 @@ player_cl::~player_cl()
 	delete ro;
 }
 
+
+void player_cl::frame(double time_delta)
+{
+	movement(time_delta);
+}
+

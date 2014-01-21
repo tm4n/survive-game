@@ -14,6 +14,8 @@ public:
                const char *name, int state, int input, gameRenderer *arenderer);
 	virtual ~player_cl();
 
+	virtual void frame(double time_delta);
+
 
 protected:
 	gameRenderer *renderer;
