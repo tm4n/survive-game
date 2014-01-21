@@ -25,7 +25,6 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
     if (pos != NULL) move(pos); else position.zero();
     if (pan != NULL) turn(pan); else angle.zero();
 
-    move_force = 0;
 	move_speed = 1; // default move speed
 	state = 0;
 }
@@ -43,7 +42,6 @@ actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
     if (pos != NULL) move(pos); else position.zero();
     if (pan != NULL) turn(pan); else angle.zero();
     
-	move_force = 0;
 	move_speed = 1; // default move speed
 	state = 0;
 }
@@ -133,12 +131,16 @@ float actor::move_rel_col(vec *reldir)
 			}
 		}
 		if (col_move_world.z < 0) 
+		{
 			if (col_move_border_min.z-bb_min.z > position.z + col_move_world.z) position.z = col_move_border_min.z-bb_min.z;
 				else {position.z += col_move_world.z; col_move_nearest[2] = NULL;} 
+		}
 				
-		if (col_move_world.z > 0) 
+		if (col_move_world.z > 0)
+		{
 			if (col_move_border_max.z-bb_max.z < position.z + col_move_world.z) position.z = col_move_border_max.z-bb_max.z;
 				else {position.z += col_move_world.z; col_move_nearest[2] = NULL;} 
+		}
 		
 		//if (col_move_world.z < 0) my.z = maxv(col_move_border_min.z-my.min_z, my.z + col_move_world.z);
 		//if (col_move_world.z > 0) my.z = minv(col_move_border_max.z-my.max_z, my.z + col_move_world.z);
@@ -173,12 +175,16 @@ float actor::move_rel_col(vec *reldir)
 			}
 		}
 		if (col_move_world.x < 0) 
+		{
 			if (col_move_border_min.x-bb_min.x > position.x + col_move_world.x) position.x = col_move_border_min.x-bb_min.x;
 				else {position.x += col_move_world.x; col_move_nearest[0] = NULL;} 
+		}
 				
 		if (col_move_world.x > 0) 
+		{
 			if (col_move_border_max.x-bb_max.x < position.x + col_move_world.x) position.x = col_move_border_max.x-bb_max.x;
 				else {position.x += col_move_world.x; col_move_nearest[0] = NULL;} 
+		}
 		
 		//if (col_move_world.x < 0) my.x = maxv(col_move_border_min.x-my.min_x, my.x + col_move_world.x);
 		//if (col_move_world.x > 0) my.x = minv(col_move_border_max.x-my.max_x, my.x + col_move_world.x);
@@ -212,13 +218,17 @@ float actor::move_rel_col(vec *reldir)
 				}
 			}
 		}
-		if (col_move_world.y < 0) 
+		if (col_move_world.y < 0)
+		{
 			if (col_move_border_min.y-bb_min.y > position.y + col_move_world.y) position.y = col_move_border_min.y-bb_min.y;
 				else {position.y += col_move_world.y; col_move_nearest[1] = NULL;} 
+		}
 				
 		if (col_move_world.y > 0) 
+		{
 			if (col_move_border_max.y-bb_max.y < position.y + col_move_world.y) position.y = col_move_border_max.y-bb_max.y;
 				else {position.y += col_move_world.y; col_move_nearest[1] = NULL;} 
+		}
 		
 		//if (col_move_world.y < 0) my.y = maxv(col_move_border_min.y-my.min_y, my.y + col_move_world.y);
 		//if (col_move_world.y > 0) my.y = minv(col_move_border_max.y-my.max_y, my.y + col_move_world.y);
