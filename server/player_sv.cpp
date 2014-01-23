@@ -32,5 +32,5 @@ player_sv::~player_sv()
 
 void player_sv::frame(double time_delta)
 {
-	movement(time_delta);
+	movement((float)time_delta);
 }

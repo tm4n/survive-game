@@ -2,11 +2,9 @@
 
 using namespace std;
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 #include "Timer.h"
-
-#include <pthread.h>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -82,9 +80,6 @@ void gameServer::clean_up()
 {
     // close net
     enet_deinitialize();
-
-    //Quit SDL
-    SDL_Quit();
 }
 
 
@@ -398,7 +393,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 						{
 							// safe player
 							pd->player_name = new char[length+1];
-							strncpy(pd->player_name, data, length);
+							strncpy(pd->player_name, data, length+1);
 							
 							// start syncing player
 							synchronizeClient(event->peer);
@@ -408,6 +403,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 						else
 						{
 							// TODO: malicious client!
+							log(LOG_ERROR, "Too long player name received!");
 						}
                     	
 

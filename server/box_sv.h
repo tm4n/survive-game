@@ -7,9 +7,10 @@ class box_sv : public box
 {
 
 public:
-	box_sv(level *, char box_type, vec *, float health);
+	box_sv(level *, char box_type, vec *);
 	~box_sv();
-	
+
+	virtual void frame(double time_delta);
 protected:
 	
 private:

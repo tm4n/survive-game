@@ -34,7 +34,7 @@ void net_cl::host_connect (const ENetAddress *address, size_t channelCount, enet
 // special send functions for client
 int net_cl::send_sync_client(const char *name, ENetPeer *receiver)
 {
-	return send_event(NET_SYNC_CLIENT, name, strlen(name), receiver);
+	return send_event(NET_SYNC_CLIENT, name, strlen(name)+1, receiver);
 }
 
 int net_cl::send_request_join(ENetPeer *receiver)

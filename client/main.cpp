@@ -7,6 +7,7 @@
 #include "GUI.h"
 #include "Menu.h"
 #include "net.h"
+#include "Timer.h"
 #include <thread>
 
 
@@ -61,9 +62,15 @@ int main(int argc, char **argv)
 	playCallback *pcb = new playCallback();
 	menu = new Menu(renderer->gui, &renderer->resources, pcb);
 
+	// Timer used to calculate time_delta (frame time)
+    Timer frametime;
+	double time_delta = 0.;
+
 	int fct = 0;
 	while (!quit)
 	{
+		frametime.start();
+
 		Uint32 t = SDL_GetTicks();
 		SDL_Event evt;
 		while( SDL_PollEvent(&evt) )
@@ -97,12 +104,14 @@ int main(int argc, char **argv)
 			}
 		}
 		
-		if (cl) cl->frame(0.1);
+		if (cl) cl->frame(time_delta);
 
 		renderer->drawFrame();
 
 		//if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
 		fct++;
+
+		time_delta = ((double)frametime.get_ticks()) / (1000./16.);
 	}
 
 	if (sv != NULL)

@@ -142,7 +142,7 @@ struct s_net_update_ang
 struct s_net_update_health
 {
     uint32_t actor_id;
-    uint32_t health;
+    float health;
 };
 
 extern bool enet_initialized;
@@ -157,7 +157,7 @@ public:
 	bool local_only;
 	bool is_server;
 	
-	ENetHost *eHost = NULL;	
+	ENetHost *eHost;
 	
 	ENetHost *host_create(const ENetAddress *address, size_t peerCount, size_t channelLimit, enet_uint32 incomingBandwidth, enet_uint32 outgoingBandwidth);
 	void host_destroy();
@@ -174,7 +174,7 @@ public:
 	int broadcast_event_except(uint16_t evtype, const char *data, uint32_t size, ENetPeer *expeer);
 	
 protected:
-	bool net_local_only = true;
+	bool net_local_only;
 	std::list<ENetPacket*> *in_queue;
 	std::list<ENetPacket*> *out_queue;
 	std::mutex *mutex_in_queue;

@@ -17,8 +17,16 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
     input = 0;
     move_force.zero();
     ang_interp_dir = 0.f;
-    weapon = 0.f;
+    weapon = 0;
     object_taken = -1;
+
+	bb_max.x = 23.f;
+	bb_max.y = 23.f;
+	bb_min.x = -23.f;
+	bb_min.y = -23.f;
+
+	bb_min.z = -32.f;
+	bb_max.z = 40.f;
 }
 
 
@@ -40,8 +48,15 @@ player::player(level *lvl,
 	move_force.zero();
 	ang_interp_dir = 0.f;
 	object_taken = -1;
-	bb_max.x = 1;
-	bb_min.x = -1;
+
+	bb_max.x = 23.f;
+	bb_max.y = 23.f;
+	bb_min.x = -23.f;
+	bb_min.y = -23.f;
+
+	bb_min.z = -32.f;
+	bb_max.z = 40.f;
+
 }
 
 

@@ -49,15 +49,15 @@ public:
 	void log(int, const char *);
 	
 	
-	int sv_spawned_npcs = 0;  // number of spawned npcs this round
-	int sv_amount_npcs = 0;  // number of npcs to spawn this round
-	int sv_num_npcs = 0;  // number of npcs currently alive
+	int sv_spawned_npcs;  // number of spawned npcs this round
+	int sv_amount_npcs;  // number of npcs to spawn this round
+	int sv_num_npcs;  // number of npcs currently alive
 
-	int sv_num_barriers = 0;
+	int sv_num_barriers;
 
-	float sv_spawn_timer = 0;
-	float sv_spawn_cap = 0;
-	float sv_barrier_timer = 0;
+	float sv_spawn_timer;
+	float sv_spawn_cap;
+	float sv_barrier_timer;
 
 private:
     bool init();

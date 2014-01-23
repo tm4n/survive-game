@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include "defs.h"
+#include "helper.h"
 #include "stdio.h"
 
 
@@ -73,8 +74,8 @@ void actor::move(vec *newpos)
 
 void actor::move_rel(vec *force)
 {
-    position.x += force->x * (float)cos(angle.x*M_PI/180.);
-    position.y += force->x * (float)sin(angle.x*M_PI/180.);
+    position.x += force->x * (float)cos(toRadians(angle.x));
+    position.y += force->x * (float)sin(toRadians(angle.x));
 }
 
 float actor::move_rel_col(vec *reldir)
@@ -84,8 +85,8 @@ float actor::move_rel_col(vec *reldir)
 	ch_old_pos.set(&position);
 	
 	// convert to world space
-	col_move_world.x = cos(angle.x)*reldir->x + cos(angle.x+90.f)*reldir->y;
-	col_move_world.y = sin(angle.x)*reldir->x + sin(angle.x+90.f)*reldir->y;
+	col_move_world.x = cos(toRadians(angle.x))*reldir->x + cos(toRadians(angle.x+90.f))*reldir->y;
+	col_move_world.y = sin(toRadians(angle.x))*reldir->x + sin(toRadians(angle.x+90.f))*reldir->y;
 	col_move_world.z = reldir->z;
 	
 	col_move_border_min.set(lvl->border_min, lvl->border_min, lvl->border_ground);

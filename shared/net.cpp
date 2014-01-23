@@ -11,6 +11,7 @@ bool enet_initialized;
 
 net::net()
 {
+	eHost = NULL;
 	local_only = false;
 	is_server = false;
 	
@@ -27,6 +28,7 @@ net::net()
 
 net::net(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue)
 {
+	eHost = NULL;
 	local_only = true;
 	is_server = false;
 	
