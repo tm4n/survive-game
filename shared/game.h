@@ -16,6 +16,7 @@ class game
 
 public:
 	game();
+	virtual ~game();
 
     level *lvl;
 

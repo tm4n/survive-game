@@ -1,10 +1,13 @@
 #ifndef __NET_H__
 #define __NET_H__
 
+#include "flist.h"
 #include "defs.h"
 #include "enet/enet.h"
 #include "vec.h"
 #include <cstdint>
+#include <list>
+#include <mutex>
 
 ////////////////////////////////////////////////
 // package type defines
@@ -32,6 +35,8 @@
 
 
 #define NET_INPUT_KEYS 40
+#define NET_TAKE 41
+#define NET_SHOOT 42
 
 #define NET_UPDATE_STATE 50
 #define NET_UPDATE_TARGET 51
@@ -41,6 +46,11 @@
 #define NET_UPDATE_WEAPON 55
 
 
+
+extern std::list<ENetPacket*> to_cl_queue;
+extern std::list<ENetPacket*> to_sv_queue;
+extern std::mutex mutex_cl_queue;
+extern std::mutex mutex_sv_queue;
 extern ENetHost *gEhost;
 
 ////////////////////////////////////////////////
@@ -66,8 +76,9 @@ struct s_net_sync_player
 	vec ang;
 	float health;
     int8_t name[32];
-	int32_t state;
+	int32_t weapon;
 	int32_t input;
+	uint32_t object_taken;
 };
 
 struct s_net_sync_box
@@ -96,6 +107,13 @@ struct s_net_input_keys
 	int32_t input;
 };
 
+struct s_net_shoot
+{
+	uint32_t actor_id;
+	vec shoot_dir;
+	int32_t rnd_seed;
+};
+
 struct s_net_update_state
 {
     uint32_t actor_id;
@@ -118,6 +136,7 @@ struct s_net_update_ang
 {
     uint32_t actor_id;
     float ang;
+    float ang_interp_dir;
 };
 
 struct s_net_update_health
@@ -126,17 +145,49 @@ struct s_net_update_health
     uint32_t health;
 };
 
-///////////////////////////////////////////////
-// global variables
-extern bool net_local_only;
+extern bool enet_initialized;
+
+class net
+{
+public:
+	net();
+	net(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
+	virtual ~net();
+	
+	bool local_only;
+	bool is_server;
+	
+	ENetHost *eHost = NULL;	
+	
+	ENetHost *host_create(const ENetAddress *address, size_t peerCount, size_t channelLimit, enet_uint32 incomingBandwidth, enet_uint32 outgoingBandwidth);
+	void host_destroy();
+	int host_service (ENetEvent *event, enet_uint32 timeout);
+	void host_connect (const ENetAddress *address, size_t channelCount, enet_uint32 data);
+	
+	// networking functions
+	int send_input_keys(uint actor_id, int input, ENetPeer *);
+	int send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
+	int send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver);
+
+	int send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *);
+	int broadcast_event(uint16_t evtype, const char *data, uint32_t size);
+	int broadcast_event_except(uint16_t evtype, const char *data, uint32_t size, ENetPeer *expeer);
+	
+protected:
+	bool net_local_only = true;
+	std::list<ENetPacket*> *in_queue;
+	std::list<ENetPacket*> *out_queue;
+	std::mutex *mutex_in_queue;
+	std::mutex *mutex_out_queue;
+	
+	ENetPeer *local_peer;
+private:
+	
+};
 
 
 ////////////////////////////////////////////////
 // network helper functions, both client and server
-int net_send_input_keys(uint actor_id, int input, ENetPeer *);
-int net_send_update_ang(uint actor_id, float ang, ENetPeer *);
 
-int net_send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *);
-int net_broadcast_event(uint16_t evtype, const char *data, uint32_t size, ENetHost *);
 
 #endif

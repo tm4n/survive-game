@@ -16,24 +16,30 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
     
     input = 0;
     move_force.zero();
+    ang_interp_dir = 0.f;
+    weapon = 0.f;
+    object_taken = -1;
 }
 
 
 player::player(level *lvl, 
 			   uint actor_id, vec *pos, vec *ang, float health,
-               const char *name, int state, int input)
+               const char *name, int weapon, int input, int object_taken)
 
                : actor(lvl, actor_id, ACTOR_TYPE_PLAYER, pos, ang)
 {
 	this->health = health;
 
-	this->state = state;
+	this->weapon = weapon;
 	this->input = input;
+	this->object_taken = object_taken;
 
     strncpy(this->name, name, 32);
     this->name[31] = '\0';
 
 	move_force.zero();
+	ang_interp_dir = 0.f;
+	object_taken = -1;
 	bb_max.x = 1;
 	bb_min.x = -1;
 }

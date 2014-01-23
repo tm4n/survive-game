@@ -11,7 +11,7 @@ public:
 	RenderObject *ro;
 
 	player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
-               const char *name, int state, int input, gameRenderer *arenderer);
+               const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer);
 	virtual ~player_cl();
 
 	virtual void frame(double time_delta);

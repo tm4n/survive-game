@@ -19,8 +19,14 @@ class player : public actor
     public:
 
         int input;
+        
+        int weapon;
+        
+        int object_taken;
 
         char name[32];
+        
+        float ang_interp_dir;
 		
 
 
@@ -28,7 +34,7 @@ class player : public actor
                const char *name);
 		player(level *, 
 			   uint actor_id, vec *pos, vec *pan, float health,
-               const char *name, int state, int input);
+               const char *name, int weapon, int input, int object_taken);
         virtual ~player();
 
 		void movement(float time_step);

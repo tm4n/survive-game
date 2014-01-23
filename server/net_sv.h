@@ -13,29 +13,38 @@ struct s_peer_data
     char *player_name;
 };
 
-///////////////////////////////////////////////
-// special send functions for server
+class net_sv : public net
+{
+public:
+	
+	net_sv();
+	net_sv(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
+	
+	///////////////////////////////////////////////
+	// special send functions for server
 
-int net_send_version(int version, ENetPeer *receiver);
-int net_send_sync_server(const char *mapfile, ENetPeer *receiver);
+	int send_version(int version, ENetPeer *receiver);
+	int send_sync_server(const char *mapfile, ENetPeer *receiver);
 
-int net_broadcast_chat(const char* msg, uint len);
+	int broadcast_chat(const char* msg, uint len);
 
-int net_send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int state, int input, ENetPeer *receiver);
-int net_broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int state, int input);
+	int send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken, ENetPeer *receiver);
+	int broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken);
 
-int net_send_sync_box(uint actor_id, vec *pos, float health, ENetPeer *receiver);
-int net_broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health);
+	int send_sync_box(uint actor_id, vec *pos, float health, ENetPeer *receiver);
+	int broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health);
 
-int net_send_sync_finish(ENetPeer *receiver);
+	int send_sync_finish(ENetPeer *receiver);
 
-int net_broadcast_remove_actor(uint actor_id);
+	int broadcast_remove_actor(uint actor_id);
 
-int net_send_join(uint own_actor_id, ENetPeer *receiver);
+	int send_join(uint own_actor_id, ENetPeer *receiver);
 
-int net_send_update_state(uint actor_id, ushort state, ENetPeer *receiver);
-int net_send_update_target(uint actor_id, uint target, ENetPeer *receiver);
-int net_send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver);
-int net_send_update_health(uint actor_id, float health, ENetPeer *receiver);
+	int send_update_target(uint actor_id, uint target, ENetPeer *receiver);
+	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
+};
+
+
+extern net_sv *net_server;
 
 #endif // __NET_SV_H__

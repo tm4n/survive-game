@@ -6,11 +6,11 @@ box_sv::box_sv(level *lvl, char abox_type, vec *pos, float ahealth)
 {
 	//lvl_sv = lvl;
 	// send creation to all connected players
-	net_broadcast_sync_box(id, abox_type, pos, ahealth);
+	net_server->broadcast_sync_box(id, abox_type, pos, ahealth);
 }
 
 box_sv::~box_sv()
 {
 	// notify of removal
-	net_broadcast_remove_actor(id);
+	net_server->broadcast_remove_actor(id);
 }

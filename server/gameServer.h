@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+#include <mutex>
 #include <set>
 
 // enum defines
@@ -29,11 +30,16 @@ public:
 
     bool quit; // Quit flag
     long frame; // number of frames already rendered
+    
+    flist<ENetPeer> peers;
 
     level_sv *lvl_sv;
 
-    gameServer(bool);
+    gameServer();
+    gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
     virtual ~gameServer();
+    
+    void run();
 
     void synchronizeClient(ENetPeer *receiver);
 	void handle_netevent(ENetEvent *event);

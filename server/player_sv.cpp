@@ -11,6 +11,8 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 {
 
     this->owner = owner;
+    
+    ang_count = 999;
 
 
     std::ostringstream s;
@@ -19,7 +21,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 
     log(LOG_DEBUG_VERBOSE, s.str().c_str());
     
-    net_broadcast_sync_player(id, pos, ang, health, name, state, input);
+    net_server->broadcast_sync_player(id, pos, ang, health, name, weapon, input, object_taken);
 }
 
 player_sv::~player_sv()

@@ -1,8 +1,8 @@
 #include "player_cl.h"
 
 player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
-               const char *name, int state, int input, gameRenderer *arenderer)
-	: player(lvl, actor_id, pos, ang, health, name, state, input)
+               const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer)
+	: player(lvl, actor_id, pos, ang, health, name, weapon, input, object_taken)
 {
 	renderer = arenderer;
 

@@ -4,23 +4,25 @@
 #include "game.h"
 #include "gameRenderer.h"
 #include "player_cl.h"
+#include "net_cl.h"
 
 #define CAMERA_VIEW_HEIGHT 1
 
 class gameClient : public game
 {
 public:
-	ENetPeer *serverpeer;
 
 	bool input_enable;
 	uint local_state;
 	uint own_actor_id;
 
 	gameClient(gameRenderer *arenderer);
+	~gameClient();
 
 	void handle_netevent(ENetEvent *event);
 
 	bool connect(const char *ip, int port);
+	bool connect(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
 	void disconnect();
 
 	void event_mouse(SDL_Event *evt);

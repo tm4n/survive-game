@@ -15,24 +15,11 @@ gameClient::gameClient(gameRenderer *arenderer)
 	input = 0;
 	input_enable = true;
 	cam_bob_offset = 0.f;
+}
 
-
-	////////////////////////////////////////////////////
-	// Initialize enet host, no connections is done yet
-    // Create enet client
-	serverpeer = NULL;
-
-    gEhost = enet_host_create (NULL /* create a client host */,
-                1 /* only allow 1 outgoing connection */,
-                2 /* allow up 2 channels to be used, 0 and 1 */,
-                0 /* no downstream limit */,
-                0 /* no upstream limit */);
-
-    if (gEhost == NULL)
-    {
-        puts("An error occurred while trying to create an ENet client host.\n");
-        exit (EXIT_FAILURE);
-    }
+gameClient::~gameClient()
+{
+	if (net_client != NULL) delete net_client;
 }
 
 
@@ -43,6 +30,7 @@ void gameClient::handle_netevent(ENetEvent *event)
     {
 		case ENET_EVENT_TYPE_CONNECT:
 		{
+			// not called on local network
 			log(LOG_DEBUG, "Connection successfull, waiting for server version.");
 
 			break;
@@ -50,6 +38,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 		case ENET_EVENT_TYPE_DISCONNECT:
 		{
+			// not called on local network
+			
 			event->peer->data = NULL;
 
 			log(LOG_DEBUG, "disconnect event.");
@@ -64,10 +54,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 		case ENET_EVENT_TYPE_RECEIVE:
 		{
-			printf ("A packet of length %lu, event %d, was received from %s on channel %u.\n",
+			printf ("A packet of length %lu, event %d, was received on channel %u.\n",
 					event->packet -> dataLength,
 					*((short*) event->packet->data),
-					(char*)(event->peer -> data),
 					event->channelID);
 
 
@@ -98,7 +87,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						else
 						{
 							// send my name
-							net_send_sync_client("Player1", event->peer);
+							net_client->send_sync_client("Player1", event->peer);
 						}
 
 						break;
@@ -120,8 +109,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 						if (lvl != NULL)
 						{
-							// create a box at given position
-							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, (char*)d->name, d->state, d->input, renderer);
+							// create a player at given position
+							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, (char*)d->name, d->weapon, d->input, d->object_taken, renderer);
 						}
 						else log(LOG_ERROR, "Receiver NET_SYNC_PLAYER without level");
 
@@ -202,41 +191,96 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 }
 
+bool gameClient::connect(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue)
+{
+	// connect to local server
+	
+	////////////////////////////////////////////////////
+	// Initialize enet host, no connections is done yet
+    // Create enet client
+    net_client = new net_cl(in_queue, mutex_in_queue, out_queue, mutex_out_queue);
+
+    net_client->host_create (NULL /* create a client host */,
+                1 /* only allow 1 outgoing connection */,
+                2 /* allow up 2 channels to be used, 0 and 1 */,
+                0 /* no downstream limit */,
+                0 /* no upstream limit */);
+
+    if (net_client->eHost == NULL)
+    {
+        puts("An error occurred while trying to create an local client host.\n");
+        exit (EXIT_FAILURE);
+    }
+
+	///////////////////////////////////////////////////
+	/* Connect to a server */
+	state = 0;
+
+	log(LOG_DEBUG, "Connecting to local server...");
+
+	/* Initiate the connection, allocating one channel. */
+	net_client->host_connect (NULL, 1, 0);
+
+	return(true);
+}
+
 
 bool gameClient::connect(const char *ip, int port)
 {
+	// connect to networked server
+	
+	////////////////////////////////////////////////////
+	// Initialize enet host, no connections is done yet
+    // Create enet client
+    net_client = new net_cl();
+
+    net_client->host_create (NULL /* create a client host */,
+                1 /* only allow 1 outgoing connection */,
+                2 /* allow up 2 channels to be used, 0 and 1 */,
+                0 /* no downstream limit */,
+                0 /* no upstream limit */);
+
+    if (net_client->eHost == NULL)
+    {
+        puts("An error occurred while trying to create an ENet client host.\n");
+        exit (EXIT_FAILURE);
+    }
+	
 	//v(mouse_mode) = 4;
 
 	ENetAddress address;
 
 	///////////////////////////////////////////////////
-    /* Connect to a server */
+	/* Connect to a server */
 	state = 0;
 
-    enet_address_set_host (&address, ip);
-    address.port = port;
+	enet_address_set_host (&address, ip);
+	address.port = port;
 
 	log(LOG_DEBUG, "Connecting to server...");
 
-    /* Initiate the connection, allocating one channel. */
-    serverpeer = enet_host_connect (gEhost, &address, 1, 0);
+	/* Initiate the connection, allocating one channel. */
+	net_client->host_connect (&address, 1, 0);
 
-    if (serverpeer == NULL)
-    {
-       log(LOG_ERROR, "No available peers for initiating an ENet connection.");
+	if (net_client->serverpeer == NULL)
+	{
+	   log(LOG_ERROR, "No available peers for initiating an ENet connection.");
 	   return(false);
-       //exit (EXIT_FAILURE);
-    }
+	   //exit (EXIT_FAILURE);
+	}
 	return(true);
 }
 
 
 void gameClient::disconnect()
 {
-	// disconnect from server after all packages been send
-	enet_peer_disconnect_later(serverpeer, 0);
+	if (net_client->local_only == false)
+	{
+		// disconnect from server after all packages been send
+		enet_peer_disconnect_later(net_client->serverpeer, 0);
 
-	// wait for event
+		// wait for event
+	}
 }
 
 
@@ -244,7 +288,7 @@ void gameClient::frame(double time_delta)
 {
 	// Handle packages
 	ENetEvent event;
-	while (enet_host_service (gEhost, &event, 0) > 0)
+	while (net_client->host_service (&event, 0) > 0)
 			handle_netevent(& event);
 
 	// move spectator camera
@@ -280,7 +324,7 @@ void gameClient::frame(double time_delta)
 			{
 				// update for this player and all others
 				pl->input = input;
-				net_send_input_keys(pl->id, input, serverpeer);
+				net_client->send_input_keys(pl->id, input, net_client->serverpeer);
 				printf("send keys for player with id=%i\n", pl->id);
 			}
 
@@ -313,7 +357,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			if (local_state == 1)
 			{
 				// send request to join
-				net_send_request_join(serverpeer);
+				net_client->send_request_join(net_client->serverpeer);
 			}
 			if (local_state == 2)
 			{

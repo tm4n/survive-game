@@ -2,14 +2,22 @@
 #include "SDL2/SDL_timer.h"
 #undef main
 #include "gameClient.h"
+#include "../server/gameServer.h"
 #include "gameRenderer.h"
 #include "GUI.h"
 #include "Menu.h"
+#include "net.h"
+#include <thread>
 
 
 gameClient *cl = NULL;
+std::thread svthread;
+gameServer *sv = NULL;
 gameRenderer *renderer = NULL;
 Menu *menu = NULL;
+
+std::mutex m1, m2;
+std::list<ENetPacket*> l1, l2;
 
 // Callback classes
 class playCallback : public GUICallback {
@@ -19,20 +27,30 @@ class playCallback : public GUICallback {
 
 };
 
+void thread_sv()
+{
+	sv = new gameServer(&l1, &m1, &l2, &m2);
+	sv->run();
+	delete sv;
+	sv = NULL;
+}
+
 
 void playCallback::callback(int obj_id)
 {
 	menu->hide();
 	
+	// start server thread
+	svthread = std::thread(thread_sv);
+	
+	// start client in this thread
 	cl = new gameClient(renderer);
-	cl->connect("192.168.0.20", 1201);
+	cl->connect(&l2, &m2, &l1, &m1);
 }
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char **argv)
 {
-	if (enet_initialize() != 0) exit(1);
-
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) exit(1);
 
 	bool quit = false;
@@ -87,9 +105,18 @@ int main(int argc, char **argv)
 		fct++;
 	}
 
+	if (sv != NULL)
+	{
+		sv->quit = true;
+		svthread.join();
+		delete sv;
+	}
+
 	delete renderer;
 
 	SDL_Quit();
+	
+	if (cl) delete cl;
 
 	return 0;
 }

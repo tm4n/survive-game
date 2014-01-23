@@ -27,18 +27,38 @@ void encode_85(char *buf, const unsigned char *data, int bytes);
 int decode_85(char *dst, const char *buffer, int len);
 
 
+gameServer::gameServer()
+{
+	// create networked game server
+	net_server = new net_sv();
+	
+	//Initialize
+    if( init() == false )
+    {
+        log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
+        exit(EXIT_FAILURE);
+    }
+}
+
+gameServer::gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue)
+{
+	// create local game server
+	net_server = new net_sv(in_queue, mutex_in_queue, out_queue, mutex_out_queue);
+	
+	//Initialize
+    if( init() == false )
+    {
+        log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 
 ////////////////////////////////////
 // initialize/deinitialize  needed subsystems
 bool gameServer::init()
 {
-
-    // initialize enet
-    if (enet_initialize() != 0)
-    {
-        fprintf (stderr, "An error occurred while initializing ENet.\n");
-        return EXIT_FAILURE;
-    }
 
     //Initialize the SDL Timer subsystem
     if( SDL_Init( SDL_INIT_TIMER ) == -1 )
@@ -60,7 +80,7 @@ bool gameServer::init()
 
 void gameServer::clean_up()
 {
-    // close enet
+    // close net
     enet_deinitialize();
 
     //Quit SDL
@@ -69,13 +89,7 @@ void gameServer::clean_up()
 
 
 
-
-
-
-///////////////////////////////////////////
-// Constructor
-
-gameServer::gameServer(bool networked) // todo: server settings
+void gameServer::run() 
 {
     quit = false;
 
@@ -98,13 +112,6 @@ gameServer::gameServer(bool networked) // todo: server settings
 
     log(LOG_DEBUG, s.str().c_str());
 
-    //Initialize
-    if( init() == false )
-    {
-        log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
-        exit(EXIT_FAILURE);
-    }
-
     //printf("Size of short: %lu, Size of int: %lu, Size of float: %lu, sizeof double: %lu, size of long: %lu \n", sizeof(short), sizeof(int), sizeof(float), sizeof(double), sizeof(long));
 
 
@@ -118,18 +125,18 @@ gameServer::gameServer(bool networked) // todo: server settings
     /* Bind the server to port 1234. */
     address.port = 1201;
 
-    gEhost = enet_host_create (&address /* the address to bind the server host to */,
+    net_server->host_create (&address /* the address to bind the server host to */,
                                  8      /* allow up to x clients and/or outgoing connections */,
                                   1      /* allow up to 1 channel to be used, 0 */,
                                   0      /* assume any amount of incoming bandwidth */,
                                   0      /* assume any amount of outgoing bandwidth */);
-    if (gEhost == NULL)
+    if (net_server->eHost == NULL)
     {
         fprintf (stderr,
-                 "An error occurred while trying to create an ENet gameServer host.\n");
+                 "An error occurred while trying to create an network gameServer host.\n");
         exit (EXIT_FAILURE);
     }
-    printf("ENet gameServer created!\n");
+    printf("Network gameServer created!\n");
     
     
 	//////////////////////////////////////////////////////////
@@ -156,7 +163,7 @@ gameServer::gameServer(bool networked) // todo: server settings
         // While there's events from enet to handle
         ENetEvent event;
 
-        while (enet_host_service (gEhost, & event, 0) > 0)
+        while (net_server->host_service (&event, 0) > 0)
             handle_netevent(&event);
             
             
@@ -220,7 +227,7 @@ gameServer::gameServer(bool networked) // todo: server settings
     }
 
     // destroy enet_server
-    enet_host_destroy(gEhost);
+    net_server->host_destroy();
 
     //Clean up
     clean_up();
@@ -287,7 +294,7 @@ gameServer::~gameServer()
 void gameServer::synchronizeClient(ENetPeer *receiver)
 {
     // send server info
-    net_send_sync_server(lvl->filename, receiver);
+    net_server->send_sync_server(lvl->filename, receiver);
 
     // send the client to be synchronized all actors in the level
     for (uint i = 0; i < lvl->actorlist.size; i++)
@@ -297,17 +304,17 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_PLAYER)
             {
                 player *pl = (player*)lvl->actorlist.elem[i];
-                net_send_sync_player(i, &pl->position, &pl->angle, pl->health, pl->name, pl->state, pl->input, receiver);
+                net_server->send_sync_player(i, &pl->position, &pl->angle, pl->health, pl->name, pl->weapon, pl->input, pl->object_taken, receiver);
             }
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
             {
                 box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
-                net_send_sync_box(i, &bo->position, bo->health, receiver);
+                net_server->send_sync_box(i, &bo->position, bo->health, receiver);
             }
         }
     }
     
-    net_send_sync_finish(receiver);
+    net_server->send_sync_finish(receiver);
 }
 
 //////////////////////////////////////////
@@ -333,7 +340,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 
 
             // send my version information
-            net_send_version(DEF_VERSION, event->peer);
+            net_server->send_version(DEF_VERSION, event->peer);
 
             break;
 
@@ -372,7 +379,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                             log(LOG_DEBUG, s.c_str());
 
                             // resend to everyone
-                            net_broadcast_chat(s.c_str(), s.length()+1);
+                            net_server->broadcast_chat(s.c_str(), s.length()+1);
                             
                         } else log (LOG_ERROR, "NET_CHAT: received message from unsynced player!");
 
@@ -413,8 +420,9 @@ void gameServer::handle_netevent(ENetEvent *event)
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
 						
+						
 						// check player
-						if (1)
+						if (state != GAME_STATE_RUNNING && pd->clstate == 1) // && respawn timer
 						{
 							if (state == GAME_STATE_WAITING) start_match();
 							
@@ -426,7 +434,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 							pd->player_actor_id = pl->id;
 							
 							// send update
-							net_send_join(pl->id, event->peer);
+							net_server->send_join(pl->id, event->peer);
 							
 							pd->clstate = 2;
 						}
@@ -472,14 +480,52 @@ void gameServer::handle_netevent(ENetEvent *event)
 							if (pl != NULL)
 							{
 								pl->angle.x = d->ang;
+								pl->ang_interp_dir = d->ang_interp_dir;
 								
-								// send update to other players
-								net_send_update_ang(d->actor_id, d->ang, event->peer);
+								// send update to other players, every other time
+								pl->ang_count++;
+								if (pl->ang_count >= 2)
+								{
+									net_server->send_update_ang(d->actor_id, d->ang, d->ang_interp_dir, event->peer);
+									pl->ang_count = 0;
+								}
 							}
 							else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player actor");
 							
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_ANG for actor thats not owned by this client");
+						
+						break;
+					}
+					
+					case NET_UPDATE_POS:
+					{
+						// get send data
+						s_net_update_pos *d = (s_net_update_pos *)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								// check how much the difference already is
+								if (pl->position.dist(&d->pos) > 60.f)
+								{
+									// force update to client
+									net_server->send_update_pos(pl->id, &pl->position, pl->owner);
+								}
+								else
+								{
+									// take this as correct position
+									pl->position.set(&d->pos);
+								}
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_POS for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_POS for actor thats not owned by this client");
 						
 						break;
 					}
@@ -518,7 +564,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                     // sending LEAVE message
                     std::string s(pd->player_name);
                     s.append(" has left the game.");
-                    net_broadcast_chat(s.c_str(), s.length()+1);
+                    net_server->broadcast_chat(s.c_str(), s.length()+1);
 
                     // remove player
                     //delete(pl); // will also remove player from actorlist
