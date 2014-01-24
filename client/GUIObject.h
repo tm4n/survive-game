@@ -37,6 +37,7 @@ public:
 
 	GUIObject(GUIObject::Types, Texture *tex, int layer, float x, float y, GUICallback *);
 	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, float x, float y, GUICallback *);
+	~GUIObject();
 };
 
 

@@ -13,12 +13,6 @@
 #include <mutex>
 #include <set>
 
-// enum defines
-#define LOG_DEBUG_VERBOSE 1
-#define LOG_DEBUG 2
-#define LOG_WARNING 3
-#define LOG_ERROR 4
-
 class level_sv;
 
 
@@ -45,8 +39,6 @@ public:
 	void handle_netevent(ENetEvent *event);
 	
 	void start_match();
-
-	void log(int, const char *);
 	
 	
 	int sv_spawned_npcs;  // number of spawned npcs this round

@@ -97,7 +97,7 @@ void net::host_destroy()
 
 int net::host_service (ENetEvent *event, enet_uint32 timeout)
 {
-	if (net_local_only)
+	if (local_only)
 	{
 		// connection established packet
 		if (is_server == true && local_peer->state == ENET_PEER_STATE_CONNECTING)
@@ -253,9 +253,19 @@ int net::send_input_keys(uint actor_id, int input, ENetPeer *receiver)
 	s.actor_id = actor_id;
     s.input = input;
 
-	puts("Sending keys!");
-
     return send_event(NET_INPUT_KEYS, (const char *)&s, sizeof(s_net_input_keys), receiver);
+}
+
+int net::send_take(uint actor_id, int taken_id, ENetPeer *receiver)
+{
+	s_net_take s;
+	
+	s.actor_id = actor_id;
+	s.taken_id = taken_id;
+	
+	puts("Sending take");
+	
+	return send_event(NET_TAKE, (const char *)&s, sizeof(s_net_take), receiver);
 }
 
 int net::send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *receiver)
@@ -278,5 +288,5 @@ int net::send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver)
     s.pos.y = pos->y;
     s.pos.z = pos->z;
 
-    return send_event(NET_UPDATE_POS, (const char*) &s, sizeof(s_net_update_pos), receiver);
+    return send_event(NET_UPDATE_POS, (const char*)&s, sizeof(s_net_update_pos), receiver);
 }

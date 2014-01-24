@@ -43,3 +43,8 @@ GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, float x, f
 	size_x = textures[0]->size_x;
 	size_y = textures[0]->size_y;
 }
+
+GUIObject::~GUIObject()
+{
+	
+}

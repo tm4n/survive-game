@@ -5,6 +5,7 @@
 #include "gameRenderer.h"
 #include "player_cl.h"
 #include "net_cl.h"
+#include "level_cl.h"
 
 #define CAMERA_VIEW_HEIGHT 1
 
@@ -15,6 +16,8 @@ public:
 	bool input_enable;
 	uint local_state;
 	uint own_actor_id;
+	
+	level_cl *lvl_cl;
 
 	gameClient(gameRenderer *arenderer);
 	~gameClient();

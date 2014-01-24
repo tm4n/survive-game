@@ -26,10 +26,12 @@ public:
 
 	Mesh* getMesh(meshType m);
 	Texture* getTex(texType t);
+	TTF_Font *getFont();
 
 private:
 	Mesh *meshes[MAX_MESHES];
 	Texture *textures[MAX_MESHES];
+	TTF_Font *fnt;
 
 };
 

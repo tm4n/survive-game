@@ -7,6 +7,7 @@
 #include "SDL2/SDL_opengl.h"
 #include "ResourceLoader.h"
 #include "GUI.h"
+#define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
 
 

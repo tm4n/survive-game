@@ -39,3 +39,13 @@ box_cl::~box_cl()
 	delete ro;
 }
 
+
+
+
+void box_cl::frame(double time_delta)
+{
+	movement(time_delta);
+	
+	ro->translation[0] = position.x; ro->translation[1] = position.y; ro->translation[2] = position.z; 
+	ro->rotation[0] = angle.x; ro->rotation[1] = angle.y; ro->rotation[2] = angle.z; 
+}

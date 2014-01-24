@@ -23,7 +23,8 @@ box_sv::~box_sv()
 
 void box_sv::frame(double time_delta)
 {
-
 	if (health <= 0.f)
 		delete this;
+		
+	movement(time_delta);
 }

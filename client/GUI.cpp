@@ -139,20 +139,23 @@ void GUI::setScreensize(int x, int y)
 
 void GUI::event_mouse(SDL_Event *evt)
 {
-	int i = 0;
-	for(GUIObject *obj : elements)
+	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
-		if (obj->type == GUIObject::Types::button && obj->visible == true)
+		int i = 0;
+		for(GUIObject *obj : elements)
 		{
-			// check if mouse is in object area
-			if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-				evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+			if (obj->type == GUIObject::Types::button && obj->visible == true)
 			{
-				if (obj->callback != NULL) obj->callback->callback(i);
-					else puts("No callback registered for clicked button");
+				// check if mouse is in object area
+				if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+					evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+				{
+					if (obj->callback != NULL) obj->callback->callback(i);
+						else puts("No callback registered for clicked button");
+				}
 			}
+			i++;
 		}
-		i++;
 	}
 }
 
@@ -214,10 +217,9 @@ void GUI::draw()
     for (int layer = 0; layer < 10; layer++)
     {
 	    for (GUIObject *elem : elements)
-		{
-	        	
+		{	        	
 	        if (elem->layer == layer && elem->visible == true)
-	        {
+	        {				
 	        	// bind texture of this element
 				glBindTexture(GL_TEXTURE_2D, elem->textures[elem->current_tex]->mTextureID);
 	        		
@@ -273,6 +275,15 @@ int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, 
 
 	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, x, y, callback);
 
+	elements.push_back(elem);
+		
+	return elements.size()-1;
+}
+
+int GUI::addText(Texture *tex, int layer, float x, float y)
+{
+	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, x, y, NULL);
+		
 	elements.push_back(elem);
 		
 	return elements.size()-1;

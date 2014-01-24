@@ -16,15 +16,15 @@ void ResourceLoader::load()
 	if (meshes[(int)meshType::Crate]->loaded == false) {std::cout << "ERROR loading model for Crate" << std::endl; exit(-1);}
 	meshes[(int)meshType::Crate]->initShader();
 
-	meshes[(int)meshType::Crate_damaged] = new Mesh("assets/models/c_destroyed.mdl", NULL);
+	/*meshes[(int)meshType::Crate_damaged] = new Mesh("assets/models/c_destroyed.mdl", NULL);
 	if (meshes[(int)meshType::Crate_damaged]->loaded == false) {std::cout << "ERROR loading model for Crate_damaged" << std::endl; exit(-1);}
-	meshes[(int)meshType::Crate_damaged]->initShader();
+	meshes[(int)meshType::Crate_damaged]->initShader();*/
 
-	meshes[(int)meshType::Generator] = new Mesh("assets/models/genera.mdl", NULL);
+	meshes[(int)meshType::Generator] = new Mesh("assets/models/c.mdl", NULL);
 	if (meshes[(int)meshType::Generator]->loaded == false) {std::cout << "ERROR loading model for Generator" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator]->initShader();
 
-	meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
+	/*meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
 	if (meshes[(int)meshType::Generator_glass]->loaded == false) {std::cout << "ERROR loading model for Generator_glass" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator_glass]->initShader();
 
@@ -38,7 +38,7 @@ void ResourceLoader::load()
 
 	meshes[(int)meshType::Turred_MG] = new Mesh("assets/models/turret_mg.mdl", NULL);
 	if (meshes[(int)meshType::Turred_MG]->loaded == false) {std::cout << "ERROR loading model for Turred_MG" << std::endl; exit(-1);}
-	meshes[(int)meshType::Turred_MG]->initShader();
+	meshes[(int)meshType::Turred_MG]->initShader();*/
 
 
 	// Environment
@@ -91,8 +91,15 @@ void ResourceLoader::load()
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
 	{
-		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl;}
+		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1);}
 	}
+	
+	// Fonts
+	const char *filename = "assets/OpenSans-Semibold.ttf";
+	SDL_RWops *file = SDL_RWFromFile(filename, "rb");
+	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename << std::endl;  return;}
+	fnt = TTF_OpenFontRW(file, 1, 18);
+	if (fnt == NULL) {std::cout << "ERROR loading Font: " << filename << std::endl; exit (-1);}
 }
 
 
@@ -108,4 +115,9 @@ Texture* ResourceLoader::getTex(texType m)
 	int id = (int)m;
 	if (id < 1 || id > MAX_TEXTURES) return NULL;
 	return textures[id];
+}
+
+TTF_Font *ResourceLoader::getFont()
+{
+	return fnt;
 }

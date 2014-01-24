@@ -16,9 +16,10 @@ public:
 
 	virtual void frame(double time_delta);
 
-
 protected:
 	gameRenderer *renderer;
+	
+	float send_angle_count;
 };
 
 

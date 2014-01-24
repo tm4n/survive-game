@@ -148,8 +148,38 @@ int net_sv::send_join(uint own_actor_id, ENetPeer *receiver)
     return send_event(NET_JOIN, (const char *)&s, sizeof(s_net_join), receiver);
 }
 
+int net_sv::broadcast_take(uint actor_id, int taken_id)
+{
+    s_net_take s;
+
+	s.actor_id = actor_id;
+	s.taken_id = taken_id;
+
+    printf("broadcast_take mit actor_id=%u\n", actor_id);
+
+    return broadcast_event(NET_TAKE, (const char *)&s, sizeof(s_net_take));
+}
 
 // update values
+int net_sv::broadcast_update_pos(uint actor_id, vec *v)
+{
+	s_net_update_pos s;
+	
+	s.actor_id = actor_id;
+	s.pos.set(v);
+	
+	return broadcast_event(NET_UPDATE_POS, (const char *)&s, sizeof(s_net_update_pos));
+}
+
+int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *receiver)
+{
+	s_net_update_ang s;
+
+	s.ang = ang;
+	s.ang_interp_dir = ang_interp_dir;
+
+    return broadcast_event_except(NET_UPDATE_ANG, (const char*) &s, sizeof(s_net_update_ang), receiver);
+}
 
 int net_sv::send_update_target(uint actor_id, uint target, ENetPeer *receiver)
 {

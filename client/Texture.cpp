@@ -1,6 +1,8 @@
 #include "Texture.h"
 #include <iostream>
+#include <string>
 #include "SDL2/SDL.h"
+#include "helper.h"
 
 
 Texture::Texture(const char* filename)
@@ -105,8 +107,73 @@ Texture::Texture(const char* filename)
 	loaded = true;
 }
 
+Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
+{
+	loaded = false;
+	tgaFile = NULL;
+	
+	file.assign(txt);
+	
+	// render text
+	SDL_Surface *surface = TTF_RenderUTF8_Blended(fnt, txt.c_str(), c);
+	
+	if (surface == NULL) {log(LOG_ERROR, "Could not render a TTF text!"); exit(-1);}
+	
+	// Convert to OpenGl texture
+	glGenTextures(1, &mTextureID);
+	glBindTexture(GL_TEXTURE_2D, mTextureID); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	int in_format;
+	int colors = surface->format->BytesPerPixel;
+	if (colors == 4) {   // alpha
+		if (surface->format->Rmask == 0x000000ff)
+			in_format = GL_RGBA;
+		else
+			in_format = GL_BGRA;
+			
+		glTexImage2D(GL_TEXTURE_2D, 0, 4, surface->w, surface->h, 0,
+						in_format, GL_UNSIGNED_BYTE, surface->pixels);
+	}
+	if (colors == 3) {           // no alpha
+		if (surface->format->Rmask == 0x000000ff)
+			in_format = GL_RGB;
+		else
+			in_format = GL_BGR;
+			
+			
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, surface->w, surface->h, 0,
+						in_format, GL_UNSIGNED_BYTE, surface->pixels);
+	}
+	if (colors == 1)
+	{
+		// no alpha, palettized
+		SDL_Surface *intermediary = SDL_CreateRGBSurface(0, surface->w, surface->h, 32, 
+			0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+
+		SDL_BlitSurface(surface, 0, intermediary, 0);
+		
+		glTexImage2D(GL_TEXTURE_2D, 0, 4, intermediary->w, intermediary->h, 0,
+						GL_RGBA, GL_UNSIGNED_BYTE, intermediary->pixels);
+						
+		SDL_FreeSurface(intermediary);
+	}
+						
+	size_x = surface->w;
+	size_y = surface->h;
+
+	SDL_FreeSurface(surface);
+						
+	loaded = true;
+}
+
+
 Texture::~Texture()
 {
-	delete[] (tgaFile->imageData);
-	delete tgaFile;
+	if (tgaFile)
+	{
+		delete[] (tgaFile->imageData);
+		delete tgaFile;
+	}
 }

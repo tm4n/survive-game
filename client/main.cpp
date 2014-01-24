@@ -1,5 +1,6 @@
 ﻿#include "SDL2/SDL.h"
 #include "SDL2/SDL_timer.h"
+#include "SDL2/SDL_ttf.h"
 #undef main
 #include "gameClient.h"
 #include "../server/gameServer.h"
@@ -53,6 +54,12 @@ void playCallback::callback(int obj_id)
 int main(int argc, char **argv)
 {
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) exit(1);
+	if( TTF_Init()==-1 )
+	{
+		printf("TTF_Init: %s\n", TTF_GetError());
+		exit(2);
+	}
+
 
 	bool quit = false;
 
@@ -80,10 +87,17 @@ int main(int argc, char **argv)
 			case SDL_QUIT:  quit = true;   break;
 			/* process other events you want to handle here */
 
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
+				if (evt.key.keysym.sym == SDLK_ESCAPE)
+				{
+					quit = true;
+					break;
+				}
+				// no break!!
+				
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
 				if (!menu->visible && cl != NULL)
 				{
 					cl->event_mouse(&evt);
@@ -123,6 +137,7 @@ int main(int argc, char **argv)
 
 	delete renderer;
 
+	TTF_Quit();
 	SDL_Quit();
 	
 	if (cl) delete cl;

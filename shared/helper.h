@@ -27,6 +27,14 @@ bool str_email(const std::string &str);
 int str_lines(const std::string *str);
 
 
+// enum defines
+#define LOG_DEBUG_VERBOSE 1
+#define LOG_DEBUG 2
+#define LOG_WARNING 3
+#define LOG_ERROR 4
+
+void log(int, const char *);
+
 #ifdef ACKNEX
 
 #define CHKHEAP()  (check_heap(__FILE__, __LINE__))

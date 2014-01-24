@@ -21,8 +21,11 @@ public:
 	
 	void movement(double);
 
+	int taker_id;
 	char box_type;
 	float gravity;
+	float take_animation; // progress while animating box
+	vec pickup_place; //  position difference where box was picked up
 };
 
 

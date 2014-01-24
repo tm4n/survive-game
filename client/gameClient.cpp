@@ -54,10 +54,10 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 		case ENET_EVENT_TYPE_RECEIVE:
 		{
-			printf ("A packet of length %lu, event %d, was received on channel %u.\n",
+			/*printf ("A packet of length %lu, event %d, was received on channel %u.\n",
 					event->packet -> dataLength,
 					*((short*) event->packet->data),
-					event->channelID);
+					event->channelID);*/
 
 
 			// check minimal packet size
@@ -98,7 +98,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_sync_server *d = (s_net_sync_server*)data;
 
 						// load level
-						lvl = new level_cl((char*)d->mapfile, renderer);
+						lvl_cl = new level_cl((char*)d->mapfile, renderer);
+						lvl = lvl_cl;
 
 						break;
 					}
@@ -172,6 +173,63 @@ void gameClient::handle_netevent(ENetEvent *event)
 						}
 						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
 
+						break;
+					}
+					
+					case NET_TAKE:
+					{
+						s_net_take *d = (s_net_take*)data;
+						
+						player_cl *pl = lvl_cl->get_player(d->actor_id);
+						
+						if (pl != NULL)
+						{
+							if (d->taken_id < 0)
+							{
+								box_cl *box = lvl_cl->get_box((uint)pl->object_taken);
+								if (box != NULL)
+								{
+									pl->object_taken = -1;
+									box->taker_id = -1;
+									box->state = BOX_STATE_DEFAULT;
+								}
+								else
+								{
+									pl->object_taken = -1;
+									log(LOG_ERROR, "Received NET_TAKE, and player had invalid object in hand");
+								}
+							}
+							else
+							{
+								box_cl *box = lvl_cl->get_box((uint)d->taken_id);
+								if (box != NULL)
+								{
+									pl->object_taken = d->taken_id;
+									box->taker_id = d->actor_id;
+									box->state = BOX_STATE_TAKEN;
+								}
+								else log(LOG_ERROR, "Received NET_TAKE with invalid box");
+							}
+						}
+						else log(LOG_ERROR, "Received NET_TAKE invalid player");
+						
+						break;
+					}
+					
+					case NET_UPDATE_ANG:
+					{
+						// get send data
+						s_net_update_ang *d = (s_net_update_ang *)data;
+						
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							printf("setting angle for %i \n", d->actor_id);
+							pl->angle.x = d->ang;
+							pl->ang_interp_dir = d->ang_interp_dir;
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player actor");
+						
 						break;
 					}
 
@@ -297,12 +355,12 @@ void gameClient::frame(double time_delta)
 		int key_vely = (input & INPUT_BACK ? 1 : 0) - (input & INPUT_FORW ? 1 : 0);
 		int key_velx = (input & INPUT_RIGHT ? 1 : 0) - (input & INPUT_LEFT ? 1 : 0);
 
-		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
-		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
-		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
+		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
+		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
+		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
 
-		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
-		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))*1) * key_velx;
+		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
+		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
 	}
 	if (local_state == 2)
 	{
@@ -325,7 +383,6 @@ void gameClient::frame(double time_delta)
 				// update for this player and all others
 				pl->input = input;
 				net_client->send_input_keys(pl->id, input, net_client->serverpeer);
-				printf("send keys for player with id=%i\n", pl->id);
 			}
 
 		}
@@ -362,6 +419,14 @@ void gameClient::event_mouse(SDL_Event *evt)
 			if (local_state == 2)
 			{
 				// TODO: shoot
+			}
+		}
+		if (evt->button.button == SDL_BUTTON_RIGHT)
+		{
+			if (local_state == 2)
+			{
+				// take
+				net_client->send_take(own_actor_id, 1, net_client->serverpeer);
 			}
 		}
 	}

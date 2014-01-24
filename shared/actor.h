@@ -38,6 +38,8 @@ class actor
         vec position, angle;
 
 		vec bb_min, bb_max;
+		
+		bool passable;
 
 		vec move_force;
 

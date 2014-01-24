@@ -4,6 +4,7 @@
 #include "gl_core_2_1.h"
 #include <stdint.h>
 #include <string>
+#include "SDL2/SDL_ttf.h"
 
 typedef struct
 {
@@ -28,6 +29,7 @@ public:
 	GLuint mTextureID;
 
 	Texture(const char* filename);
+	Texture(std::string txt, TTF_Font *fnt, SDL_Color c);
 	~Texture();
 
 private:

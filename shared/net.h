@@ -45,14 +45,6 @@
 #define NET_UPDATE_HEALTH 54
 #define NET_UPDATE_WEAPON 55
 
-
-
-extern std::list<ENetPacket*> to_cl_queue;
-extern std::list<ENetPacket*> to_sv_queue;
-extern std::mutex mutex_cl_queue;
-extern std::mutex mutex_sv_queue;
-extern ENetHost *gEhost;
-
 ////////////////////////////////////////////////
 // syncronization data
 
@@ -105,6 +97,12 @@ struct s_net_input_keys
 {
 	uint32_t actor_id;
 	int32_t input;
+};
+
+struct s_net_take
+{
+	uint32_t actor_id;
+	int32_t taken_id;
 };
 
 struct s_net_shoot
@@ -166,6 +164,7 @@ public:
 	
 	// networking functions
 	int send_input_keys(uint actor_id, int input, ENetPeer *);
+	int send_take(uint actor_id, int taken_id, ENetPeer *);
 	int send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver);
 

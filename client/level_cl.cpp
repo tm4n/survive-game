@@ -28,3 +28,22 @@ level_cl::level_cl(const char *filename, gameRenderer *arenderer)
 level_cl::~level_cl()
 {
 }
+
+
+player_cl *level_cl::get_player(uint actor_id)
+{
+    actor *ac = actorlist.at(actor_id);
+    if (ac == NULL) return NULL;
+
+    if (ac->type == ACTOR_TYPE_PLAYER) return (player_cl*)ac;
+    return NULL;
+}
+
+box_cl *level_cl::get_box(uint actor_id)
+{
+    actor *ac = actorlist.at(actor_id);
+    if (ac == NULL) return NULL;
+
+    if (ac->type == ACTOR_TYPE_BOX) return (box_cl*)ac;
+    return NULL;
+}

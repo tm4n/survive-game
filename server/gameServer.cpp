@@ -341,10 +341,10 @@ void gameServer::handle_netevent(ENetEvent *event)
 
         case ENET_EVENT_TYPE_RECEIVE:
 		{
-            printf ("A packet of length %lu, event %d, was received on channel %u.\n",
+            /*printf ("A packet of length %lu, event %d, was received on channel %u.\n",
                     event->packet -> dataLength,
                     *((short*) event->packet->data),
-                    event->channelID);
+                    event->channelID); */
 
 
             // check minimal packet size
@@ -446,8 +446,6 @@ void gameServer::handle_netevent(ENetEvent *event)
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
 						
-						printf("input keys mit: %i und %i", d->actor_id, pd->player_actor_id);
-						
 						if (d->actor_id == pd->player_actor_id)
 						{
 							player_sv *pl= lvl_sv->get_player(d->actor_id);
@@ -459,6 +457,57 @@ void gameServer::handle_netevent(ENetEvent *event)
 							
 						}
 						else log(LOG_ERROR, "Received NET_INPUT_KEYS for actor thats not owned by this client");
+						
+						break;
+					}
+					
+					case NET_TAKE:
+					{
+						s_net_take *d = (s_net_take*)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+						
+						player_sv *pl = lvl_sv->get_player(d->actor_id);
+						
+						if (d->actor_id == pd->player_actor_id && pl != NULL)
+						{
+							if (d->taken_id < 0)
+							{
+								box_sv *box = lvl_sv->get_box((uint)pl->object_taken);
+								if (box != NULL)
+								{
+									pl->object_taken = -1;
+									box->taker_id = -1;
+									box->state = BOX_STATE_DEFAULT;
+									
+									net_server->broadcast_take(d->actor_id, d->taken_id);
+									net_server->broadcast_update_pos(box->id, &box->position);
+								}
+								else
+								{
+									pl->object_taken = -1;
+									log(LOG_ERROR, "Received NET_TAKE, and player had invalid object in hand");
+								}
+							}
+							else
+							{
+								box_sv *box = lvl_sv->get_box((uint)d->taken_id);
+								if (box != NULL)
+								{
+									if (box->position.dist(&pl->position) < 2000000.f && pl->object_taken < 0)
+									{
+										pl->object_taken = d->taken_id;
+										box->taker_id = d->actor_id;
+										box->state = BOX_STATE_TAKEN;
+										
+										net_server->broadcast_take(d->actor_id, d->taken_id);
+									}
+									else log(LOG_ERROR, "Received NET_TAKE but box was too far away or player already had one");
+								}
+								else log(LOG_ERROR, "Received NET_TAKE with invalid box");
+							}
+						}
+						else log(LOG_ERROR, "Received NET_TAKE for actor thats not owned by this client");
 						
 						break;
 					}
@@ -482,7 +531,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 								pl->ang_count++;
 								if (pl->ang_count >= 2)
 								{
-									net_server->send_update_ang(d->actor_id, d->ang, d->ang_interp_dir, event->peer);
+									net_server->broadcast_update_ang_except(d->actor_id, d->ang, d->ang_interp_dir, event->peer);
 									pl->ang_count = 0;
 								}
 							}
@@ -586,12 +635,4 @@ void gameServer::start_match()
 	
 	// add level starters
     lvl_sv->spawn_starters();
-}
-
-
-///////////////////////////////7
-// log data to console
-void gameServer::log(int importance, const char *msg)
-{
-    puts(msg);
 }

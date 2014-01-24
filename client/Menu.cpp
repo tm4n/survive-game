@@ -23,6 +23,11 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb)
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, 0.651f, 0.49f, NULL);
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, 0.653f, 0.645f, NULL);
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, 0.653f, 0.766f, NULL);
+	
+	// Add version text
+	SDL_Color c = {255, 255, 255};
+	Texture *tex_version = new Texture(DEF_NAME_STR, resources->getFont(), c);
+	gui->addText(tex_version, 3, 0.87f, 0.97f);
 }
 
 
@@ -48,6 +53,9 @@ void Menu::hide()
 	{
 		gui->setVisible(button_ids[i], false);
 	}
+			
+	// trap mouse
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 

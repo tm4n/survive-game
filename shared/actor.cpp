@@ -28,6 +28,7 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
 
 	move_speed = 1; // default move speed
 	state = 0;
+	passable = false;
 }
 
 actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
@@ -45,6 +46,7 @@ actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
     
 	move_speed = 1; // default move speed
 	state = 0;
+	passable = false;
 }
 
 actor::~actor()
@@ -111,7 +113,7 @@ float actor::move_rel_col(vec *reldir)
 			actor *ac = lvl->actorlist.at(i);
 			if (ac != NULL)
 			{
-				if (ac->health > 0.f)
+				if (ac->health > 0.f && !ac->passable)
 				{	
 					if ((my_min.x < ac->position.x + ac->bb_max.x && my_max.x > ac->position.x + ac->bb_min.x) // collision in x plane
 						&& (my_min.y < ac->position.y + ac->bb_max.y && my_max.y > ac->position.y + ac->bb_min.y)) // collision in y plane
@@ -155,7 +157,7 @@ float actor::move_rel_col(vec *reldir)
 			actor *ac = lvl->actorlist.at(i);
 			if (ac != NULL)
 			{
-				if (ac->health > 0.f)
+				if (ac->health > 0.f && !ac->passable)
 				{	
 					if ((my_min.z < ac->position.z + ac->bb_max.z && my_max.z > ac->position.z + ac->bb_min.z) // collision in t plane
 						&& (my_min.y < ac->position.y + ac->bb_max.y && my_max.y > ac->position.y + ac->bb_min.y)) // collision in y plane
@@ -199,7 +201,7 @@ float actor::move_rel_col(vec *reldir)
 			actor *ac = lvl->actorlist.at(i);
 			if (ac != NULL)
 			{
-				if (ac->health > 0.f)
+				if (ac->health > 0.f && !ac->passable)
 				{	
 					if ((my_min.z < ac->position.z + ac->bb_max.z && my_max.z > ac->position.z + ac->bb_min.z) // collision in z plane
 						&& (my_min.x < ac->position.x + ac->bb_max.x && my_max.x > ac->position.x + ac->bb_min.x)) // collision in x plane

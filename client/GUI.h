@@ -18,6 +18,7 @@ public:
 
 	int addPanel(Texture *tex, int layer, float x, float y);
 	int addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, GUICallback *callback);
+	int addText(Texture *tex, int layer, float x, float y);
 	void clear();
 
 	void setVisible(int id, bool vis);

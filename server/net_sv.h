@@ -39,7 +39,11 @@ public:
 	int broadcast_remove_actor(uint actor_id);
 
 	int send_join(uint own_actor_id, ENetPeer *receiver);
+	
+	int broadcast_take(uint actor_id, int taken_id);
 
+	int broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
+	int broadcast_update_pos(uint actor_id, vec *v);
 	int send_update_target(uint actor_id, uint target, ENetPeer *receiver);
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
 };
