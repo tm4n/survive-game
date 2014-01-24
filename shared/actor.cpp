@@ -106,7 +106,7 @@ float actor::move_rel_col(vec *reldir)
 	
 	//////////////////////////
 	// do z collision
-	if (col_move_world.z != 0)
+	if (col_move_world.z != 0.f)
 	{
 		for (uint i = 0; i < lvl->actorlist.size; i++)
 		{
@@ -133,13 +133,13 @@ float actor::move_rel_col(vec *reldir)
 				}
 			}
 		}
-		if (col_move_world.z < 0) 
+		if (col_move_world.z < 0.f) 
 		{
 			if (col_move_border_min.z-bb_min.z > position.z + col_move_world.z) position.z = col_move_border_min.z-bb_min.z;
 				else {position.z += col_move_world.z; col_move_nearest[2] = NULL;} 
 		}
 				
-		if (col_move_world.z > 0)
+		if (col_move_world.z > 0.f)
 		{
 			if (col_move_border_max.z-bb_max.z < position.z + col_move_world.z) position.z = col_move_border_max.z-bb_max.z;
 				else {position.z += col_move_world.z; col_move_nearest[2] = NULL;} 
@@ -150,7 +150,7 @@ float actor::move_rel_col(vec *reldir)
 	}
 	
 	// do x collision
-	if (col_move_world.x != 0)
+	if (col_move_world.x != 0.f)
 	{
 		for (uint i = 0; i < lvl->actorlist.size; i++)
 		{
@@ -177,13 +177,13 @@ float actor::move_rel_col(vec *reldir)
 				}
 			}
 		}
-		if (col_move_world.x < 0) 
+		if (col_move_world.x < 0.f) 
 		{
 			if (col_move_border_min.x-bb_min.x > position.x + col_move_world.x) position.x = col_move_border_min.x-bb_min.x;
 				else {position.x += col_move_world.x; col_move_nearest[0] = NULL;} 
 		}
 				
-		if (col_move_world.x > 0) 
+		if (col_move_world.x > 0.f) 
 		{
 			if (col_move_border_max.x-bb_max.x < position.x + col_move_world.x) position.x = col_move_border_max.x-bb_max.x;
 				else {position.x += col_move_world.x; col_move_nearest[0] = NULL;} 
@@ -194,7 +194,7 @@ float actor::move_rel_col(vec *reldir)
 	}
 	
 	// y collision
-	if (col_move_world.y != 0)
+	if (col_move_world.y != 0.f)
 	{
 		for (uint i = 0; i < lvl->actorlist.size; i++)
 		{
@@ -221,13 +221,13 @@ float actor::move_rel_col(vec *reldir)
 				}
 			}
 		}
-		if (col_move_world.y < 0)
+		if (col_move_world.y < 0.f)
 		{
 			if (col_move_border_min.y-bb_min.y > position.y + col_move_world.y) position.y = col_move_border_min.y-bb_min.y;
 				else {position.y += col_move_world.y; col_move_nearest[1] = NULL;} 
 		}
 				
-		if (col_move_world.y > 0) 
+		if (col_move_world.y > 0.f) 
 		{
 			if (col_move_border_max.y-bb_max.y < position.y + col_move_world.y) position.y = col_move_border_max.y-bb_max.y;
 				else {position.y += col_move_world.y; col_move_nearest[1] = NULL;} 

@@ -81,11 +81,11 @@ void box::movement(double time_delta)
 		gravity -= actor_gravity*(float)time_delta;
 			
 		if (state == BOX_STATE_PARACHUTING) gravity = clamp(gravity, -8.f, 8.f);
-		else gravity = clamp (gravity, -30, 30);
+		else gravity = clamp (gravity, -30.f, 30.f);
 			
 		vec v(0.f, 0.f, gravity*(float)time_delta);
-		int result = move_rel_col(&v);
-		if (result <= 0)
+		float result = move_rel_col(&v);
+		if (result <= 0.f)
 		{
 			gravity = 0.f;
 			if (state == BOX_STATE_PARACHUTING)

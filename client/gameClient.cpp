@@ -402,6 +402,8 @@ void gameClient::frame(double time_delta)
 
 void gameClient::event_mouse(SDL_Event *evt)
 {
+	player_cl *pl = get_own_player();
+	
 	if (evt->type == SDL_MOUSEMOTION)
 	{
 		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
@@ -426,7 +428,8 @@ void gameClient::event_mouse(SDL_Event *evt)
 			if (local_state == 2)
 			{
 				// take
-				net_client->send_take(own_actor_id, 1, net_client->serverpeer);
+				if (pl != NULL) pl->order_take_object();
+				
 			}
 		}
 	}

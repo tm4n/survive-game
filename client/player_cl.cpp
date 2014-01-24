@@ -25,6 +25,20 @@ player_cl::~player_cl()
 }
 
 
+
+void player_cl::order_take_object()
+{
+	if (object_taken < 0)
+	{
+		net_client->send_take(id, 1, net_client->serverpeer);
+	}
+	else
+	{
+		net_client->send_take(id, -1, net_client->serverpeer);
+	}
+}
+
+
 void player_cl::frame(double time_delta)
 {
 	// turn player with camera

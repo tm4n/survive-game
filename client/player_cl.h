@@ -15,6 +15,8 @@ public:
 	virtual ~player_cl();
 
 	virtual void frame(double time_delta);
+	
+	void order_take_object();
 
 protected:
 	gameRenderer *renderer;
