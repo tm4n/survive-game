@@ -40,7 +40,6 @@ box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth)
 
 void box::movement(double time_delta)
 {
-	
 	if (state == BOX_STATE_TAKEN)
 	{
 		// is moved by carrying entity
@@ -60,7 +59,7 @@ void box::movement(double time_delta)
 			}
 			else
 			{
-				take_animation -= time_delta * 15.f;
+				take_animation -= (float)time_delta * 15.f;
 				take_animation = std::max(take_animation, 0.f);
 			}
 			

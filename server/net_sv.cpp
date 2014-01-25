@@ -171,14 +171,25 @@ int net_sv::broadcast_update_pos(uint actor_id, vec *v)
 	return broadcast_event(NET_UPDATE_POS, (const char *)&s, sizeof(s_net_update_pos));
 }
 
-int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *receiver)
+int net_sv::broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *except)
+{
+	s_net_update_pos s;
+
+	s.actor_id = actor_id;
+	s.pos.set(v);
+
+    return broadcast_event_except(NET_UPDATE_POS, (const char*) &s, sizeof(s_net_update_pos), except);
+}
+
+int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *except)
 {
 	s_net_update_ang s;
 
+	s.actor_id = actor_id;
 	s.ang = ang;
 	s.ang_interp_dir = ang_interp_dir;
 
-    return broadcast_event_except(NET_UPDATE_ANG, (const char*) &s, sizeof(s_net_update_ang), receiver);
+    return broadcast_event_except(NET_UPDATE_ANG, (const char*) &s, sizeof(s_net_update_ang), except);
 }
 
 int net_sv::send_update_target(uint actor_id, uint target, ENetPeer *receiver)

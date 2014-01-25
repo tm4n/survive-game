@@ -170,6 +170,10 @@ void gameClient::handle_netevent(ENetEvent *event)
 							own_actor_id = d->own_actor_id;
 							local_state = 2;
 
+							player_cl *pl = get_own_player();
+							if (pl != NULL) pl->local_player = true;
+							 else log(LOG_ERROR, "FATAL! Invalid actor_id on NET_JOIN!");
+
 						}
 						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
 
@@ -215,6 +219,20 @@ void gameClient::handle_netevent(ENetEvent *event)
 						
 						break;
 					}
+
+					case NET_UPDATE_POS:
+					{
+						s_net_update_pos *d = (s_net_update_pos *)data;
+
+						actor *ac = lvl_cl->actorlist.at(d->actor_id);
+						if (ac != NULL)
+						{
+							ac->position.set(&d->pos);
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_POS for invalid actor");
+
+						break;
+					}
 					
 					case NET_UPDATE_ANG:
 					{
@@ -228,7 +246,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 							pl->angle.x = d->ang;
 							pl->ang_interp_dir = d->ang_interp_dir;
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player or invalid actor");
 						
 						break;
 					}

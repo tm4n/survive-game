@@ -44,6 +44,7 @@ public:
 
 	int broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int broadcast_update_pos(uint actor_id, vec *v);
+	int broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *);
 	int send_update_target(uint actor_id, uint target, ENetPeer *receiver);
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
 };

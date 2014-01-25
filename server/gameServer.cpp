@@ -212,7 +212,7 @@ void gameServer::run()
         {
 
             //Calculate the frames per second and create the string
-            std::cout << "Average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
+            std::cout << "Server average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
 
             //Restart the update timer
             update.start();
@@ -636,3 +636,4 @@ void gameServer::start_match()
 	// add level starters
     lvl_sv->spawn_starters();
 }
+

@@ -7,7 +7,9 @@
 // General definitions, types
 
 #ifdef _WIN32
+#ifndef M_PI
 #define M_PI        3.14159265358979323846
+#endif
 #endif
 
 typedef unsigned int uint;
@@ -20,6 +22,8 @@ typedef unsigned char uchar;
 
 #define TICK_UPDATE_LIMIT 16  // update interval for regular chances, in ticks
 #define CL_SEND_ANGLE_RATE 2.f
+#define SV_SEND_PLAYER_RATE 8.f
+#define SV_SEND_NPC_RATE 32.f
 
 
 ////////////////////////////////////////////

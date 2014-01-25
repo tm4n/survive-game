@@ -8,7 +8,7 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
 
                : actor(lvl, ACTOR_TYPE_PLAYER, pos, ang)
 {
-	this->health = health;
+	this->health = ahealth;
 	this->input = 0;
 
     strncpy(this->name, name, 32);
@@ -31,12 +31,12 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
 
 
 player::player(level *lvl, 
-			   uint actor_id, vec *pos, vec *ang, float health,
+			   uint actor_id, vec *pos, vec *ang, float ahealth,
                const char *name, int weapon, int input, int object_taken)
 
                : actor(lvl, actor_id, ACTOR_TYPE_PLAYER, pos, ang)
 {
-	this->health = health;
+	this->health = ahealth;
 
 	this->weapon = weapon;
 	this->input = input;
@@ -147,5 +147,5 @@ void player::movement(float time_step)
 
 		vec v2(move_force.x*time_step, move_force.y*time_step, 0.f);
 		move_rel_col(&v2);
-	}
+	} 
 }

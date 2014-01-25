@@ -7,6 +7,7 @@
 class player_cl : public player
 {
 public:
+	bool local_player;
 
 	RenderObject *ro;
 
@@ -20,8 +21,8 @@ public:
 
 protected:
 	gameRenderer *renderer;
-	
-	float send_angle_count;
+
+	float send_angle_timer, send_pos_timer;
 };
 
 

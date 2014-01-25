@@ -21,8 +21,11 @@ class player_sv : public player
         virtual void frame (double time_delta);
         
 		int ang_count;
-        
+
     protected:
+
+		float send_pos_timer;
+		vec last_position;
 
     private:
 };

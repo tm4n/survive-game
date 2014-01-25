@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "helper.h"
+#include "actor.h"
 using namespace std;
 
 // map access macro
@@ -32,7 +33,7 @@ level::~level()
 
 
 
-/*void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
+void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
 {
     for (uint i = 0; i < actorlist.size; i++)
     {
@@ -47,4 +48,4 @@ level::~level()
 
         }
     }
-}*/
+}

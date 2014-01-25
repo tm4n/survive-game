@@ -20,7 +20,7 @@ class level_sv;
 class gameServer : public game
 {
 public:
-    static const int FRAMES_PER_SECOND = 30;
+    static const int FRAMES_PER_SECOND = 60;
 
     bool quit; // Quit flag
     long frame; // number of frames already rendered
