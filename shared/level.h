@@ -4,9 +4,7 @@
 #include "defs.h"
 #include "flist.h"
 #include <list>
-
 class actor;
-
 
 
 
@@ -27,6 +25,7 @@ public:
 	virtual ~level();
 
     void get_actors_within(std::list<uint> *res, vec *pos, double range);
+    int get_generator();
 };
 
 

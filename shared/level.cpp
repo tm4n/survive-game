@@ -6,6 +6,7 @@
 #include <fstream>
 #include "helper.h"
 #include "actor.h"
+#include "box.h"
 using namespace std;
 
 // map access macro
@@ -29,6 +30,24 @@ level::level(const char *afilename)
 // Destructor
 level::~level()
 {
+}
+
+int level::get_generator()
+{
+	for (uint i = 0; i < actorlist.size; i++)
+	{
+		actor *ac = actorlist.at(i);
+		if (ac != NULL)
+		{
+			if (ac->type == ACTOR_TYPE_BOX)
+			{
+				box *b = (box*)ac;
+				if (b->box_type == BOX_TYPE_GENERATOR) return i;
+			}
+		}
+	}
+	
+	return -1;
 }
 
 
