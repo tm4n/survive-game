@@ -88,11 +88,12 @@ int net_sv::broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float healt
     return broadcast_event(NET_SYNC_PLAYER, (const char *)&s, sizeof(s_net_sync_player));
 }
 
-int net_sv::send_sync_box(uint actor_id, vec *pos, float health, ENetPeer *receiver)
+int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, ENetPeer *receiver)
 {
     s_net_sync_box s;
 
     s.actor_id = actor_id;
+	s.box_type = box_type;
     s.pos.set(pos);
     s.health = health;
 
@@ -116,6 +117,38 @@ int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float hea
 
     return broadcast_event(NET_SYNC_BOX, (const char *)&s, sizeof(s_net_sync_box));
 
+}
+
+int net_sv::send_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target, ENetPeer *receiver)
+{
+	s_net_sync_npc s;
+
+    s.actor_id = actor_id;
+    s.npc_type = npc_type;
+    s.pos.set(pos);
+	s.angle.set(ang);
+    s.health = health;
+	s.target = target;
+
+    printf("net_sync_npc mit actor_id=%u\n", actor_id);
+
+    return send_event(NET_SYNC_NPC, (const char *)&s, sizeof(s_net_sync_npc), receiver);
+}
+int net_sv::broadcast_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target)
+{
+	// TODO: broadcast only to synchronized players?
+    s_net_sync_npc s;
+
+    s.actor_id = actor_id;
+    s.npc_type = npc_type;
+    s.pos.set(pos);
+	s.angle.set(ang);
+    s.health = health;
+	s.target = target;
+
+    printf("net_sync_npc broadcast mit actor_id=%u\n", actor_id);
+
+    return broadcast_event(NET_SYNC_NPC, (const char *)&s, sizeof(s_net_sync_npc));
 }
 
 int net_sv::broadcast_remove_actor(uint actor_id)

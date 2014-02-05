@@ -1,16 +1,19 @@
 #include "npc_sv.h"
+#include "net_sv.h"
 #include <sstream>
 
 npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan) : npc(lvl_sv, npc_type, pos, pan)
 {
+
     // TODO: create AI depending on npc values
 
     std::ostringstream s;
-    s << " created NPC, type=" << npc_type;
+    s << " created NPC, type=" << npc_type << "position.z = " << position.z;
 
     log(LOG_DEBUG_VERBOSE, s.str().c_str());
 
-    //ctor
+	// update to all players
+    net_server->broadcast_sync_npc(id, npc_type, pos, pan, health, target);
 }
 
 npc_sv::~npc_sv()

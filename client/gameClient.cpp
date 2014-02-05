@@ -5,6 +5,7 @@
 #include "level_cl.h"
 #include "player_cl.h"
 #include "box_cl.h"
+#include "npc_cl.h"
 
 
 gameClient::gameClient(gameRenderer *arenderer)
@@ -128,6 +129,20 @@ void gameClient::handle_netevent(ENetEvent *event)
 							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer);
 						}
 						else log(LOG_ERROR, "Received NET_SYNC_BOX without level");
+
+						break;
+					}
+
+					case NET_SYNC_NPC:
+					{
+						s_net_sync_npc *d = (s_net_sync_npc*)data;
+
+						if (lvl != NULL)
+						{
+							// create a box at given position
+							new npc_cl(lvl, d->actor_id, d->npc_type, &d->pos, &d->angle, d->health, d->target, renderer);
+						}
+						else log(LOG_ERROR, "Received NET_SYNC_NPC without level");
 
 						break;
 					}

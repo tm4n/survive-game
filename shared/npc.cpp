@@ -4,9 +4,17 @@
 npc::npc(level* lvl, uint npc_type, vec *pos, vec *pan) : actor(lvl, ACTOR_TYPE_NPC, pos, pan)
 {
     this->npc_type = npc_type;
+	this->health = b_npcs::instance()->at(npc_type)->max_health;
+	this->target = -1;
 
-    // put to ground
-    this->position.z = lvl->border_ground;
+    init_values();
+}
+
+npc::npc(level* lvl, uint actor_id, uint npc_type, vec *pos, vec *pan, float health, int target) : actor(lvl, actor_id, ACTOR_TYPE_NPC, pos, pan)
+{
+    this->npc_type = npc_type;
+	this->health = health;
+	this->target = target;
 
     init_values();
 }

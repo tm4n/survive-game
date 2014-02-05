@@ -2,12 +2,10 @@
 #include "helper.h"
 #include <sstream>
 
-b_npcs *b_np;
-
-b_npcs::b_npcs(const char *filename)
+b_npcs::b_npcs()
 {
 	// init values
-		// NPC_MUMMY
+	// NPC_MUMMY
 	npc_data[NPC_MUMMY].name = "Mummy";
 	npc_data[NPC_MUMMY].res_mesh = ResourceLoader::meshType::Mummy;
 	npc_data[NPC_MUMMY].max_health = 8;
@@ -143,4 +141,17 @@ void b_npcs::err(const char *msg, int id)
 #else
 	std::cout << pr.str() << std::endl;
 #endif
+}
+
+// Thread safe singleton!
+std::unique_ptr<b_npcs> b_npcs::m_instance;
+std::once_flag b_npcs::m_onceFlag;
+
+b_npcs * b_npcs::instance()
+{
+    std::call_once(m_onceFlag,
+        [] {
+            m_instance.reset(new b_npcs);
+    });
+    return m_instance.get();
 }

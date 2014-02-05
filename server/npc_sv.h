@@ -10,7 +10,6 @@ class level_sv;
 class npc_sv : public npc
 {
     public:
-        vec spawn_position;
 
         npc_sv(level_sv *, uint, vec *, vec *);
         virtual ~npc_sv();

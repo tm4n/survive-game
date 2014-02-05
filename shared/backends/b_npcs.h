@@ -5,8 +5,11 @@
 #include "defs.h"
 #include <iostream>
 #include <string>
+#include <memory>
+#include <mutex>
 
 #define B_NPCS_ENTRIES 20
+
 
 // NPC_TYPES
 #define NPC_MUMMY 1
@@ -43,25 +46,25 @@ struct s_npcs{
 	float ai_max_z_diff;
 	float anim_speed;
 	int res_snd_taunt1;
-	int res_and_taunt2;
+	int res_snd_taunt2;
 };
 
 class b_npcs
 {
 public:
-
-	s_npcs npc_data[B_NPCS_ENTRIES];
-
-	b_npcs(const char *);
+	b_npcs();
 
 	s_npcs *at(uint id);
 
+	static b_npcs *instance();
+
 private:
+	s_npcs npc_data[B_NPCS_ENTRIES];
+
+	static std::unique_ptr<b_npcs> m_instance;
+    static std::once_flag m_onceFlag;
+
 	void err(const char *, int);
 };
-
-
-// globally available instance
-extern b_npcs *b_np;
 
 #endif

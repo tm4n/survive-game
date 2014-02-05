@@ -31,8 +31,12 @@ public:
 	int send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken, ENetPeer *receiver);
 	int broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken);
 
-	int send_sync_box(uint actor_id, vec *pos, float health, ENetPeer *receiver);
+	int send_sync_box(uint actor_id, char box_type, vec *pos, float health, ENetPeer *receiver);
 	int broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health);
+
+	int send_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target, ENetPeer *receiver);
+	int broadcast_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target);
+
 
 	int send_sync_finish(ENetPeer *receiver);
 

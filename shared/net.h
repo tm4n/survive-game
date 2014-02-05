@@ -81,6 +81,16 @@ struct s_net_sync_box
 	float health;
 };
 
+struct s_net_sync_npc
+{
+	uint32_t actor_id;
+	uint32_t npc_type;
+	vec pos;
+	vec angle;
+	float health;
+	int target;
+};
+
 struct s_net_remove_actor
 {
 	uint32_t actor_id;

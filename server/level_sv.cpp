@@ -12,7 +12,7 @@ level_sv::~level_sv()
 
 void level_sv::spawn_starters()
 {
-	vec v;
+	vec v, t;
 	// TODO: create generator
 	v.set(0, 0, border_ground);
 	new box_sv(this, BOX_TYPE_GENERATOR, &v);
@@ -45,6 +45,12 @@ void level_sv::spawn_starters()
 	new box_sv(this, BOX_TYPE_WOOD, &v);
 	v.set(180, -130, border_ground);
 	new box_sv(this, BOX_TYPE_WOOD, &v);
+
+	v.set(400, 0, border_ground+100.f);
+	new npc_sv(this, NPC_MUMMY, &v, &t);
+
+	v.set(400, 300, 0.f);
+	new npc_sv(this, NPC_HARPY, &v, &t);
 }
 
 player_sv *level_sv::get_player(uint actor_id)

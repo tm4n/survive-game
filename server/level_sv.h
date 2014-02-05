@@ -6,7 +6,10 @@
 #include <list>
 #include "box_sv.h"
 #include "player_sv.h"
+#include "npc_sv.h"
 class player_sv;
+class npc_sv;
+class box_sv;
 
 
 
@@ -20,7 +23,7 @@ class level_sv : public level
 
         player_sv *get_player(uint actor_id);
         box_sv *get_box(uint actor_id);
-        //npc_sv *get_npc(uint actor_id);
+        npc_sv *get_npc(uint actor_id);
 
     protected:
     private:

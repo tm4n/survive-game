@@ -304,8 +304,13 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
             {
                 box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
-                net_server->send_sync_box(i, &bo->position, bo->health, receiver);
+				net_server->send_sync_box(i, bo->box_type, &bo->position, bo->health, receiver);
             }
+			if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_NPC)
+			{
+				npc_sv *np = (npc_sv*)lvl->actorlist.elem[i];
+				net_server->broadcast_sync_npc(i, np->npc_type, &np->position, &np->angle, np->health, np->target);
+			}
         }
     }
     

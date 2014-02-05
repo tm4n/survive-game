@@ -141,8 +141,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			char *texture = new char[imgsize];
 			SDL_RWread(file, texture, imgsize, 1);
 
-			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5_REV, texture);
-        	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4_REV, texture);
+			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture);
+        	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, texture);
         	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
         	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);
         	
