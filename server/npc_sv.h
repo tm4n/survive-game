@@ -5,9 +5,6 @@
 #include "game.h"
 #include "level_sv.h"
 
-class actor_updater;
-class path;
-class npc_ai;
 class level_sv;
 
 class npc_sv : public npc
@@ -19,7 +16,6 @@ class npc_sv : public npc
         virtual ~npc_sv();
 
         virtual void frame(double time_delta);
-        virtual void set_state(uint new_state);
 
         virtual bool do_damage(uint target_actor, float damage);
 

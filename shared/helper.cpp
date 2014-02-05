@@ -1,9 +1,9 @@
 #include "helper.h"
+#include "defs.h"
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
-#include "backends/b_game.h"
 
 using namespace std;
 

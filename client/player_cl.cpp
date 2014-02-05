@@ -59,7 +59,7 @@ void player_cl::order_take_object()
 
 					if (ang_pan < 50.f && ang_tilt < 50.f)
 					{
-						// smaller is better
+						// smaller is better TODO: fix!
 						float heur = ang_pan + ang_tilt*2.f + position.dist(&ac->position)/20.f;
 						if (shortest_ang > heur)
 						{
