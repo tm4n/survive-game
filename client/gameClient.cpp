@@ -29,6 +29,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 {
 	switch (event->type)
     {
+		case ENET_EVENT_TYPE_NONE: break;
+    	
 		case ENET_EVENT_TYPE_CONNECT:
 		{
 			// not called on local network

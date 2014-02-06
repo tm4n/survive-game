@@ -13,7 +13,7 @@ box::box(level *lvl, char abox_type, vec *pos, float ahealth)
 	
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;
-	bb_max.z = 43-2.f;
+	bb_max.z = 43.2f;
 	bb_min.x = -21.6f;
 	bb_min.y = -21.6f;
 	bb_min.z = 0.f;
@@ -32,7 +32,7 @@ box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth)
 
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;
-	bb_max.z = 43-2.f;
+	bb_max.z = 43.2f;
 	bb_min.x = -21.6f;
 	bb_min.y = -21.6f;
 	bb_min.z = 0.f;

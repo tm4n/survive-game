@@ -31,8 +31,8 @@ public:
 	void removeRenderObject(RenderObject *obj);
 
 protected:
-	char *vertexShaderCode;
-	char *fragmentShaderCode;
+	const char *vertexShaderCode;
+	const char *fragmentShaderCode;
 
 	std::list<RenderObject*> objectList;
 
