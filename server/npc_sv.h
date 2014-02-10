@@ -15,10 +15,19 @@ class npc_sv : public npc
         virtual ~npc_sv();
 
         virtual void frame(double time_delta);
-
-        virtual bool do_damage(uint target_actor, float damage);
+		virtual void event_callback(int event_type, actor *ac);
 
     protected:
+
+		actor *get_nearest_target(bool get_barrier);
+
+		float npc_target_timer;
+		float send_pos_timer;
+		float jump_timer;
+		bool sv_attack_done;
+		int old_target;
+		vec last_position;
+
     private:
 };
 

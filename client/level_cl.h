@@ -5,6 +5,7 @@
 #include "gameRenderer.h"
 #include "box_cl.h"
 #include "player_cl.h"
+#include "npc_cl.h"
 
 class level_cl : public level
 {
@@ -14,6 +15,7 @@ public:
 	
 	player_cl *get_player(uint actor_id);
 	box_cl *get_box(uint actor_id);
+	npc_cl *get_npc(uint actor_id);
 
 protected:
 	gameRenderer *renderer;

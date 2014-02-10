@@ -47,3 +47,12 @@ box_cl *level_cl::get_box(uint actor_id)
     if (ac->type == ACTOR_TYPE_BOX) return (box_cl*)ac;
     return NULL;
 }
+
+npc_cl *level_cl::get_npc(uint actor_id)
+{
+	actor *ac = actorlist.at(actor_id);
+    if (ac == NULL) return NULL;
+
+    if (ac->type == ACTOR_TYPE_NPC) return (npc_cl*)ac;
+    return NULL;
+}

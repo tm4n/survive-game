@@ -19,6 +19,11 @@ RenderObject::RenderObject()
 	animProgress = 0.0f;
 
 	visible = true;
+
+	alpha = 1.0f;
+	coloring[0] = 0.f;
+	coloring[1] = 0.f;
+	coloring[2] = 0.f;
 }
 
 RenderObject::RenderObject(float *atranslation, float *arotation)
@@ -40,4 +45,9 @@ RenderObject::RenderObject(float *atranslation, float *arotation)
 	animProgress = 0.0f;
 
 	visible = true;
+
+	alpha = 1.0f;
+	coloring[0] = 0.f;
+	coloring[1] = 0.f;
+	coloring[2] = 0.f;
 }

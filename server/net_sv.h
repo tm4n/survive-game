@@ -50,7 +50,10 @@ public:
 	int broadcast_update_pos(uint actor_id, vec *v);
 	int broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *);
 	int send_update_target(uint actor_id, uint target, ENetPeer *receiver);
+	int broadcast_update_target(uint actor_id, uint target);
+	int broadcast_update_npc_orders(uint actor_id, int npc_orders);
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
+	int broadcast_update_health(uint actor_id, float health);
 };
 
 

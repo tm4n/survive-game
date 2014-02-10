@@ -12,10 +12,14 @@ public:
 	
 	virtual void frame(double time_delta);
 
+	Mesh *getMesh();
+	Mesh *getDmgMesh();
+
 protected:
 	gameRenderer *renderer;
 
-	RenderObject *ro;
+
+	RenderObject *ro, *ro_dmg;
 };
 
 

@@ -10,6 +10,7 @@ box::box(level *lvl, char abox_type, vec *pos, float ahealth)
 	gravity = 0.f;
 	taker_id = -1;
 	take_animation = -1.f;
+	faction = 0;
 	
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;
@@ -29,6 +30,7 @@ box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth)
 	gravity = 0.f;
 	taker_id = -1;
 	take_animation = -1.f;
+	faction = 0;
 
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;

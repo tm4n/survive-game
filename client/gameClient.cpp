@@ -267,6 +267,38 @@ void gameClient::handle_netevent(ENetEvent *event)
 						
 						break;
 					}
+					
+					case NET_UPDATE_HEALTH:
+					{
+						// get send data
+						s_net_update_health *d = (s_net_update_health *)data;
+						
+						actor * ac = lvl_cl->actorlist.at(d->actor_id);
+						if (ac != NULL)
+						{
+							printf("setting health for %i \n", d->actor_id);
+							ac->health = d->health;
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_HEALTH for invalid actor");
+						
+						break;
+					}
+
+					case NET_UPDATE_TARGET:
+					{
+						// get send data
+						s_net_update_target *d = (s_net_update_target *)data;
+						
+						npc_cl *np= lvl_cl->get_npc(d->actor_id);
+						if (np != NULL)
+						{
+							printf("setting target for %i \n", d->actor_id);
+							np->target = d->target;
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_TARGET for non-npc or invalid actor");
+						
+						break;
+					}
 
 					default:
 					{

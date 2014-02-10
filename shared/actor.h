@@ -23,6 +23,10 @@
 
 #define ST_DEATH 9
 
+#define EVENT_TYPE_COLLISION_ENTITY 1
+
+#define ENABLE_EVENT_COLLISION_ENTITY (1<<1)
+
 
 class level;
 
@@ -38,14 +42,17 @@ class actor
         vec position, angle;
 
 		vec bb_min, bb_max;
+		int event_mask;
 		
 		bool passable;
 
 		vec move_force;
+		float gravity;
 
         // Attributes, either read from file or dynamically created
         float max_health;
         float health;
+		int faction;
 
         float move_speed;
 
@@ -68,12 +75,13 @@ class actor
         void move_rel(vec *);
 		float move_rel_col(vec *);
         void turn(vec *);
-        void turn_to(vec *, double time_delta);
+        void turn_to(vec *);
 		virtual void set_state(uint new_state);
 
         void state_manager(double time_delta);
 
         virtual void frame(double time_delta);
+		virtual void event_callback(int event_type, actor *ac);
 
     protected:
 

@@ -3,6 +3,8 @@
 
 #include "RenderObject.h"
 #include <list>
+#include <vector>
+#include "vec.h"
 #include <string>
 #include "gl_core_2_1.h"
 #include "glm/glm.hpp"
@@ -19,6 +21,9 @@ public:
 	int numtris;
 	int numframes;
 
+	vec bb_min;
+	vec bb_max;
+
 	Mesh(const char *mesh_file, const char *tex_file);
 
 	virtual void draw(glm::mat4 mVPMatrix);
@@ -30,11 +35,15 @@ public:
     
 	void removeRenderObject(RenderObject *obj);
 
+	int animate(RenderObject* ro, const char* frame, float progress, int flags);
+
 protected:
 	const char *vertexShaderCode;
 	const char *fragmentShaderCode;
 
 	std::list<RenderObject*> objectList;
+
+	std::vector<std::string> frameNames;
 
 	glm::mat4 mTransformationMatrix;
 	glm::mat4 mFinalMatrix;
@@ -45,6 +54,8 @@ protected:
     GLuint mPositionHandle;
     GLuint mNextPositionHandle;
     GLuint mAnimProgressHandle;
+	GLuint mAlphaHandle;
+	GLuint mColoringHandle;
 	GLuint mTexHandle;
 
     GLuint *mVertexBuffer;

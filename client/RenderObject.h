@@ -15,6 +15,8 @@ public:
 	int animFrame;
 	int animNextFrame;
 	float animProgress;
+	float alpha;
+	glm::vec3 coloring;
 
 	bool visible;
 

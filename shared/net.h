@@ -44,6 +44,7 @@
 #define NET_UPDATE_ANG 53
 #define NET_UPDATE_HEALTH 54
 #define NET_UPDATE_WEAPON 55
+#define NET_UPDATE_NPC_ORDERS 56
 
 ////////////////////////////////////////////////
 // syncronization data
@@ -151,6 +152,12 @@ struct s_net_update_health
 {
     uint32_t actor_id;
     float health;
+};
+
+struct s_net_update_npc_orders
+{
+    uint32_t actor_id;
+    int npc_orders;
 };
 
 extern bool enet_initialized;

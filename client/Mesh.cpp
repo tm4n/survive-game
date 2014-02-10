@@ -3,7 +3,9 @@
 #include <fstream>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "SDL2/SDL.h"
 
 // base header
@@ -210,10 +212,27 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	for (int f = 0; f < numframes; f++)
 	{
+		std::string s;
 		mdl_frame_t frameheader;
 		mdl_trivertxs_t trivert;
 		SDL_RWread(file, &frameheader, sizeof(mdl_frame_t), 1);
 		if (frameheader.type == 0) return; // not supporting byte packed frames!
+
+		if (f == 1)
+		{
+			// store bb_max and min
+			bb_max.x = (header.scale[0] * (float)frameheader.bboxmax.rawposition[0]) + header.offset[0];
+			bb_max.y = (header.scale[1] * (float)frameheader.bboxmax.rawposition[1]) + header.offset[1];
+			bb_max.z = (header.scale[2] * (float)frameheader.bboxmax.rawposition[2]) + header.offset[2];
+			bb_min.x = (header.scale[0] * (float)frameheader.bboxmin.rawposition[0]) + header.offset[0];
+			bb_min.y = (header.scale[1] * (float)frameheader.bboxmin.rawposition[1]) + header.offset[1];
+			bb_min.z = (header.scale[2] * (float)frameheader.bboxmin.rawposition[2]) + header.offset[2];
+			/*printf("bb_max.x = %f; bb_max.y = %f; bb_max.z = %f; \n", bb_max.x, bb_max.y, bb_max.z);
+			printf("bb_min.x = %f; bb_min.y = %f; bb_min.z = %f; \n", bb_min.x, bb_min.y, bb_min.z);*/
+		}
+		frameheader.name[15] = 0; // make sure its null terminated!
+		s.assign((char*)frameheader.name);
+		frameNames.push_back(s);
 
 		for (int i = 0; i < numverts; i++)
 		{
@@ -335,8 +354,10 @@ void Mesh::draw(glm::mat4 mVPMatrix)
 	    // Apply the projection and view transformation
 	    glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, &mFinalMatrix[0][0]);
 	        
-	    // Upload blend values
+	    // Upload other values
 	    glUniform1f(mAnimProgressHandle, obj->animProgress);
+		glUniform1f(mAlphaHandle, obj->alpha);
+		glUniform3fv(mColoringHandle, 1, glm::value_ptr(obj->coloring));
 
 		err = glGetError();
 		if (err != 0) {
@@ -394,9 +415,12 @@ void Mesh::setShader() {
 			"#version 110 \n"
             "varying vec2 TexCoordOut; \n" 
             "uniform sampler2D Texture; \n"
+			"uniform float alpha; \n"
+			"uniform vec3 coloring; \n"
             "void main() { \n" 
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-            "  gl_FragColor = texture2D(Texture, TexCoordOut); \n" 
+			"  gl_FragColor = texture2D(Texture, TexCoordOut) + vec4(coloring, 0.0); \n" 
+			"  gl_FragColor.w *= alpha; \n"
             "}";
 }
 
@@ -422,8 +446,10 @@ void Mesh::initShader() {
     // get handle to vertex shader's vNextPosition member
     mNextPositionHandle = glGetAttribLocation(mProgram, "vNextPosition");
         
-    // get handle to vertex shader's vNextPosition member
+    // get handle to vertex shader's other members
     mAnimProgressHandle = glGetUniformLocation(mProgram, "animProgress");
+	mAlphaHandle = glGetUniformLocation(mProgram, "alpha");
+	mColoringHandle = glGetUniformLocation(mProgram, "coloring");
         
     // get handle to shape's transformation matrix
     mMVPMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");
@@ -472,4 +498,47 @@ void Mesh::addRenderObject(RenderObject *obj) {
     
 void Mesh::removeRenderObject(RenderObject *obj) {
     return objectList.remove(obj);
+}
+
+
+int Mesh::animate(RenderObject* ro, const char* frame, float progress, int flags)
+{
+	// count number of frames with that name
+	// TODO: make this static!
+	int start_frame = -1;
+	int num_frameset = 0;
+	int ct = 0;
+	for (std::string s : frameNames)
+	{
+		if (s.find(frame) == 0)
+		{
+			if (start_frame < 0) start_frame = ct;
+			num_frameset++;
+		}
+		ct++;
+	}
+
+	if (flags == 0)
+	{
+		if (progress > 100.f) progress = 0.f;
+	}
+	else
+	{
+		// continuous animatino
+		while (progress > 100.f) progress -= 100.f;
+	}
+
+	int target_frame = start_frame + (int)((progress/100.f) * num_frameset);
+	if (target_frame >= numframes) {puts("ERROR: frame too big on animation! How could this happen"); return 0;}
+	int target_next_frame = target_frame+1;
+	if (target_next_frame >= start_frame + num_frameset) target_next_frame = start_frame;
+	if (target_next_frame >= numframes) target_next_frame = numframes-1;
+
+	double intpart;
+	ro->animProgress = (float)modf((progress/100.f) * num_frameset, &intpart);
+
+	ro->animFrame = target_frame;
+	ro->animNextFrame = target_next_frame;
+
+	return target_frame;
 }

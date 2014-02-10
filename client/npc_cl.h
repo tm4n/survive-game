@@ -11,8 +11,14 @@ public:
 	virtual ~npc_cl();
 	
 	virtual void frame(double time_delta);
+	void animate(double time_delta);
+
+	Mesh* getMesh() {return renderer->resources.getMesh(b_npcs::instance()->at(npc_type)->res_mesh);}
 
 protected:
+	int old_anim;
+	float anim_prog;
+
 	gameRenderer *renderer;
 
 	RenderObject *ro;

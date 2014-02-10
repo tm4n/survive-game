@@ -26,6 +26,7 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
     if (pos != NULL) move(pos); else position.zero();
     if (pan != NULL) turn(pan); else angle.zero();
 
+	event_mask = 0;
 	move_speed = 1; // default move speed
 	state = 0;
 	passable = false;
@@ -44,6 +45,7 @@ actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
     if (pos != NULL) move(pos); else position.zero();
     if (pan != NULL) turn(pan); else angle.zero();
     
+	event_mask = 0;
 	move_speed = 1; // default move speed
 	state = 0;
 	passable = false;
@@ -239,21 +241,17 @@ float actor::move_rel_col(vec *reldir)
 	
 	float ch_moved_dist = position.dist(&ch_old_pos);
 	
-	/*if (my.emask & ENABLE_ENTITY)
+
+	// start event
+	if (event_mask & ENABLE_EVENT_COLLISION_ENTITY)
 	{
-		// start event
-		ent = NULL;
-		if (col_move_nearest[2] != NULL) ent = col_move_nearest[2];
-		if (col_move_nearest[1] != NULL) ent = col_move_nearest[1];
-		if (col_move_nearest[0] != NULL) ent = col_move_nearest[0];
+		actor *ac = NULL;
+		if (col_move_nearest[2] != NULL) ac = col_move_nearest[2];
+		if (col_move_nearest[1] != NULL) ac = col_move_nearest[1];
+		if (col_move_nearest[0] != NULL) ac = col_move_nearest[0];
 		
-		if (ent != NULL && my->event != NULL)
-		{
-			ch_event_type = EVENT_ENTITY;
-			fnc_event_prototype = my->event;
-			fnc_event_prototype(ent);
-		}
-	}*/
+		if (ac != NULL) event_callback(EVENT_TYPE_COLLISION_ENTITY, ac);
+	}
 	
 	return ch_moved_dist;
 }
@@ -262,18 +260,11 @@ void actor::turn(vec *newpan)
     angle.set(newpan);
 }
 
-void actor::turn_to(vec *pos, double time_delta)
+void actor::turn_to(vec *pos)
 {
-    float ang_pan = 90.0f - vec::angle(atan2(pos->x - position.x, pos->y - position.y))*(float)(180.0/M_PI);
-
-    angle.x += vec::angle(vec::angle(ang_pan) - vec::angle(angle.x))*(float)(0.5*time_delta);
-
-    // old code
-	/*float n = pos->y - position.y;
-	if (n == 0) n += 0.0001;
-    angle.x = atan((pos->x - position.x)/(n));
-	while (angle.x >= 360) angle.x -= 360;
-	while (angle.x < 0) angle.x += 360;*/
+	vec v (pos->x - position.x, pos->y - position.y, pos->z - position.z);
+    angle.x = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0/M_PI));
+	angle.y = vec::angle(asin(v.z / v.length())*(float)(180.0/M_PI));
 }
 
 
@@ -296,4 +287,10 @@ void actor::state_manager(double time_delta)
 void actor::frame(double time_delta)
 {
 	// WARNING: this code is overwritten on server and client!
+}
+
+
+void actor::event_callback(int event_type, actor *ac)
+{
+	// WARNING: this code might be overwritten on server and client
 }

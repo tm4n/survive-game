@@ -225,6 +225,26 @@ int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_inte
     return broadcast_event_except(NET_UPDATE_ANG, (const char*) &s, sizeof(s_net_update_ang), except);
 }
 
+int net_sv::broadcast_update_target(uint actor_id, uint target)
+{
+	s_net_update_target s;
+
+    s.actor_id = actor_id;
+    s.target = target;
+	
+	return broadcast_event(NET_UPDATE_TARGET, (const char *)&s, sizeof(s_net_update_target));
+}
+
+int net_sv::broadcast_update_npc_orders(uint actor_id, int npc_orders)
+{
+	s_net_update_npc_orders s;
+
+    s.actor_id = actor_id;
+    s.npc_orders = npc_orders;
+	
+	return broadcast_event(NET_UPDATE_NPC_ORDERS, (const char *)&s, sizeof(s_net_update_npc_orders));
+}
+
 int net_sv::send_update_target(uint actor_id, uint target, ENetPeer *receiver)
 {
     s_net_update_target s;
@@ -243,5 +263,15 @@ int net_sv::send_update_health(uint actor_id, float health, ENetPeer *receiver)
     s.health = health;
 
     return send_event(NET_UPDATE_HEALTH, (const char*) &s, sizeof(s_net_update_health), receiver);
+}
+
+int net_sv::broadcast_update_health(uint actor_id, float health)
+{
+    s_net_update_health s;
+
+    s.actor_id = actor_id;
+    s.health = health;
+
+    return broadcast_event(NET_UPDATE_HEALTH, (const char *)&s, sizeof(s_net_update_health));
 }
 

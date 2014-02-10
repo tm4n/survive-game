@@ -45,6 +45,8 @@ struct s_npcs{
 	int ai_type;
 	float ai_max_z_diff;
 	float anim_speed;
+	vec bb_min;
+	vec bb_max;
 	int res_snd_taunt1;
 	int res_snd_taunt2;
 };
