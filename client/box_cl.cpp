@@ -55,6 +55,8 @@ Mesh *box_cl::getMesh()
 		return renderer->resources.getMesh(ResourceLoader::meshType::Generator);
 		break;
 	}
+	
+	return NULL;
 }
 
 Mesh *box_cl::getDmgMesh()
@@ -68,6 +70,8 @@ Mesh *box_cl::getDmgMesh()
 		return renderer->resources.getMesh(ResourceLoader::meshType::Metalcrate_damaged);
 		break;
 	}
+	
+	return NULL;
 }
 
 void box_cl::frame(double time_delta)
