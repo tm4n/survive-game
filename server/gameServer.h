@@ -46,6 +46,7 @@ public:
 	
 	void npc_spawn(int etype, float ebonus);
 	void box_spawn();
+	void wpdrop_spawn(int wtype);
 	
 	// settings: number of max. enemies
 	int sv_num_npcs_limit;

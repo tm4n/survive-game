@@ -26,7 +26,7 @@ box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth)
 {
 	health = ahealth;
 	box_type = abox_type;
-	state = BOX_STATE_PARACHUTING;
+	if (position.z > lvl->level_ground) state = BOX_STATE_PARACHUTING; else state = BOX_STATE_DEFAULT;
 	gravity = 0.f;
 	taker_id = -1;
 	take_animation = -1.f;

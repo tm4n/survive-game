@@ -38,6 +38,9 @@ public:
 	int send_sync_box(uint actor_id, char box_type, vec *pos, float health, ENetPeer *receiver);
 	int broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health);
 
+	int send_sync_collectible(uint actor_id, char collectible_type, vec *pos, ENetPeer *receiver);
+	int broadcast_sync_collectible(uint actor_id, char collectible_type, vec *pos);
+
 	int send_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target, ENetPeer *receiver);
 	int broadcast_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target);
 

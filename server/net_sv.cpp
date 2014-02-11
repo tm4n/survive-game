@@ -137,6 +137,36 @@ int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float hea
 
 }
 
+int net_sv::send_sync_collectible(uint actor_id, char collectible_type, vec *pos, ENetPeer *receiver)
+{
+    s_net_sync_collectible s;
+
+    s.actor_id = actor_id;
+	s.collectible_type = collectible_type;
+    s.pos.set(pos);
+
+    printf("net_sync_collectible mit actor_id=%u\n", actor_id);
+
+    return send_event(NET_SYNC_COLLECTIBLE, (const char *)&s, sizeof(s_net_sync_collectible), receiver);
+
+}
+
+
+int net_sv::broadcast_sync_collectible(uint actor_id, char collectible_type, vec *pos)
+{
+    // TODO: broadcast only to synchronized players?
+    s_net_sync_collectible s;
+
+    s.actor_id = actor_id;
+	s.collectible_type = collectible_type;
+    s.pos.set(pos);
+
+    printf("net_sync_collectible broadcast mit actor_id=%u\n", actor_id);
+
+    return broadcast_event(NET_SYNC_COLLECTIBLE, (const char *)&s, sizeof(s_net_sync_collectible));
+
+}
+
 int net_sv::send_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float health, int target, ENetPeer *receiver)
 {
 	s_net_sync_npc s;

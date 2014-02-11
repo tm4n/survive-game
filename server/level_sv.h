@@ -12,6 +12,7 @@ class npc_sv;
 class box_sv;
 
 
+#define NUM_WPDROPS 10
 
 class level_sv : public level
 {
@@ -22,6 +23,8 @@ class level_sv : public level
         player_sv *get_player(uint actor_id);
         box_sv *get_box(uint actor_id);
         npc_sv *get_npc(uint actor_id);
+
+		bool wpdrops[NUM_WPDROPS];
 
     protected:
     private:

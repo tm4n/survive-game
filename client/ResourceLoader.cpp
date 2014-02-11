@@ -46,6 +46,17 @@ void ResourceLoader::load()
 	if (meshes[(int)meshType::Turred_MG]->loaded == false) {std::cout << "ERROR loading model for Turred_MG" << std::endl; exit(-1);}
 	meshes[(int)meshType::Turred_MG]->initShader();
 
+	m = new Mesh("assets/models/wc.mdl", NULL);
+	meshes[(int)meshType::Weaponcrate] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+
+	m = new Mesh("assets/models/parachute.mdl", NULL);
+	meshes[(int)meshType::Parachute] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+
 
 	// Environment
 

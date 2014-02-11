@@ -12,7 +12,7 @@ class ResourceLoader
 {
 public:
 	enum class meshType : int { Crate = 1, Crate_damaged = 2, Generator = 3, Generator_glass = 4, 
-		Metalcrate = 5, Metalcrate_damaged = 6, Turred = 8, Turred_MG = 9,
+		Metalcrate = 5, Metalcrate_damaged = 6, Turred = 8, Turred_MG = 9, Weaponcrate = 10, Parachute = 11,
 		Terrain = 20, Tree = 21, Shrub = 22,
 		Soldier = 30,
 		Mummy = 40, Werewolf = 41, Smasher = 42, Witch = 43, Hogman = 44, Knight = 45, Bauul = 46, Harpy = 47

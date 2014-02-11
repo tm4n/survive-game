@@ -6,7 +6,7 @@
 
 #define ACTOR_TYPE_PLAYER 1
 #define ACTOR_TYPE_BOX 2
-#define ACTOR_TYPE_CONTAINER 3
+#define ACTOR_TYPE_COLLECTIBLE 3
 #define ACTOR_TYPE_NPC 4
 
 #define ST_IDLE 0

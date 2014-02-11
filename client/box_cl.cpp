@@ -14,14 +14,17 @@ box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health,
 
 	if (box_type == BOX_TYPE_WOOD || box_type == BOX_TYPE_METAL)
 	{
-		ro_dmg = new RenderObject();	
-		ro_dmg->translation[0] = pos->x;
-		ro_dmg->translation[1] = pos->y;
-		ro_dmg->translation[2] = pos->z;
-
+		ro_dmg = new RenderObject(&position, &angle);	
 		getDmgMesh()->addRenderObject(ro_dmg);
 	}
 	else ro_dmg = NULL;
+
+	if (state == BOX_STATE_PARACHUTING)
+	{
+		ro_parachute = new RenderObject(&position, &angle);
+		renderer->resources.getMesh(ResourceLoader::meshType::Parachute)->addRenderObject(ro_parachute);
+	}
+	else ro_parachute = NULL;
 }
 
 
@@ -34,6 +37,12 @@ box_cl::~box_cl()
 	{
 		getDmgMesh()->removeRenderObject(ro_dmg);
 		delete ro_dmg;
+	}
+
+	if (ro_parachute != NULL)
+	{
+		renderer->resources.getMesh(ResourceLoader::meshType::Parachute)->removeRenderObject(ro_parachute);
+		delete ro_parachute;
 	}
 }
 
@@ -109,4 +118,21 @@ void box_cl::frame(double time_delta)
 		ro_dmg->translation[0] = position.x; ro_dmg->translation[1] = position.y; ro_dmg->translation[2] = position.z; 
 		ro_dmg->rotation[0] = angle.x; ro_dmg->rotation[1] = angle.y; ro_dmg->rotation[2] = angle.z; 
 	}
+
+	if (ro_parachute != NULL)
+	{
+		if (state != BOX_STATE_PARACHUTING)
+		{
+			// remove parachute
+			renderer->resources.getMesh(ResourceLoader::meshType::Parachute)->removeRenderObject(ro_parachute);
+			delete ro_parachute;
+			ro_parachute = NULL;
+		}
+		else
+		{
+			ro_parachute->translation[0] = position.x; ro_parachute->translation[1] = position.y; ro_parachute->translation[2] = position.z; 
+			ro_parachute->rotation[0] = angle.x; ro_parachute->rotation[1] = angle.y; ro_parachute->rotation[2] = angle.z; 
+		}
+	}
+
 }

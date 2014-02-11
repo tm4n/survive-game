@@ -125,6 +125,7 @@ void npc_sv::frame(double time_delta)
 	else
 	{
 		// TODO: dead
+		//if (integer(random(30)) == 0 && my.ai_type != NPC_AI_PLAYER_FLYING) new collectible_sv(lvl, COLLECTIBLE_TYPE_HEALTH, &position);
 		
 	}
 

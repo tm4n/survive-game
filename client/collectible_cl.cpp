@@ -1,0 +1,1 @@
+#include "collectible.h"

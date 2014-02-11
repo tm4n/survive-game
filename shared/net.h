@@ -23,7 +23,7 @@
 // SYNC also used for creation
 #define NET_SYNC_PLAYER 11
 #define NET_SYNC_BOX 12
-#define NET_SYNC_CONTAINER 13
+#define NET_SYNC_COLLECTIBLE 13
 #define NET_SYNC_NPC 14
 
 #define NET_SYNC_FINISH 15
@@ -83,6 +83,13 @@ struct s_net_sync_box
 	uint8_t box_type;
 	vec pos;
 	float health;
+};
+
+struct s_net_sync_collectible
+{
+	uint32_t actor_id;
+	uint8_t collectible_type;
+	vec pos;
 };
 
 struct s_net_sync_npc

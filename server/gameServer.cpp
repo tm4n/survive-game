@@ -18,11 +18,8 @@ using namespace std;
 #include "net_sv.h"
 #include "level_sv.h"
 #include "player_sv.h"
+#include "collectible_sv.h"
 
-
-// base85 functions from base95.cpp
-void encode_85(char *buf, const unsigned char *data, int bytes);
-int decode_85(char *dst, const char *buffer, int len);
 
 
 gameServer::gameServer()
@@ -218,7 +215,7 @@ void gameServer::run()
 						// set number of barriers to spawn
 						//sv_barrier_probability -= sv_barrier_probability/4; //don't lower anymore in current versions
 						
-						if (wave > 15) sv_wave_bonus += 0.1;
+						if (wave > 15) sv_wave_bonus += 0.1f;
 						
 						// update the players
 						net_server->broadcast_game_wave(wave);
@@ -329,6 +326,11 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
             {
                 box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
 				net_server->send_sync_box(i, bo->box_type, &bo->position, bo->health, receiver);
+            }
+			if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_COLLECTIBLE)
+            {
+                collectible_sv *co = (collectible_sv*)lvl->actorlist.elem[i];
+				net_server->send_sync_collectible(i, co->collectible_type, &co->position, receiver);
             }
 			if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_NPC)
 			{
@@ -854,7 +856,7 @@ void gameServer::spawner(double time_frame)
 					break;
 				}
 				
-				npc_spawn(spawn_type, 1.0 + ((get_num_players()-1)*(1.0/MAX_PLAYERS)) + sv_wave_bonus);
+				npc_spawn(spawn_type, 1.0f + ((get_num_players()-1.0f)*(1.0f/MAX_PLAYERS)) + sv_wave_bonus);
 				sv_spawned_npcs += 1;
 			}
 		}
@@ -867,39 +869,39 @@ void gameServer::spawner(double time_frame)
 	{
 		sv_barrier_timer -= 0.5;
 		
-		if (random_range(100) < sv_barrier_probability)
+		if ((float)random_range(100) < sv_barrier_probability)
 		{
-			/*if (game_wave >= 2 && game_wpcrates[WP_CHAINSAW] == 0)
+			if (wave >= 2 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_CHAINSAW] == false)
 			{
-				game_wpcrates[WP_CHAINSAW] = 1;
-				sv_wpcrate_spawn(WP_CHAINSAW);
+				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_CHAINSAW] = true;
+				wpdrop_spawn(COLLECTIBLE_TYPE_WP_CHAINSAW);
 				return;
 			}
 			
-			if (game_wave >= 4 && game_wpcrates[WP_WESSON] == 0)
+			if (wave >= 4 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_WESSON] == false)
 			{
-				game_wpcrates[WP_WESSON] = 1;
-				sv_wpcrate_spawn(WP_WESSON);
+				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_WESSON] = true;
+				wpdrop_spawn(COLLECTIBLE_TYPE_WP_WESSON);
 				return;
 			}
-			if (game_wave >= 7 && game_wpcrates[WP_HKSL8] == 0)
+			if (wave >= 7 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_HKSL8] == false)
 			{
-				game_wpcrates[WP_HKSL8] = 1;
-				sv_wpcrate_spawn(WP_HKSL8);
+				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_HKSL8] = true;
+				wpdrop_spawn(COLLECTIBLE_TYPE_WP_HKSL8);
 				return;
 			}
-			if (game_wave >= 10 && game_wpcrates[WP_SHOTGUN] == 0)
+			if (wave >= 10 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_SHOTGUN] == false)
 			{
-				game_wpcrates[WP_SHOTGUN] = 1;
-				sv_wpcrate_spawn(WP_SHOTGUN);
+				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_SHOTGUN] = true;
+				wpdrop_spawn(COLLECTIBLE_TYPE_WP_SHOTGUN);
 				return;
 			}
-			if (game_wave >= 14 && game_wpcrates[WP_USAS12] == 0)
+			if (wave >= 14 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_USAS12] == false)
 			{
-				game_wpcrates[WP_USAS12] = 1;
-				sv_wpcrate_spawn(WP_USAS12);
+				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_USAS12] = true;
+				wpdrop_spawn(COLLECTIBLE_TYPE_WP_USAS12);
 				return;
-			}*/
+			}
 			box_spawn();
 		}
 	}
@@ -956,8 +958,8 @@ void gameServer::box_spawn()
 	log(LOG_DEBUG, "Spawning barrier crate");
 		
 	// get position anywhere on the level^
-	pos.x = random_range(lvl->level_size*2) - lvl->level_size;
-	pos.y = random_range(lvl->level_size*2) - lvl->level_size;
+	pos.x = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
+	pos.y = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
 	pos.z = 1500.f;
 	
 	dice = random_range(75);
@@ -971,4 +973,18 @@ void gameServer::box_spawn()
 	{
 		new box_sv(lvl_sv, BOX_TYPE_WOOD, &pos, &sv_num_barriers);
 	}
+}
+
+void gameServer::wpdrop_spawn(int wtype)
+{
+	vec pos;
+
+	log(LOG_DEBUG, "Spawning weapon crate, Type ");
+	
+	// get position anywhere on the level^
+	pos.x = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
+	pos.y = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
+	pos.z = 1500.f;
+	
+	new collectible_sv(lvl_sv, (char)wtype, &pos);
 }

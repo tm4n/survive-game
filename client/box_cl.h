@@ -19,7 +19,7 @@ protected:
 	gameRenderer *renderer;
 
 
-	RenderObject *ro, *ro_dmg;
+	RenderObject *ro, *ro_dmg, *ro_parachute;
 };
 
 

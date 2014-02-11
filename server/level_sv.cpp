@@ -2,6 +2,7 @@
 
 level_sv::level_sv(const char *filename) : level(filename)
 {
+	for (int i = 0; i < NUM_WPDROPS; i++) wpdrops[i] = false;
 }
 
 // TODO: destructor

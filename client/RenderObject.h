@@ -2,6 +2,7 @@
 #define __RENDEROBJECT_H__
 
 #include <glm/glm.hpp>
+#include <vec.h>
 
 class RenderObject
 {
@@ -22,6 +23,9 @@ public:
 
 	RenderObject();
 	RenderObject(float *translation, float *rotation);
+	RenderObject(vec *translation, vec *rotation);
+private:
+	void setDefaults();
 };
 
 
