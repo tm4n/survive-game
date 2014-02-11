@@ -19,6 +19,24 @@ net_sv::net_sv(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std
 }
 
 
+int net_sv::num_connected_clients()
+{
+	if (local_only)
+	{
+		return 1; // if singleplayer, there is always a player connected
+	}
+	else
+	{
+		int ct = 0;
+		for (uint i = 0; i < eHost->peerCount; i++)
+		{
+			ENetPeer *p = &eHost->peers[i];
+			if (eHost->peers[i].state == ENET_PEER_STATE_CONNECTED) ct++;
+		}
+		return ct;
+	}
+}
+
 /////////////////////////////////////////////////////////////////
 // specialized send functions
 // server
@@ -179,6 +197,33 @@ int net_sv::send_join(uint own_actor_id, ENetPeer *receiver)
 	printf("sending net_send_join\n");
 
     return send_event(NET_JOIN, (const char *)&s, sizeof(s_net_join), receiver);
+}
+
+int net_sv::broadcast_game_wave(int game_wave)
+{
+    s_net_game_wave s;
+
+	s.game_wave = game_wave;
+
+    return broadcast_event(NET_GAME_WAVE, (const char *)&s, sizeof(s_net_game_wave));
+}
+
+int net_sv::broadcast_wave_wait_timer(int wave_wait_timer)
+{
+    s_net_wave_wait_timer s;
+
+	s.wave_wait_timer = wave_wait_timer;
+
+    return broadcast_event(NET_WAVE_WAIT_TIMER, (const char *)&s, sizeof(s_net_wave_wait_timer));
+}
+
+int net_sv::broadcast_game_state(int state)
+{
+    s_net_game_state s;
+
+	s.state = state;
+
+    return broadcast_event(NET_GAME_STATE, (const char *)&s, sizeof(s_net_game_state));
 }
 
 int net_sv::broadcast_take(uint actor_id, int taken_id)

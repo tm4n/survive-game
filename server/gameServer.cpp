@@ -36,6 +36,10 @@ gameServer::gameServer()
         log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
         exit(EXIT_FAILURE);
     }
+    
+    // TODO: set settings from the outside
+    sv_num_npcs_limit = 30;
+	sv_barrier_probability = 5.f;
 }
 
 gameServer::gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue)
@@ -49,6 +53,10 @@ gameServer::gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_qu
         log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
         exit(EXIT_FAILURE);
     }
+    
+    // TODO: set settings from the outside
+    sv_num_npcs_limit = 30;
+	sv_barrier_probability = 5.f;
 }
 
 
@@ -131,7 +139,7 @@ void gameServer::run()
                  "An error occurred while trying to create an network gameServer host.\n");
         exit (EXIT_FAILURE);
     }
-    printf("Network gameServer created!\n");
+    log(LOG_DEBUG, "Network gameServer created!\n");
     
     
 	//////////////////////////////////////////////////////////
@@ -167,23 +175,65 @@ void gameServer::run()
 		// Game logic
 		if (state == GAME_STATE_WAITING)
 		{
-			// check if a player wants to start
+			reset();
+			// check if a player wants to start (is done with event currently!)
 		}
 		if (state == GAME_STATE_RUNNING)
-		{
-			// game logic
-			//sv_spawner();
+		{			
+			// spawn npcs and boxes
+			spawner(time_delta);
 		
 			// check if the generator has been destroyed
-			//if (game_generator == ANET_ERROR) game_state = GAME_STATE_END;
+			if (lvl_sv->get_box(lvl_sv->get_generator()) == NULL) state = GAME_STATE_END;
 			
 			// check if there are still players connected!
-			//if (enet_connected_clients() <= 0) game_state = GAME_STATE_END;
+			if (net_server->num_connected_clients() <= 0) state = GAME_STATE_END;
+			
+			
+			// check if we are counting down a wave
+			if (wave_wait_timer > 0 && state == GAME_STATE_RUNNING)
+			{
+				// wait one second!
+				wave_wait_tick += ((float)time_delta) / 16.f;
+				if (wave_wait_tick > 1.0f)
+				{
+					wave_wait_tick -= 1.0f;
+					
+					wave_wait_timer -= 1;
+					net_server->broadcast_wave_wait_timer(wave_wait_timer);
+					
+					if (wave_wait_timer == 0)
+					{
+						// advance to next wave! 
+						
+						sv_spawned_npcs = 0;
+						sv_spawn_timer = 0.f;
+						sv_barrier_timer = 0.f;
+						
+						wave += 1;
+						
+						// set number of npcs to spawn
+						sv_amount_npcs = 5 + (int)(log((double)(wave+1))*(5.f + get_num_players()*3.f));
+						
+						// set number of barriers to spawn
+						//sv_barrier_probability -= sv_barrier_probability/4; //don't lower anymore in current versions
+						
+						if (wave > 15) sv_wave_bonus += 0.1;
+						
+						// update the players
+						net_server->broadcast_game_wave(wave);
+						
+						std::cout << "Wave " << wave << " started" << std::endl;
+					}
+				}
+			}
 			
 		}
 		if (state == GAME_STATE_END)
 		{
 			// Timeout, then switch to GAME_STATE_WAITING
+			
+			// only do once:
 		}
 
 
@@ -231,49 +281,6 @@ void gameServer::run()
 }
 
 
-/////////////////////////////////////
-// Start next wave
-void gameServer::next_wave()
-{
-	puts("Waiting for next wave.");
-	
-	// set waiting timer
-	//game_wait_timer = 45 + game_wave*10;
-	//game_wait_timer = minv(game_wait_timer, 200);
-	wait_timer = 5; 	//DEBUG: waves immediately
-	
-	//enet_sendto(&game_wait_timer, sizeof(int), BROADCAST);
-	
-	if (wait_timer > 0 && state == GAME_STATE_RUNNING)
-	{
-		/*wait(-1);
-		game_wait_timer -= 1;
-		enet_sendto(&game_wait_timer, sizeof(int), BROADCAST);*/
-	}
-	else
-	{
-		sv_spawned_npcs = 0;
-		sv_spawn_timer = 0;
-		sv_barrier_timer = 0;
-		
-		wave += 1;
-		
-		// set number of npcs to spawn
-		//sv_amount_npcs = 5 + (int)(log(wave+1)*(5 + game_num_players*3));
-		
-		// set number of barriers to spawn
-		//sv_barrier_probability -= sv_barrier_probability/4; don't lower anymore in current versions
-		
-		//if (wave > 15) sv_wave_bonus += 0.1;
-		
-		
-		// update the players
-		//enet_sendto(&game_wave, sizeof(int), BROADCAST);
-		
-		std::cout << "Wave " << wave << " started" << std::endl;
-	}
-}
-
 //////////////////////////////////////
 // destructor
 gameServer::~gameServer()
@@ -281,7 +288,24 @@ gameServer::~gameServer()
 	
 }
 
-
+int gameServer::get_num_players()
+{
+	// iterator through players
+	int ct = 0;
+	for (uint i = 0; i < net_server->eHost->peerCount; i++)
+	{
+		ENetPeer *p = &net_server->eHost->peers[i];
+		if (p->state == ENET_PEER_STATE_CONNECTED)
+		{
+			s_peer_data *pd = (s_peer_data *)p->data;
+			if (pd != NULL)
+			{
+				if (pd->clstate == 2) ct++; // if player is in game
+			}
+		}
+	}
+	return ct;
+}
 
 //////////////////////////////////////
 // network data
@@ -635,10 +659,316 @@ void gameServer::handle_netevent(ENetEvent *event)
 void gameServer::start_match()
 {
 	// reset values
+	reset();
 	
-	// reset level (lat0r)   
+	// reset level (lat0r, maybe done on exit?  
 	
 	// add level starters
-    lvl_sv->spawn_starters();
+	vec v, t;
+	// TODO: create generator
+	v.set(0, 0, lvl->level_ground);
+	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
+	
+	// create starting crates
+	v.set(180, 180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(130, 180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(180, 130, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	
+	v.set(-180, 180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(-130, 180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(-180, 130, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	
+	v.set(-180, -180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(-130, -180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(-180, -130, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	
+	v.set(180, -180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(130, -180, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+	v.set(180, -130, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
+
+	v.set(400, 0, lvl->level_ground);
+	new npc_sv(lvl_sv, NPC_MUMMY, &v, &t, &sv_num_npcs);
+
+	v.set(400, 300, 0.f);
+	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
+    
+    state = GAME_STATE_RUNNING;
+    net_server->broadcast_game_state(state);
+    
+    // start countdown to first
+    next_wave();
 }
 
+void gameServer::reset()
+{
+	wave = 0;
+	wave_wait_timer = 0;
+	wave_wait_tick = 0.f;
+	
+	sv_spawned_npcs = 0;  // number of spawned npcs this round
+	sv_amount_npcs = 0;  // number of npcs to spawn this round
+	sv_num_npcs = 0;  // number of npcs currently alive
+
+	sv_num_barriers = 0;
+
+	sv_spawn_timer = 0.f;
+	sv_spawn_cap = 0.f;
+	sv_barrier_timer = 0.f;
+	
+	sv_wave_bonus = 0.f;
+}
+
+void gameServer::spawner(double time_frame)
+{
+	int spawn_type = 0;
+	int dice;
+	
+	// don't do any enemy if we are currently waiting for a new wave
+	if (wave_wait_timer <= 0)
+	{
+		
+		// check if we are ready a new wave, don't wait for all enemies to die
+		if (sv_spawned_npcs >= sv_amount_npcs && sv_num_npcs < sv_num_npcs_limit/4 && wave_wait_timer == 0)
+		{
+			next_wave();
+		}
+		
+		// spawn npcs
+		sv_spawn_cap = -0.2f*(float)get_num_players()+1.8f;
+		if (wave > 12) sv_spawn_cap -= ((float)wave-12.f)*0.1f;
+		sv_spawn_cap = std::max(sv_spawn_cap, 0.1f);
+		
+		if (sv_spawn_timer >= sv_spawn_cap)
+		{
+			sv_spawn_timer -= sv_spawn_cap;
+			
+			if (sv_spawned_npcs < sv_amount_npcs && sv_num_npcs < sv_num_npcs_limit)
+			{
+				// roll the dice
+				dice = random_range(100);
+
+				// decide which to spawn
+				
+				switch(wave)
+				{
+					case 1:
+						spawn_type = NPC_MUMMY;
+					break;
+					
+					case 2:
+						if (dice < 12) spawn_type = NPC_SMASHER; else spawn_type = NPC_MUMMY;
+					break;
+				
+					case 3:
+						if (dice < 20) spawn_type = NPC_SMASHER; else spawn_type = NPC_MUMMY;
+					break;
+					
+					
+					case 4:
+						if (dice < 15) spawn_type = NPC_SMASHER; else
+							if (dice > 80) spawn_type = NPC_WEREWOLF;
+								else spawn_type = NPC_MUMMY;
+					break;
+				
+					case 5:
+						if (dice < 60) spawn_type = NPC_WITCH;
+								else spawn_type = NPC_SMASHER;
+					break;
+				
+					case 6:
+						if (dice < 40) spawn_type = NPC_WITCH; else
+							if (dice > 80) spawn_type = NPC_WEREWOLF;
+								else spawn_type = NPC_MUMMY;
+					break;
+				
+					case 7:
+						if (dice < 30) spawn_type = NPC_WITCH; else
+							if (dice > 70) spawn_type = NPC_WEREWOLF;
+								else spawn_type = NPC_MUMMY;
+					break;
+					
+					
+					case 8:
+						if (dice < 20) spawn_type = NPC_HOGMAN; else
+							if (dice > 70) spawn_type = NPC_WITCH;
+								else spawn_type = NPC_MUMMY;
+					break;
+					
+					case 9:
+						spawn_type = NPC_WEREWOLF;
+					break;
+					
+					case 10:
+						if (dice < 50) spawn_type = NPC_HOGMAN; else
+							if (dice > 80) spawn_type = NPC_KNIGHT;
+								else spawn_type = NPC_MUMMY;
+					break;
+					
+					case 11:
+						if (dice < 30) spawn_type = NPC_WITCH; else
+							if (dice > 85) spawn_type = NPC_HARPY;
+								else spawn_type = NPC_KNIGHT;
+					break;
+					
+					case 12:
+						if (dice < 30) spawn_type = NPC_SMASHER; else
+							if (dice > 85) spawn_type = NPC_HARPY;
+								else spawn_type = NPC_WITCH;
+					break;
+					
+					case 13:
+						spawn_type = NPC_HARPY;
+					break;
+					
+					case 14:
+						if (dice < 40) spawn_type = NPC_WITCH; else
+							if (dice > 90) spawn_type = NPC_HARPY;
+								else spawn_type = NPC_KNIGHT;
+					break;
+					
+					case 15:
+						if (dice < 30) spawn_type = NPC_WITCH; else
+							if (dice > 50) spawn_type = NPC_HARPY;
+								else spawn_type = NPC_BAUUL;
+					break;
+					
+					default:
+					if (dice < 25) {spawn_type = NPC_WITCH; break;}
+					if (dice < 50) {spawn_type = NPC_HOGMAN; break;}
+					if (dice < 60) {spawn_type = NPC_SMASHER; break;}
+					if (dice < 65) {spawn_type = NPC_HARPY; break;}
+					if (dice < 70) {spawn_type = NPC_WEREWOLF; break;}
+					spawn_type = NPC_KNIGHT;
+					break;
+				}
+				
+				npc_spawn(spawn_type, 1.0 + ((get_num_players()-1)*(1.0/MAX_PLAYERS)) + sv_wave_bonus);
+				sv_spawned_npcs += 1;
+			}
+		}
+		
+	}
+	
+	// TODO: maybe make spawning more random without counter?
+	// spawn barriers
+	if (sv_barrier_timer >= 0.5)
+	{
+		sv_barrier_timer -= 0.5;
+		
+		if (random_range(100) < sv_barrier_probability)
+		{
+			/*if (game_wave >= 2 && game_wpcrates[WP_CHAINSAW] == 0)
+			{
+				game_wpcrates[WP_CHAINSAW] = 1;
+				sv_wpcrate_spawn(WP_CHAINSAW);
+				return;
+			}
+			
+			if (game_wave >= 4 && game_wpcrates[WP_WESSON] == 0)
+			{
+				game_wpcrates[WP_WESSON] = 1;
+				sv_wpcrate_spawn(WP_WESSON);
+				return;
+			}
+			if (game_wave >= 7 && game_wpcrates[WP_HKSL8] == 0)
+			{
+				game_wpcrates[WP_HKSL8] = 1;
+				sv_wpcrate_spawn(WP_HKSL8);
+				return;
+			}
+			if (game_wave >= 10 && game_wpcrates[WP_SHOTGUN] == 0)
+			{
+				game_wpcrates[WP_SHOTGUN] = 1;
+				sv_wpcrate_spawn(WP_SHOTGUN);
+				return;
+			}
+			if (game_wave >= 14 && game_wpcrates[WP_USAS12] == 0)
+			{
+				game_wpcrates[WP_USAS12] = 1;
+				sv_wpcrate_spawn(WP_USAS12);
+				return;
+			}*/
+			box_spawn();
+		}
+	}
+	
+	sv_spawn_timer += (float)time_frame / 16.f;
+	sv_barrier_timer += (float)time_frame / 16.f;
+}
+
+
+
+
+/////////////////////////////////////
+// Start next wave
+void gameServer::next_wave()
+{
+	log(LOG_DEBUG, "Waiting for next wave.");
+	
+	// set waiting timer
+	//game_wait_timer = 45 + game_wave*10;
+	//game_wait_timer = minv(game_wait_timer, 200);
+	wave_wait_timer = 5; 	//DEBUG: waves immediately
+	
+	net_server->broadcast_wave_wait_timer(wave_wait_timer);
+}
+
+
+void gameServer::npc_spawn(int etype, float ebonus)
+{
+	// debug message:
+	/*tr_cpy (str_temp, "Spawning NPC: ");
+	str_cat(str_temp, str_for_int(NULL, etype));
+	str_cat(str_temp, " with bonus ");
+	str_cat(str_temp, str_for_num(NULL, ebonus));
+	sv_debug(str_temp);*/
+	
+	// determine where they should spawn
+	float ang = toRadians((float)random_range(360));
+	vec v;
+	v.x = cos(ang) * lvl->level_size;
+	v.y = sin(ang) * lvl->level_size;
+	
+	if (b_npcs::instance()->at(etype)->ai_type == NPC_AI_PLAYER_FLYING) v.z = 200.f + (float)random_range(400);
+	else v.z = lvl->level_ground;
+	
+	npc_sv *np = new npc_sv(lvl_sv, etype, &v, NULL, &sv_num_npcs);
+	np->health *= ebonus;
+}
+
+void gameServer::box_spawn()
+{
+	vec pos;
+	int dice;
+	
+	log(LOG_DEBUG, "Spawning barrier crate");
+		
+	// get position anywhere on the level^
+	pos.x = random_range(lvl->level_size*2) - lvl->level_size;
+	pos.y = random_range(lvl->level_size*2) - lvl->level_size;
+	pos.z = 1500.f;
+	
+	dice = random_range(75);
+	if (dice <= 12)
+	{
+		if (dice <= 1.5)
+			new box_sv(lvl_sv, BOX_TYPE_TURRET, &pos, &sv_num_barriers);
+		else new box_sv(lvl_sv, BOX_TYPE_METAL, &pos, &sv_num_barriers);
+	}
+	else
+	{
+		new box_sv(lvl_sv, BOX_TYPE_WOOD, &pos, &sv_num_barriers);
+	}
+}

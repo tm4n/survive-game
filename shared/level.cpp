@@ -25,6 +25,9 @@ level::level(const char *afilename)
 	border_height = 1400.f;
 	border_max = 2000.f;
 	border_min = -2000.f;
+	
+	level_size = 2000.f; // determains spawn position
+	level_ground = -240.f;
 }
 
 // Destructor

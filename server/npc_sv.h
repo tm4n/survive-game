@@ -11,7 +11,7 @@ class npc_sv : public npc
 {
     public:
 
-        npc_sv(level_sv *, uint, vec *, vec *);
+        npc_sv(level_sv *, uint, vec *, vec *, int *);
         virtual ~npc_sv();
 
         virtual void frame(double time_delta);
@@ -27,6 +27,8 @@ class npc_sv : public npc
 		bool sv_attack_done;
 		int old_target;
 		vec last_position;
+		
+		int *npc_counter;
 
     private:
 };

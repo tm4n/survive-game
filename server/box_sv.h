@@ -7,13 +7,14 @@ class box_sv : public box
 {
 
 public:
-	box_sv(level *, char box_type, vec *);
+	box_sv(level *, char box_type, vec *, int *box_counter);
 	~box_sv();
 
 	virtual void frame(double time_delta);
 protected:
 	
 	float old_health;
+	int *box_counter;
 
 private:
 

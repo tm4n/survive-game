@@ -24,7 +24,7 @@ public:
 	
 	int wave;
 	
-	int wait_timer;
+	int wave_wait_timer;
 
 
 	virtual void handle_netevent(ENetEvent *event) = 0;

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
+#include <random>
 
 using namespace std;
 
@@ -243,4 +244,22 @@ void log(int prop, char const* str)
 float toRadians(float d)
 {
 	return (d * (float)M_PI / 180.f);
+}
+
+// global generator
+std::minstd_rand *gen = NULL;
+
+void random_seed(int seed)
+{
+	if (gen != NULL) delete gen;
+	gen = new std::minstd_rand(seed);
+}
+
+int random_range(int mx)
+{
+	if (gen == NULL) gen = new std::minstd_rand();
+	
+	std::uniform_int_distribution<> d(0, mx);
+	
+	return d(*gen);
 }

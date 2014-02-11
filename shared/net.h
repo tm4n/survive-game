@@ -33,6 +33,9 @@
 #define NET_REQUEST_JOIN 20
 #define NET_JOIN 21
 
+#define NET_GAME_WAVE 22
+#define NET_WAVE_WAIT_TIMER 23
+
 
 #define NET_INPUT_KEYS 40
 #define NET_TAKE 41
@@ -100,6 +103,21 @@ struct s_net_remove_actor
 struct s_net_join
 {
 	uint32_t own_actor_id;
+};
+
+struct s_net_game_wave
+{
+	int32_t game_wave;
+};
+
+struct s_net_wave_wait_timer
+{
+	int32_t wave_wait_timer;
+};
+
+struct s_net_game_state
+{
+	int32_t state;
 };
 
 // value updates

@@ -2,7 +2,7 @@
 #include "net_sv.h"
 #include <sstream>
 
-npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan) : npc(lvl_sv, npc_type, pos, pan)
+npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan, int* counter) : npc(lvl_sv, npc_type, pos, pan)
 {
 	npc_target_timer = 0.f;
 	send_pos_timer = 0.f;
@@ -10,6 +10,7 @@ npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan) : npc(lvl_sv
 	sv_attack_done = false;
 	old_target = target;
 	last_position.zero();
+	npc_counter = counter;
 	// set events?
     // TODO: create AI depending on npc values
 
@@ -19,12 +20,16 @@ npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan) : npc(lvl_sv
     log(LOG_DEBUG_VERBOSE, s.str().c_str());
 
 	// update to all players
-    net_server->broadcast_sync_npc(id, npc_type, pos, pan, health, target);
+    net_server->broadcast_sync_npc(id, npc_type, &position, &angle, health, target);
+    
+    *npc_counter += 1;
 }
 
 npc_sv::~npc_sv()
 {
+	net_server->broadcast_remove_actor(id);
 	
+	*npc_counter -= 1;
 }
 
 void npc_sv::frame(double time_delta)

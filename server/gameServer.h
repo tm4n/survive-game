@@ -38,9 +38,20 @@ public:
     void synchronizeClient(ENetPeer *receiver);
 	void handle_netevent(ENetEvent *event);
 	
+	int get_num_players();
+	
+	void reset();
 	void start_match();
+	void spawner(double time_frame);
 	
+	void npc_spawn(int etype, float ebonus);
+	void box_spawn();
 	
+	// settings: number of max. enemies
+	int sv_num_npcs_limit;
+	float sv_barrier_probability;
+	
+	// internal counters:
 	int sv_spawned_npcs;  // number of spawned npcs this round
 	int sv_amount_npcs;  // number of npcs to spawn this round
 	int sv_num_npcs;  // number of npcs currently alive
@@ -50,6 +61,9 @@ public:
 	float sv_spawn_timer;
 	float sv_spawn_cap;
 	float sv_barrier_timer;
+	float wave_wait_tick;
+	
+	float sv_wave_bonus;
 
 private:
     bool init();

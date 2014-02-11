@@ -20,6 +20,8 @@ public:
 	net_sv();
 	net_sv(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
 	
+	int num_connected_clients();
+	
 	///////////////////////////////////////////////
 	// special send functions for server
 
@@ -27,6 +29,8 @@ public:
 	int send_sync_server(const char *mapfile, ENetPeer *receiver);
 
 	int broadcast_chat(const char* msg, uint len);
+	
+	int broadcast_game_state(int state);
 
 	int send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken, ENetPeer *receiver);
 	int broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken);
@@ -43,6 +47,9 @@ public:
 	int broadcast_remove_actor(uint actor_id);
 
 	int send_join(uint own_actor_id, ENetPeer *receiver);
+	
+	int broadcast_game_wave(int game_wave);
+	int broadcast_wave_wait_timer(int wave_wait_timer);
 	
 	int broadcast_take(uint actor_id, int taken_id);
 

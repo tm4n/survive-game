@@ -17,6 +17,9 @@ public:
     float border_height;
     float border_max;
     float border_min;
+    
+    float level_size;
+    float level_ground;
 
 	// actors in level
 	flist<actor> actorlist;

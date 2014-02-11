@@ -18,8 +18,6 @@ class level_sv : public level
     public:
         level_sv(const char *);
         ~level_sv();
-        
-        void spawn_starters();
 
         player_sv *get_player(uint actor_id);
         box_sv *get_box(uint actor_id);

@@ -7,7 +7,7 @@ game::game()
 	
 	lvl = NULL;
 	
-	wait_timer = 0;
+	wave_wait_timer = 0;
 }
 
 game::~game()
