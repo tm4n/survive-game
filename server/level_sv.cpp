@@ -20,6 +20,15 @@ player_sv *level_sv::get_player(uint actor_id)
     return NULL;
 }
 
+collectible_sv *level_sv::get_collectible(uint actor_id)
+{
+    actor *ac = actorlist.at(actor_id);
+    if (ac == NULL) return NULL;
+
+    if (ac->type == ACTOR_TYPE_COLLECTIBLE) return (collectible_sv*)ac;
+    return NULL;
+}
+
 box_sv *level_sv::get_box(uint actor_id)
 {
     actor *ac = actorlist.at(actor_id);
@@ -30,3 +39,21 @@ box_sv *level_sv::get_box(uint actor_id)
 }
 
 
+void level_sv::get_players_within(std::list<uint> *res, vec *pos, double range)
+{
+    for (uint i = 0; i < actorlist.size; i++)
+    {
+        actor *act = actorlist.at(i);
+        if (act != NULL)
+        {
+            // check if within range
+            if (act->type == ACTOR_TYPE_PLAYER)
+            {
+				if (act->position.dist(pos) <= range)
+				{
+					res->push_back(i);
+				}
+            }
+        }
+    }
+}

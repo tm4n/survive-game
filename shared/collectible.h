@@ -12,6 +12,9 @@
 
 #define COLLECTIBLE_TYPE_HEALTH 20
 
+#define COLLECTIBLE_STATE_DEFAULT 1
+#define COLLECTIBLE_STATE_PARACHUTE 2
+
 class collectible : public actor
 {
 public:

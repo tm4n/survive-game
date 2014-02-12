@@ -5,6 +5,7 @@
 #include "level_cl.h"
 #include "player_cl.h"
 #include "box_cl.h"
+#include "collectible_cl.h"
 #include "npc_cl.h"
 
 
@@ -134,6 +135,20 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 						break;
 					}
+					
+					case NET_SYNC_COLLECTIBLE:
+					{
+						s_net_sync_collectible *d = (s_net_sync_collectible*)data;
+
+						if (lvl != NULL)
+						{
+							// create a box at given position
+							new collectible_cl(lvl, d->actor_id, d->collectible_type, &d->pos, renderer);
+						}
+						else log(LOG_ERROR, "Received NET_SYNC_COLLECTIBLE without level");
+
+						break;
+					}
 
 					case NET_SYNC_NPC:
 					{
@@ -194,6 +209,33 @@ void gameClient::handle_netevent(ENetEvent *event)
 						}
 						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
 
+						break;
+					}
+					
+					case NET_GAME_STATE:
+					{
+						s_net_game_state *d = (s_net_game_state*)data;
+						
+						state = d->state;
+						
+						break;
+					}
+					
+					case NET_GAME_WAVE:
+					{
+						s_net_game_wave *d = (s_net_game_wave*)data;
+						
+						wave = d->game_wave;
+						
+						break;
+					}
+					
+					case NET_WAVE_WAIT_TIMER:
+					{
+						s_net_wave_wait_timer *d = (s_net_wave_wait_timer*)data;
+						
+						wave_wait_timer = d->wave_wait_timer;
+						
 						break;
 					}
 					
