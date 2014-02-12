@@ -152,11 +152,7 @@ void b_npcs::err(const char *msg, int id)
 	std::ostringstream pr;
 	pr << "ERROR in b_npcs in id=" << id << " :" << msg;
 
-#ifdef ACKNEX
-	error((char*)pr.str().c_str());
-#else
-	std::cout << pr.str() << std::endl;
-#endif
+	log(LOG_ERROR, pr.str().c_str());
 }
 
 // Thread safe singleton!
