@@ -12,10 +12,11 @@ class ResourceLoader
 {
 public:
 	enum class meshType : int { Crate = 1, Crate_damaged = 2, Generator = 3, Generator_glass = 4, 
-		Metalcrate = 5, Metalcrate_damaged = 6, Turred = 8, Turred_MG = 9, Weaponcrate = 10, Parachute = 11,
+		Metalcrate = 5, Metalcrate_damaged = 6, Turred = 8, Turred_MG = 9, Weaponcrate = 10, Parachute = 11, Powerup_health = 12,
 		Terrain = 20, Tree = 21, Shrub = 22,
 		Soldier = 30,
-		Mummy = 40, Werewolf = 41, Smasher = 42, Witch = 43, Hogman = 44, Knight = 45, Bauul = 46, Harpy = 47
+		Mummy = 40, Werewolf = 41, Smasher = 42, Witch = 43, Hogman = 44, Knight = 45, Bauul = 46, Harpy = 47,
+		Colt = 60, Colt_hand = 61, Chainsaw = 62, Chainsaw_hand = 63, Wesson = 64, Wesson_hand = 65, HKSL8 = 66, HKSL8_hand = 67, Shotgun = 68, Shotgun_hand = 69, USAS12 = 70, USAS12_hand = 71
 		};
 
 	enum class texType : int { Pointer = 1, MenuBackground = 2, MenuPlay = 3, MenuMultiplayer = 4, MenuHelp = 5, MenuOptions = 6, MenuQuit = 7,

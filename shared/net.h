@@ -52,6 +52,10 @@
 ////////////////////////////////////////////////
 // syncronization data
 
+// align at 4
+#pragma pack(push)
+#pragma pack(4)
+
 struct s_net_version
 {
     uint32_t version;
@@ -80,7 +84,7 @@ struct s_net_sync_player
 struct s_net_sync_box
 {
 	uint32_t actor_id;
-	uint8_t box_type;
+	uint32_t box_type;
 	vec pos;
 	float health;
 };
@@ -88,7 +92,7 @@ struct s_net_sync_box
 struct s_net_sync_collectible
 {
 	uint32_t actor_id;
-	uint8_t collectible_type;
+	uint32_t collectible_type;
 	vec pos;
 };
 
@@ -184,6 +188,8 @@ struct s_net_update_npc_orders
     uint32_t actor_id;
     int npc_orders;
 };
+
+#pragma pack(pop)
 
 extern bool enet_initialized;
 

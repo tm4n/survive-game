@@ -56,6 +56,11 @@ void ResourceLoader::load()
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
+	/*m = new Mesh("assets/models/health.mdl", NULL);
+	meshes[(int)meshType::Powerup_health] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();*/
+	
 
 
 	// Environment
@@ -123,6 +128,66 @@ void ResourceLoader::load()
 	m->initShader();
 
 	// weapons
+	m = new Mesh("assets/models/weapons/colt.mdl", NULL);
+	meshes[(int)meshType::Colt] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/colt_hand.mdl", NULL);
+	meshes[(int)meshType::Colt_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
+	meshes[(int)meshType::Chainsaw] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/chainsaw_hand.mdl", NULL);
+	meshes[(int)meshType::Chainsaw_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/wesson.mdl", NULL);
+	meshes[(int)meshType::Wesson] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/wesson_hand.mdl", NULL);
+	meshes[(int)meshType::Wesson_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/hksl8.mdl", NULL);
+	meshes[(int)meshType::HKSL8] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/hksl8_hand.mdl", NULL);
+	meshes[(int)meshType::HKSL8_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/shotgun.mdl", NULL);
+	meshes[(int)meshType::Shotgun] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/shotgun_hand.mdl", NULL);
+	meshes[(int)meshType::Shotgun_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/usas12.mdl", NULL);
+	meshes[(int)meshType::USAS12] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
+	m = new Mesh("assets/models/weapons/usas12_hand.mdl", NULL);
+	meshes[(int)meshType::USAS12_hand] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
+	
 
 
 

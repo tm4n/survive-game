@@ -55,7 +55,28 @@ Mesh *collectible_cl::getMesh()
 
 Mesh *collectible_cl::getWpMesh()
 {
-	//return renderer->resources.getMesh(ResourceLoader::meshType::Crate);
+	switch (collectible_type)
+	{
+		case COLLECTIBLE_TYPE_WP_COLT:
+			return renderer->resources.getMesh(ResourceLoader::meshType::Colt);
+			
+		case COLLECTIBLE_TYPE_WP_CHAINSAW:
+			return renderer->resources.getMesh(ResourceLoader::meshType::Chainsaw);
+			
+		case COLLECTIBLE_TYPE_WP_WESSON:
+			return renderer->resources.getMesh(ResourceLoader::meshType::Wesson);
+			
+		case COLLECTIBLE_TYPE_WP_HKSL8:
+			return renderer->resources.getMesh(ResourceLoader::meshType::HKSL8);
+			
+		case COLLECTIBLE_TYPE_WP_SHOTGUN:
+			return renderer->resources.getMesh(ResourceLoader::meshType::Shotgun);
+			
+		case COLLECTIBLE_TYPE_WP_USAS12:
+			return renderer->resources.getMesh(ResourceLoader::meshType::USAS12);
+
+		
+	}
 	return NULL;
 }
 
