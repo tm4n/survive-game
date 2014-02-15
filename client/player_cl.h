@@ -3,6 +3,7 @@
 
 #include "player.h"
 #include "gameRenderer.h"
+#include "weaponmgr_cl.h"
 
 class player_cl : public player
 {
@@ -10,6 +11,8 @@ public:
 	bool local_player;
 
 	RenderObject *ro;
+
+	weaponmgr_cl *wpmgr;
 
 	player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
                const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer);

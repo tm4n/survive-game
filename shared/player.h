@@ -19,8 +19,8 @@ class player : public actor
     public:
 
         int input;
-        
-        int weapon;
+
+		int curr_weapon;
         
         int object_taken;
 

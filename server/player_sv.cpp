@@ -14,6 +14,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
     
     ang_count = 999;
 	send_pos_timer = 0.f;
+	old_health = health;
 
 
     std::ostringstream s;
@@ -22,7 +23,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 
     log(LOG_DEBUG_VERBOSE, s.str().c_str());
     
-    net_server->broadcast_sync_player(id, pos, ang, health, name, weapon, input, object_taken);
+    net_server->broadcast_sync_player(id, pos, ang, health, name, curr_weapon, input, object_taken);
 }
 
 player_sv::~player_sv()
@@ -46,5 +47,12 @@ void player_sv::frame(double time_delta)
 			last_position.set(&position);
 			net_server->broadcast_update_pos_except(id, &position, owner);
 		}
+	}
+
+	// send health to own player if changed
+	if (health != old_health)
+	{
+		old_health = health;
+		net_server->send_update_health(id, health, owner);
 	}
 }

@@ -419,7 +419,7 @@ void Mesh::setShader() {
 			"uniform vec3 coloring; \n"
             "void main() { \n" 
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-			"  gl_FragColor = texture2D(Texture, TexCoordOut) + vec4(coloring, 0.0); \n" 
+			"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" 
 			"  gl_FragColor.w *= alpha; \n"
             "}";
 }

@@ -64,6 +64,8 @@ public:
 	int broadcast_update_npc_orders(uint actor_id, int npc_orders);
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
 	int broadcast_update_health(uint actor_id, float health);
+
+	int send_update_ammo_magazin(int actor_id, int weapon_id, short ammo, short magazin, ENetPeer*);
 };
 
 

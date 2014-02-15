@@ -17,11 +17,15 @@ gameClient::gameClient(gameRenderer *arenderer)
 	input = 0;
 	input_enable = true;
 	cam_bob_offset = 0.f;
+
+	hud = NULL;
 }
 
 gameClient::~gameClient()
 {
 	if (net_client != NULL) delete net_client;
+
+	delete hud;
 }
 
 
@@ -507,6 +511,15 @@ void gameClient::frame(double time_delta)
 		}
 	}
 
+	// Updade HUD
+	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources);
+
+	player_cl *pl = get_own_player();
+	if (pl != NULL)
+	{
+		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_ammo(), wave, 0);
+	}
+
 }
 
 void gameClient::event_mouse(SDL_Event *evt)
@@ -529,7 +542,8 @@ void gameClient::event_mouse(SDL_Event *evt)
 			}
 			if (local_state == 2)
 			{
-				// TODO: shoot
+				// shoot
+				if (pl->health > 0 && !(input & INPUT_SPRINT)) pl->wpmgr->input_shoot();
 			}
 		}
 		if (evt->button.button == SDL_BUTTON_RIGHT)
@@ -541,6 +555,11 @@ void gameClient::event_mouse(SDL_Event *evt)
 				
 			}
 		}
+	}
+	if (evt->type == SDL_MOUSEWHEEL)
+	{
+		if (evt->wheel.x > 0) pl->wpmgr->input_scroll_up();
+		if (evt->wheel.x < 0) pl->wpmgr->input_scroll_down();
 	}
 	if (evt->type == SDL_KEYDOWN)
 	{

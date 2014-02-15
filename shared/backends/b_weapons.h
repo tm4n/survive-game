@@ -1,5 +1,5 @@
-#ifndef __B_NPC_H__
-#define __B_NPC_H__
+#ifndef __B_WEAPONS_H__
+#define __B_WEAPONS_H__
 
 #include "ResourceLoader.h"
 #include "defs.h"
@@ -8,7 +8,7 @@
 #include <memory>
 #include <mutex>
 
-#define B_WEAPONS_ENTRIES 20
+#define B_WEAPONS_ENTRIES 10
 
 
 // WEAPON TYPES

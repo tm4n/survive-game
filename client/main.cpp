@@ -109,6 +109,7 @@ int main(int argc, char **argv)
 				break;
 
 			case SDL_MOUSEMOTION:
+			case SDL_MOUSEWHEEL:
 				if (menu->visible == false && cl != NULL)
 				{
 					// give to gameClient

@@ -40,14 +40,16 @@
 #define NET_INPUT_KEYS 40
 #define NET_TAKE 41
 #define NET_SHOOT 42
+#define NET_CHANGE_WEAPON 43
 
 #define NET_UPDATE_STATE 50
 #define NET_UPDATE_TARGET 51
 #define NET_UPDATE_POS 52
 #define NET_UPDATE_ANG 53
 #define NET_UPDATE_HEALTH 54
-#define NET_UPDATE_WEAPON 55
+#define NET_UPDATE_CURR_WEAPON 55
 #define NET_UPDATE_NPC_ORDERS 56
+#define NET_UPDATE_AMMO_MAGAZIN 57
 
 ////////////////////////////////////////////////
 // syncronization data
@@ -152,6 +154,12 @@ struct s_net_shoot
 	int32_t rnd_seed;
 };
 
+struct s_net_change_weapon
+{
+	uint32_t actor_id;
+	uint32_t new_weapon_id;
+};
+
 struct s_net_update_state
 {
     uint32_t actor_id;
@@ -189,6 +197,13 @@ struct s_net_update_npc_orders
     int npc_orders;
 };
 
+struct s_net_update_ammo_magazin
+{
+    uint32_t actor_id;
+    int weapon_id;
+	int ammo_magazin;
+};
+
 #pragma pack(pop)
 
 extern bool enet_initialized;
@@ -213,6 +228,8 @@ public:
 	// networking functions
 	int send_input_keys(uint actor_id, int input, ENetPeer *);
 	int send_take(uint actor_id, int taken_id, ENetPeer *);
+	int send_shoot(uint actor_id, vec *shoot_dir, int rnd_seed, ENetPeer *);
+	int send_change_weapon(uint actor_id, int new_weapon_id, ENetPeer *);
 	int send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver);
 

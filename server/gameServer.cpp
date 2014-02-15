@@ -320,7 +320,7 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_PLAYER)
             {
                 player *pl = (player*)lvl->actorlist.elem[i];
-                net_server->send_sync_player(i, &pl->position, &pl->angle, pl->health, pl->name, pl->weapon, pl->input, pl->object_taken, receiver);
+                net_server->send_sync_player(i, &pl->position, &pl->angle, pl->health, pl->name, pl->curr_weapon, pl->input, pl->object_taken, receiver);
             }
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
             {

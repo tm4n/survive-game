@@ -6,6 +6,7 @@
 #include "player_cl.h"
 #include "net_cl.h"
 #include "level_cl.h"
+#include "gui_hud.h"
 
 #define CAMERA_VIEW_HEIGHT 1
 
@@ -39,6 +40,8 @@ private:
 
 	int input;
 	float cam_bob_offset;
+
+	gui_hud *hud;
 
 };
 

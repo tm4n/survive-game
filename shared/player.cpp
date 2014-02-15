@@ -18,7 +18,7 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
     input = 0;
     move_force.zero();
     ang_interp_dir = 0.f;
-    weapon = 0;
+    curr_weapon = 0;
     object_taken = -1;
 
 	bb_max.x = 23.f;
@@ -39,7 +39,7 @@ player::player(level *lvl,
 {
 	this->health = ahealth;
 
-	this->weapon = weapon;
+	this->curr_weapon = weapon;
 	this->input = input;
 	this->object_taken = object_taken;
 	this->faction = 1;

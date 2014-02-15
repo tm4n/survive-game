@@ -254,9 +254,6 @@ void GUI::draw()
 }
 
 
-
-
-
 int GUI::addPanel(Texture *tex, int layer, float x, float y)
 {
 	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, x, y, NULL);
@@ -287,6 +284,19 @@ int GUI::addText(Texture *tex, int layer, float x, float y)
 	elements.push_back(elem);
 		
 	return elements.size()-1;
+}
+
+
+
+
+void GUI::updateTexture(int id, Texture *newtex, int texnum)
+{
+	delete elements.at(id)->textures[texnum];
+	elements.at(id)->textures[texnum] = newtex;
+
+	// update size
+	elements.at(id)->size_x = newtex->size_x;
+	elements.at(id)->size_y = newtex->size_y;
 }
 
 

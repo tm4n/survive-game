@@ -21,6 +21,7 @@ public:
 	int addText(Texture *tex, int layer, float x, float y);
 	void clear();
 
+	void updateTexture(int id, Texture *newtex, int texnum = 0);
 	void setVisible(int id, bool vis);
 	void setCentered(int id, bool cen);
 	void setX(int id, float x);
