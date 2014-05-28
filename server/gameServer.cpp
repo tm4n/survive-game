@@ -606,7 +606,14 @@ void gameServer::handle_netevent(ENetEvent *event)
 						break;
 					}
                     
-                    default:
+					case NET_SHOOT:
+					{
+						s_net_shoot *d = (s_net_shoot *)data;
+
+						// TODO: shoot
+					}
+
+					default:
 						log(LOG_ERROR, "Packed with unkown/invalid type received");
                     
                 }

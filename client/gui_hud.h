@@ -19,7 +19,7 @@ protected:
 	GUI *gui;
 	ResourceLoader *resources;
 
-	int debug_id;
+	int debug_id, ammo_txt_id, ammo_mag_txt_id, ammo_bg_id, health_txt_id, health_bg_id, crosshair_id;
 };
 
 

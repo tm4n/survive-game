@@ -212,6 +212,10 @@ void ResourceLoader::load()
 	textures[(int)texType::MenuQuit] = new Texture("assets/gui/menu_quit.tga");
 	textures[(int)texType::MenuQuitSel] = new Texture("assets/gui/menu_quit_sel.tga");
 
+	textures[(int)texType::GuiAmmo] = new Texture("assets/gui/gui_ammo.tga");
+	textures[(int)texType::GuiHealth] = new Texture("assets/gui/gui_health.tga");
+	textures[(int)texType::GuiCrosshair] = new Texture("assets/gui/crosshair.tga");
+
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
 	{
