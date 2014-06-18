@@ -7,6 +7,7 @@
 
 #define MAX_MESHES 100
 #define MAX_TEXTURES 100
+#define MAX_FONTS 20
 
 class ResourceLoader
 {
@@ -24,18 +25,22 @@ public:
 		 GuiAmmo = 20, GuiHealth = 21, GuiCrosshair = 22
 	};
 
+	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};
+
 	ResourceLoader();
 
 	void load();
 
 	Mesh* getMesh(meshType m);
 	Texture* getTex(texType t);
-	TTF_Font *getFont();
+	TTF_Font *getFont(fontType f);
 
 private:
 	Mesh *meshes[MAX_MESHES];
 	Texture *textures[MAX_MESHES];
-	TTF_Font *fnt;
+	TTF_Font *fonts[MAX_FONTS];
+
+	void openFont(fontType f, const char *filename, int size);
 
 };
 

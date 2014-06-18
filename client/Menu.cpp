@@ -26,7 +26,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb)
 	
 	// Add version text
 	SDL_Color c = {255, 255, 255};
-	Texture *tex_version = new Texture(DEF_NAME_STR, resources->getFont(), c);
+	Texture *tex_version = new Texture(DEF_NAME_STR, resources->getFont(ResourceLoader::fontType::fnt_small), c);
 	gui->addText(tex_version, 3, 0.87f, 0.97f);
 }
 

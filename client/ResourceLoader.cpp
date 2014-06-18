@@ -223,13 +223,63 @@ void ResourceLoader::load()
 	}
 	
 	// Fonts
-	const char *filename = "assets/OpenSans-Semibold.ttf";
-	SDL_RWops *file = SDL_RWFromFile(filename, "rb");
-	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename << std::endl;  return;}
-	fnt = TTF_OpenFontRW(file, 1, 18);
-	if (fnt == NULL) {std::cout << "ERROR loading Font: " << filename << std::endl; exit (-1);}
+
+	openFont(fontType::fnt_small, "assets/OpenSans-Semibold.ttf", 10);
+	openFont(fontType::fnt_norm, "assets/OpenSans-Semibold.ttf", 16);
+	openFont(fontType::fnt_normp, "assets/OpenSans-Bold.ttf", 18);
+	openFont(fontType::fnt_large, "assets/OpenSans-Bold.ttf", 36);
+	openFont(fontType::fnt_mid, "assets/OpenSans-Bold.ttf", 28);
+	openFont(fontType::fnt_mids, "assets/OpenSans-Bold.ttf", 24);
+	openFont(fontType::fnt_menu, "assets/OpenSans-Bold.ttf", 20);
+
+	/*const char *filename_semibold = "assets/OpenSans-Semibold.ttf";
+	SDL_RWops *file_semibold = SDL_RWFromFile(filename_semibold, "rb");
+	if (file_semibold == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename_semibold << std::endl;  return;}
+
+	const char *filename_bold = "assets/OpenSans-Bold.ttf";
+	SDL_RWops *file_bold = SDL_RWFromFile(filename_bold, "rb");
+	if (file_bold == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename_bold << std::endl;  return;}
+
+	fonts[(int)fontType::fnt_small] = TTF_OpenFontRW(file_semibold, 0, 10);
+	if (fonts[(int)fontType::fnt_small] == NULL) {std::cout << "ERROR loading Font fnt_small!" << std::endl; exit (-1);}
+	SDL_RWseek(file_semibold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_norm]  = TTF_OpenFontRW(file_semibold, 0, 16);
+	if (fonts[(int)fontType::fnt_norm] == NULL) {std::cout << "ERROR loading Font fnt_norm!" << std::endl; exit (-1);}
+	SDL_RWseek(file_semibold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_normp]  = TTF_OpenFontRW(file_bold, 0, 18);
+	if (fonts[(int)fontType::fnt_normp] == NULL) {std::cout << "ERROR loading Font fnt_normp!" << std::endl; exit (-1);}
+	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_large]  = TTF_OpenFontRW(file_bold, 0, 36);
+	if (fonts[(int)fontType::fnt_large] == NULL) {std::cout << "ERROR loading Font fnt_large!" << std::endl; exit (-1);}
+	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_mid]  = TTF_OpenFontRW(file_bold, 0, 28);
+	if (fonts[(int)fontType::fnt_mid] == NULL) {std::cout << "ERROR loading Font fnt_mid!" << std::endl; exit (-1);}
+	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_mids]  = TTF_OpenFontRW(file_bold, 0, 24);
+	if (fonts[(int)fontType::fnt_mids] == NULL) {std::cout << "ERROR loading Font fnt_mids!" << std::endl; exit (-1);}
+	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
+
+	fonts[(int)fontType::fnt_menu]  = TTF_OpenFontRW(file_bold, 0, 20);
+	if (fonts[(int)fontType::fnt_menu] == NULL) {std::cout << "ERROR loading Font fnt_menu!" << std::endl; exit (-1);}
+	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
+
+	SDL_RWclose(file_semibold);
+	SDL_RWclose(file_bold);*/
 }
 
+void ResourceLoader::openFont(fontType f, const char *filename, int size)
+{
+	SDL_RWops *file = SDL_RWFromFile(filename, "rb");
+	if (filename == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename << std::endl;  return;}
+
+	fonts[(int)f] = TTF_OpenFontRW(file, 1, size);
+	if (fonts[(int)f] == NULL) {std::cout << "ERROR loading Font " << filename << " size:" << size << std::endl; exit (-1);}
+}
 
 Mesh* ResourceLoader::getMesh(meshType m)
 {
@@ -245,7 +295,9 @@ Texture* ResourceLoader::getTex(texType m)
 	return textures[id];
 }
 
-TTF_Font *ResourceLoader::getFont()
+TTF_Font *ResourceLoader::getFont(fontType f)
 {
-	return fnt;
+	int id = (int)f;
+	if (id < 1 || id > MAX_FONTS) return NULL;
+	return fonts[id];
 }
