@@ -1,10 +1,11 @@
 #include "GUIObject.h"
 
-GUIObject::GUIObject(Types t, Texture *tex, int layer, float x, float y, GUICallback *ptr)
+GUIObject::GUIObject(Types t, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *ptr)
 {
 	this->type = t;
 
 	this->layer = layer;
+	this->alignment = align;
 	this->x = x;
 	this->y = y;
 	textures.push_back(tex);
@@ -22,11 +23,12 @@ GUIObject::GUIObject(Types t, Texture *tex, int layer, float x, float y, GUICall
 	size_y = tex->size_y;
 }
 
-GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, float x, float y, GUICallback *ptr)
+GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, Alignment align, float x, float y, GUICallback *ptr)
 {
 	this->type = t;
 
 	this->layer = layer;
+	this->alignment = align;
 	this->x = x;
 	this->y = y;
 	textures.assign(atexs.begin(), atexs.end());

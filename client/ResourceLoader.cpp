@@ -228,8 +228,8 @@ void ResourceLoader::load()
 	openFont(fontType::fnt_norm, "assets/OpenSans-Semibold.ttf", 16);
 	openFont(fontType::fnt_normp, "assets/OpenSans-Bold.ttf", 18);
 	openFont(fontType::fnt_large, "assets/OpenSans-Bold.ttf", 36);
-	openFont(fontType::fnt_mid, "assets/OpenSans-Bold.ttf", 28);
-	openFont(fontType::fnt_mids, "assets/OpenSans-Bold.ttf", 24);
+	openFont(fontType::fnt_mid, "assets/OpenSans-Bold.ttf", 24);
+	openFont(fontType::fnt_mids, "assets/OpenSans-Bold.ttf", 18);
 	openFont(fontType::fnt_menu, "assets/OpenSans-Bold.ttf", 20);
 
 	/*const char *filename_semibold = "assets/OpenSans-Semibold.ttf";

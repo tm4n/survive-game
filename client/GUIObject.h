@@ -17,8 +17,10 @@ class GUIObject
 {
 public:
 	enum Types {button, panel, text};
+	enum Alignment {center, upleft, upcenter, upright, downleft, downcenter, downright, scaled}; // scaled starts from upleft
 
 	Types type;
+	Alignment alignment;
 
 	std::vector<Texture*> textures;
 
@@ -35,8 +37,8 @@ public:
 	bool visible;
 	bool centered;
 
-	GUIObject(GUIObject::Types, Texture *tex, int layer, float x, float y, GUICallback *);
-	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, float x, float y, GUICallback *);
+	GUIObject(GUIObject::Types, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *);
+	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, Alignment align, float x, float y, GUICallback *);
 	~GUIObject();
 };
 

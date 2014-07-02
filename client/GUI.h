@@ -16,14 +16,15 @@ public:
 
 	void setScreensize(int x, int y);
 
-	int addPanel(Texture *tex, int layer, float x, float y);
-	int addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, GUICallback *callback);
-	int addText(Texture *tex, int layer, float x, float y);
+	int addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, float y);
+	int addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback);
+	int addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y);
 	void clear();
 
 	void updateTexture(int id, Texture *newtex, int texnum = 0);
 	void setVisible(int id, bool vis);
 	void setCentered(int id, bool cen);
+	void setAlignment(int id, GUIObject::Alignment align);
 	void setX(int id, float x);
 	void setY(int id, float y);
 	void setLayer(int id, int layer);
@@ -39,6 +40,8 @@ public:
 	int screensize_x, screensize_y;
 
 private:
+	float to_glscreen_x(float pos_x);
+	float to_glscreen_y(float pos_y);
 
 	GLuint mProgram;
 	GLuint mPositionHandle;

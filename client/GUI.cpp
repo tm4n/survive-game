@@ -159,6 +159,15 @@ void GUI::event_mouse(SDL_Event *evt)
 	}
 }
 
+float GUI::to_glscreen_x(float pos_x)
+{
+	return (((pos_x/screensize_x)*2.f)-1.f);
+}
+
+float GUI::to_glscreen_y(float pos_y)
+{
+	return (((pos_y/screensize_y)*2.f)-1.f);
+}
 
 void GUI::draw()
 {
@@ -170,7 +179,7 @@ void GUI::draw()
 	{
 		if (obj->type == GUIObject::Types::button && obj->visible == true)
 		{
-			// check if mouse is in object area
+			// check if mouse is in object area TODO: all kinds of scalings!
 			if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
 				raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
 			{
@@ -224,11 +233,58 @@ void GUI::draw()
 				glBindTexture(GL_TEXTURE_2D, elem->textures[elem->current_tex]->mTextureID);
 	        		
 	        	// calculate and upload size and position
-		        float size_x = (float)elem->size_x/((float)screensize_x) * elem->scale_x;
+				// TODO: auto-scale
+				float trans_x;
+				float trans_y;
+				float size_x = (float)elem->size_x/((float)screensize_x) * elem->scale_x;
 				float size_y = (float)elem->size_y/((float)screensize_y) * elem->scale_y;
-		        float trans_x = ((float)elem->x*2.f)-1.f;
-		        float trans_y = ((float)elem->y*2.f)-1.f;
-		        if (elem->centered == false) {trans_x += size_x; trans_y += size_y;}
+				switch (elem->alignment)
+				{
+				case GUIObject::Alignment::center:
+					trans_x = to_glscreen_x(elem->x + screensize_x/2);
+					trans_y = to_glscreen_y(elem->y + screensize_y/2);
+				break;
+
+				case GUIObject::Alignment::upleft:
+					trans_x = to_glscreen_x(elem->x);
+					trans_y = to_glscreen_y(elem->y);
+				break;
+
+				case GUIObject::Alignment::upcenter:
+					trans_x = to_glscreen_x(elem->x + screensize_x/2);
+					trans_y = to_glscreen_y(elem->y);
+				break;
+
+				case GUIObject::Alignment::upright:
+					trans_x = to_glscreen_x(elem->x+screensize_x);
+					trans_y = to_glscreen_y(elem->y);
+				break;
+
+				case GUIObject::Alignment::downright:
+					trans_x = to_glscreen_x(elem->x+screensize_x);
+					trans_y = to_glscreen_y(elem->y+screensize_y);
+				break;
+
+				case GUIObject::Alignment::downcenter:
+					trans_x = to_glscreen_x(elem->x + screensize_x/2);
+					trans_y = to_glscreen_y(elem->y + screensize_y);
+				break;
+
+				case GUIObject::Alignment::downleft:
+					trans_x = to_glscreen_x(elem->x);
+					trans_y = to_glscreen_y(elem->y+screensize_y);
+				break;
+
+				case GUIObject::Alignment::scaled: // TODO:
+					trans_x = ((elem->x*2.f)-1.f);
+					trans_y = ((elem->y*2.f)-1.f);
+					//size_x = 20;
+					//size_y = 20;
+				break;
+					
+				}
+
+				if (elem->centered == false) {trans_x += size_x; trans_y += size_y;}
 		        	
 		        glUniform4f(mChangeHandle, size_x, trans_x, size_y, trans_y);
 		        	
@@ -254,32 +310,32 @@ void GUI::draw()
 }
 
 
-int GUI::addPanel(Texture *tex, int layer, float x, float y)
+int GUI::addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, float y)
 {
-	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, x, y, NULL);
+	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, align, x, y, NULL);
 		
 	elements.push_back(elem);
 		
 	return elements.size()-1;
 }
 
-int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, float x, float y, GUICallback *callback)
+int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback)
 {
 	std::vector<Texture*> v;
 
 	v.push_back(tex);
 	v.push_back(tex_sel);
 
-	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, x, y, callback);
+	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, align, x, y, callback);
 
 	elements.push_back(elem);
 		
 	return elements.size()-1;
 }
 
-int GUI::addText(Texture *tex, int layer, float x, float y)
+int GUI::addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y)
 {
-	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, x, y, NULL);
+	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, align, x, y, NULL);
 		
 	elements.push_back(elem);
 		
@@ -308,6 +364,11 @@ void GUI::setVisible(int id, bool vis)
 void GUI::setCentered(int id, bool cen)
 {
 	elements.at(id)->centered = cen;
+}
+
+void GUI::setAlignment(int id, GUIObject::Alignment align)
+{
+	elements.at(id)->alignment = align;
 }
 	
 void GUI::setX(int id, float x)
