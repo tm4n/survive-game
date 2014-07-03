@@ -608,9 +608,28 @@ void gameServer::handle_netevent(ENetEvent *event)
                     
 					case NET_SHOOT:
 					{
+						// get send data
 						s_net_shoot *d = (s_net_shoot *)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
 
-						// TODO: shoot
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								vec shoot_origin;
+								shoot_origin.x = pl->position.x;
+								shoot_origin.y = pl->position.y;
+								shoot_origin.z = pl->position.z+pl->bb_max.z-CAMERA_VIEW_HEIGHT;
+								pl->wpmgr->shoot(shoot_origin, d->shoot_dir);
+							}
+							else log(LOG_ERROR, "Received NET_SHOOT for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_SHOOT for actor thats not owned by this client");
+
+						break;
 					}
 
 					default:

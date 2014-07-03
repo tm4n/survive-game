@@ -26,6 +26,8 @@ typedef unsigned char uchar;
 #define SV_SEND_PLAYER_RATE 8.f
 #define SV_SEND_NPC_RATE 32.f
 
+#define CAMERA_VIEW_HEIGHT 1
+
 
 ////////////////////////////////////////////
 // functions used everywhere

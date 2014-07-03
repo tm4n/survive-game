@@ -7,7 +7,7 @@
 #include "box_cl.h"
 #include "collectible_cl.h"
 #include "npc_cl.h"
-
+#include <sstream>
 
 gameClient::gameClient(gameRenderer *arenderer)
 {
@@ -515,6 +515,12 @@ void gameClient::frame(double time_delta)
 			}
 
 		}
+
+		std::ostringstream s;
+
+		s << "Player x=" << pl->position.x << ", y=" << pl->position.y << ", z=" << pl->position.z;
+
+		hud->set_debug(s.str());
 		
 		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_ammo(), wave, 0);
 	}
@@ -552,7 +558,9 @@ void gameClient::event_mouse(SDL_Event *evt)
 			if (local_state == 2)
 			{
 				// shoot
-				if (pl->health > 0 && !(input & INPUT_SPRINT)) pl->wpmgr->input_shoot();
+				vec pos(renderer->CameraPos.x, renderer->CameraPos.y, renderer->CameraPos.z);
+				vec ang(renderer->CameraAngle.x, renderer->CameraAngle.y, renderer->CameraAngle.z);
+				if (pl->health > 0 && !(input & INPUT_SPRINT)) pl->wpmgr->input_shoot(pos, ang);
 			}
 		}
 		if (evt->button.button == SDL_BUTTON_RIGHT)

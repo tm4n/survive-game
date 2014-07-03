@@ -6,11 +6,14 @@
 #include <enet/enet.h>
 #include "level_sv.h"
 #include "enet/enet.h"
+#include "weaponmgr_sv.h"
 
 class player_sv : public player
 {
     public:
         ENetPeer *owner;
+
+		weaponmgr_sv *wpmgr;
 
 
         player_sv(level *, vec *pos, vec *ang, float health,

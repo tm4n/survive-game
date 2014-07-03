@@ -9,13 +9,15 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, gameRenderer *renderer,
 	this->player_id = player_id;
 }
 
-void weaponmgr_cl::input_shoot()
+void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 {
 	wp_ready = 0;
 	wp_cooldown += 10;
 
 	// get target
 	vec v;
+	v.set(&cam_pos);
+	v.x += 1000;
 	/*vec_set(player.shoot_dir, vector(screen_size.x/2, screen_size.y/2, wp_data[player.weapon].range));
 	vec_for_screen (player.shoot_dir, camera);
 	if (player.shoot_dir == 0) {player.shoot_dir = 0.001;}*/

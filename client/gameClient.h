@@ -8,8 +8,6 @@
 #include "level_cl.h"
 #include "gui_hud.h"
 
-#define CAMERA_VIEW_HEIGHT 1
-
 class gameClient : public game
 {
 public:

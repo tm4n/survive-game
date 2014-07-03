@@ -12,6 +12,8 @@ public:
 
 	void give_weapon(int weapon_id);
 
+	void shoot(vec &shoot_origin, vec &shoot_dir);
+
 
 protected:
 	ENetPeer *playerpeer;

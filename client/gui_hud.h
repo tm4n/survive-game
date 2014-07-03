@@ -14,6 +14,8 @@ public:
 
 	void set_state(hud_state new_state);
 
+	void set_debug(std::string s);
+
 	void frame(double time_frame, float health, int ammo, int magazin, int wave, int points);
 
 protected:

@@ -83,16 +83,14 @@ void gui_hud::set_state(hud_state new_state)
 	state = new_state;
 }
 
+void gui_hud::set_debug(std::string s)
+{
+	gui->updateText(debug_id, s);
+}
 
 void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, int points)
 {
-	// Debug::
 	std::ostringstream s;
-
-	s << "Health: " << health << ", Ammo: " << ", Magazin: " << magazin << ", Wave: " << wave
-		<< ", Wave: " << ", Points: " << points;
-
-	gui->updateText(debug_id, s.str().c_str());
 	
 	// Update Fight GUI
 	if (state == hud_state::playing)

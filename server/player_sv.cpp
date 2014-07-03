@@ -11,6 +11,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 {
 
     this->owner = owner;
+	this->wpmgr = new weaponmgr_sv(lvl, &curr_weapon, owner, id);
     
     ang_count = 999;
 	send_pos_timer = 0.f;
@@ -29,6 +30,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 player_sv::~player_sv()
 {
     log(LOG_DEBUG_VERBOSE, "player_sv: deleting player");
+	delete wpmgr;
 }
 
 

@@ -66,7 +66,7 @@ gameRenderer::~gameRenderer()
 {
 	if (gui) delete gui;
 
-	SDL_GL_DeleteContext(glcontext);
+	//SDL_GL_DeleteContext(glcontext); TODO: find out if needed
 
 	SDL_DestroyWindow(window);
 }
