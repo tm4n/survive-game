@@ -23,6 +23,9 @@ public:
 	Alignment alignment;
 
 	std::vector<Texture*> textures;
+	
+	std::string txt; // for storing string text
+	TTF_Font *fnt;
 
 	GUICallback *callback;
 

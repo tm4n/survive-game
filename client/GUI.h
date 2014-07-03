@@ -19,9 +19,11 @@ public:
 	int addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, float y);
 	int addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback);
 	int addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y);
+	int addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, Uint8 cred = 255, Uint8 cgreen = 255, Uint8 cblue = 255);
 	void clear();
 
 	void updateTexture(int id, Texture *newtex, int texnum = 0);
+	bool updateText(int id, const std::string &txt, Uint8 cred = 255, Uint8 cgreen = 255, Uint8 cblue = 255);
 	void setVisible(int id, bool vis);
 	void setCentered(int id, bool cen);
 	void setAlignment(int id, GUIObject::Alignment align);

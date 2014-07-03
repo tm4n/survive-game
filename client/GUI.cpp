@@ -342,7 +342,40 @@ int GUI::addText(Texture *tex, int layer, GUIObject::Alignment align, float x, f
 	return elements.size()-1;
 }
 
+int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, Uint8 cred, Uint8 cgreen, Uint8 cblue)
+{
+	SDL_Color c = {cred, cgreen, cblue};
+	Texture *t = new Texture(txt, fnt, c);
+	
+	GUIObject *elem = new GUIObject(GUIObject::Types::text, t, layer, align, x, y, NULL);
+	
+	elem->txt.assign(txt);
+	elem->fnt = fnt;
+		
+	elements.push_back(elem);
+		
+	return elements.size()-1;
+}
 
+bool GUI::updateText(int id, const std::string &txt, Uint8 cred, Uint8 cgreen, Uint8 cblue)
+{
+	GUIObject *elem = elements.at(id);
+	if (elem == NULL) return false;
+	if (elem->type != GUIObject::Types::text) return false;
+	if (elem->txt.compare(txt) == 0) return false;
+	
+	SDL_Color c = {cred, cgreen, cblue};
+	Texture *t = new Texture(txt, elem->fnt, c);
+	
+	delete elements.at(id)->textures[0];
+	elements.at(id)->textures[0] = t;
+
+	// update size
+	elements.at(id)->size_x = t->size_x;
+	elements.at(id)->size_y = t->size_y;
+	
+	return true;
+}
 
 
 void GUI::updateTexture(int id, Texture *newtex, int texnum)

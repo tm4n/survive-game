@@ -345,6 +345,13 @@ void gameClient::handle_netevent(ENetEvent *event)
 						
 						break;
 					}
+					
+					case NET_UPDATE_AMMO_MAGAZIN:
+					{
+						s_net_update_ammo_magazin *d = (s_net_update_ammo_magazin *)data;
+						
+						
+					}
 
 					default:
 					{

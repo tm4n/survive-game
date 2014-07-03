@@ -115,7 +115,7 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 	file.assign(txt);
 	
 	// render text
-	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(fnt, txt.c_str(), c, 10000);
+	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(fnt, txt.c_str(), c, 1024);
 	
 	if (surface == NULL) {log(LOG_ERROR, "Could not render a TTF text!"); exit(-1);}
 	
