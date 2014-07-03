@@ -464,6 +464,9 @@ void gameClient::disconnect()
 
 void gameClient::frame(double time_delta)
 {
+	// deferred creation
+	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources);
+	
 	// Handle packages
 	ENetEvent event;
 	while (net_client->host_service (&event, 0) > 0)
@@ -472,6 +475,8 @@ void gameClient::frame(double time_delta)
 	// move spectator camera
 	if (local_state == 1)
 	{
+		hud->set_state(gui_hud::hud_state::spectating);
+		
 		int key_vely = (input & INPUT_BACK ? 1 : 0) - (input & INPUT_FORW ? 1 : 0);
 		int key_velx = (input & INPUT_RIGHT ? 1 : 0) - (input & INPUT_LEFT ? 1 : 0);
 
@@ -481,11 +486,15 @@ void gameClient::frame(double time_delta)
 
 		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
 		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
+		
+		hud->frame(time_delta, 0, 0, 0, wave, 0);
 	}
 	if (local_state == 2)
 	{
 		player_cl *pl = get_own_player();
 		if (pl == NULL) {log(LOG_ERROR, "Could not retreive own player!"); return;}
+		
+		hud->set_state(gui_hud::hud_state::playing);
 
 		// stick camera to player
 		pl->ro->visible = false;
@@ -506,6 +515,8 @@ void gameClient::frame(double time_delta)
 			}
 
 		}
+		
+		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_ammo(), wave, 0);
 	}
 
 
@@ -516,15 +527,6 @@ void gameClient::frame(double time_delta)
 		{
 			if (lvl->actorlist.elem[i] != 0) lvl->actorlist.elem[i]->frame(time_delta);
 		}
-	}
-
-	// Updade HUD
-	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources);
-
-	player_cl *pl = get_own_player();
-	if (pl != NULL)
-	{
-		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_ammo(), wave, 0);
 	}
 
 }

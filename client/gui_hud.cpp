@@ -31,22 +31,58 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
 	gui->setCentered(message_id, true);
 
 	wave_points_id = gui->addText("Wave: 0 \nPoints: 2", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::upright, -150.f, 10.f);
+	
+	// hide everything default
+	set_state(hud_state::hidden);
 }
 
 gui_hud::~gui_hud()
 {
 }
 
-// ´TODO: replace hide/show with set_state
-void gui_hud::show()
+void gui_hud::set_state(hud_state new_state)
 {
-	gui->setVisible(debug_id, true);
+	
+	if (new_state == state) return;
+	
+	// deactivate old state
+	// hide everything
+	gui->setVisible(debug_id, false);
+	gui->setVisible(health_bg_id, false);
+	gui->setVisible(health_txt_id, false);
+	gui->setVisible(ammo_bg_id, false);
+	gui->setVisible(ammo_txt_id, false);
+	gui->setVisible(ammo_mag_txt_id, false);
+	gui->setVisible(crosshair_id, false);
+	gui->setVisible(status_id, false);
+	gui->setVisible(message_id, false);
+	gui->setVisible(wave_points_id, false);
+	
+	
+	if (new_state == hud_state::spectating)
+	{
+		gui->setVisible(debug_id, true);
+		gui->setVisible(status_id, true);
+		gui->setVisible(message_id, true);
+		gui->setVisible(wave_points_id, true);
+	}
+	if (new_state == hud_state::playing)
+	{
+		gui->setVisible(debug_id, true);
+		gui->setVisible(health_bg_id, true);
+		gui->setVisible(health_txt_id, true);
+		gui->setVisible(ammo_bg_id, true);
+		gui->setVisible(ammo_txt_id, true);
+		gui->setVisible(ammo_mag_txt_id, true);
+		gui->setVisible(crosshair_id, true);
+		gui->setVisible(status_id, true);
+		gui->setVisible(message_id, true);
+		gui->setVisible(wave_points_id, true);
+	}
+	
+	state = new_state;
 }
 
-void gui_hud::hide()
-{
-	gui->setVisible(debug_id, false);
-}
 
 void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, int points)
 {
@@ -59,14 +95,17 @@ void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int 
 	gui->updateText(debug_id, s.str().c_str());
 	
 	// Update Fight GUI
-	s.str(""); s << health;
-	gui->updateText(health_txt_id, s.str().c_str());
-	
-	s.str(""); s << ammo;
-	gui->updateText(ammo_txt_id, s.str().c_str());
-	
-	s.str(""); s << magazin;
-	gui->updateText(ammo_mag_txt_id, s.str().c_str());
+	if (state == hud_state::playing)
+	{
+		s.str(""); s << health;
+		gui->updateText(health_txt_id, s.str().c_str());
+		
+		s.str(""); s << ammo;
+		gui->updateText(ammo_txt_id, s.str().c_str());
+		
+		s.str(""); s << magazin;
+		gui->updateText(ammo_mag_txt_id, s.str().c_str());
+	}
 	
 	s.str(""); s << "Wave: " << wave << "\nPoints: " << points;
 	gui->updateText(wave_points_id, s.str().c_str());
