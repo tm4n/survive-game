@@ -27,6 +27,7 @@ typedef unsigned char uchar;
 #define SV_SEND_NPC_RATE 32.f
 
 #define CAMERA_VIEW_HEIGHT 1
+#define CAMERA_BOB_STOP_RATE 1.5
 
 
 ////////////////////////////////////////////

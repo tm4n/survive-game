@@ -37,7 +37,7 @@ private:
 	gameRenderer *renderer;
 
 	int input;
-	float cam_bob_offset;
+	float cam_bob_offset, cam_bob_prog;
 
 	gui_hud *hud;
 

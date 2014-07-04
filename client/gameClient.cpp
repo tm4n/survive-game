@@ -509,16 +509,26 @@ void gameClient::frame(double time_delta)
 		
 		hud->set_state(gui_hud::hud_state::playing);
 
-		// stick camera to player
-		pl->ro->visible = false;
-
-		renderer->CameraPos.x = pl->position.x;
-		renderer->CameraPos.y = pl->position.y;
-		renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
-
 		// only when player is alive
 		if (pl->health > 0.f)
 		{
+			// bob camera
+			if ((input & INPUT_FORW || input & INPUT_BACK || input & INPUT_LEFT || input & INPUT_RIGHT) && !(input & INPUT_JUMP))
+			{
+				cam_bob_prog += pl->move_speed*6.2831853f*(float)time_delta;
+				cam_bob_offset = sin(toRadians(cam_bob_prog))*2.f;
+			}
+			else
+			{
+				cam_bob_prog = 0;
+				if (abs(cam_bob_offset) < CAMERA_BOB_STOP_RATE*time_delta) cam_bob_offset = 0;
+				else
+				{
+					if (cam_bob_offset > 0) {cam_bob_offset -= CAMERA_BOB_STOP_RATE*time_delta;}
+					else {cam_bob_offset += CAMERA_BOB_STOP_RATE*time_delta;}
+				}
+			}
+
 			// give input to player
 			if (input != pl->input)
 			{
@@ -529,13 +539,22 @@ void gameClient::frame(double time_delta)
 
 		}
 
+		// stick camera to player
+		pl->ro->visible = false;
+
+		renderer->CameraPos.x = pl->position.x;
+		renderer->CameraPos.y = pl->position.y;
+		renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
+
 		std::ostringstream s;
 
-		s << "Player "<<pl->position << ", curr_weapon=" << pl->curr_weapon;
+		s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon;
 
 		hud->set_debug(s.str());
 		
 		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, 0);
+
+		pl->wpmgr->frame(time_delta);
 	}
 
 

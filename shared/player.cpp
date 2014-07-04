@@ -12,6 +12,8 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
 	this->input = 0;
 	this->faction = 1;
 
+	this->move_speed = 9.f;
+
     strncpy(this->name, name, 32);
     this->name[31] = '\0';
     
@@ -43,6 +45,8 @@ player::player(level *lvl,
 	this->input = input;
 	this->object_taken = object_taken;
 	this->faction = 1;
+
+	this->move_speed = 9.f;
 
     strncpy(this->name, name, 32);
     this->name[31] = '\0';

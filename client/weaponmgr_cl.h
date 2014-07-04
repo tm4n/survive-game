@@ -15,9 +15,13 @@ public:
 	void input_scroll_up();
 	void input_scroll_down();
 
+	void frame(double time_frame);
+
 protected:
 	gameRenderer *renderer;
 	int player_id;
+
+	RenderObject *ro;
 
 };
 

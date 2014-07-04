@@ -8,6 +8,14 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, gameRenderer *renderer,
 {
 	this->renderer = renderer;
 	this->player_id = player_id;
+
+	s_weapons *wdata = b_weapons::instance()->at(1);
+	ro = new RenderObject();
+	ro->translation[0] = 5;
+    ro->translation[1] = -2;
+	ro->translation[2] = -74;
+        	
+	renderer->resources.getMesh(ResourceLoader::meshType::Colt_hand)->addRenderObject(ro);
 }
 
 void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
@@ -75,4 +83,33 @@ void weaponmgr_cl::input_scroll_down()
 		curr -= 1;
 		if (input_switch(curr) == 1) {return;}
 	}
+}
+
+void weaponmgr_cl::frame(double time_frame)
+{
+	ro->translation[0] = renderer->CameraPos.x;
+    ro->translation[1] = renderer->CameraPos.y;
+	ro->translation[2] = renderer->CameraPos.z;
+
+	// move by x
+	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * 5.f;
+	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * 5.f;
+	ro->translation[2] += (float) (sin(toRadians(renderer->CameraAngle.y))) * 5.f;
+
+	// move by y
+	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * 2.f;
+	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * 2.f;
+
+	// move by z
+	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
+	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
+	ro->translation[2] += (float) (sin(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
+
+	/*ro->translation[0] = renderer->CameraPos.x; // + 5.f;
+    ro->translation[1] = renderer->CameraPos.y; //- 2.f;
+	ro->translation[2] = renderer->CameraPos.z - 74.f;*/
+
+	ro->rotation[0] = renderer->CameraAngle.x;
+	ro->rotation[1] = -renderer->CameraAngle.y;
+	ro->rotation[2] = renderer->CameraAngle.z;
 }

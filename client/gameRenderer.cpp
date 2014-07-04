@@ -42,8 +42,8 @@ gameRenderer::gameRenderer()
 	// Initialize OpenGL features
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
        
-    glClearDepth(1.0f);                     //Depth Buffer Setup
     glEnable(GL_DEPTH_TEST);            //Enables Depth Testing
+	glClearDepth(1.0f);                     //Depth Buffer Setup
     glDepthFunc(GL_LEQUAL);             //The Type Of Depth Testing To Do
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
