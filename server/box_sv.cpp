@@ -11,7 +11,6 @@ box_sv::box_sv(level *lvl, char abox_type, vec *pos, int *counter)
 	if (abox_type == BOX_TYPE_METAL) health = 300.f;
 	if (abox_type == BOX_TYPE_GENERATOR) health = 500.f;
 	if (abox_type == BOX_TYPE_TURRET) health = 50.f;
-	old_health = health;
 
 	// send creation to all connected players
 	net_server->broadcast_sync_box(id, abox_type, pos, health);
@@ -34,12 +33,6 @@ void box_sv::frame(double time_delta)
 	{
 		delete this;
 		return;
-	}
-
-	if (old_health != health)
-	{
-		old_health = health;
-		net_server->broadcast_update_health(id, health);
 	}
 		
 	movement(time_delta);

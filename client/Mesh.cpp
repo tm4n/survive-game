@@ -520,7 +520,8 @@ int Mesh::animate(RenderObject* ro, const char* frame, float progress, int flags
 
 	if (flags == 0)
 	{
-		if (progress > 100.f) progress = 0.f;
+		if (progress > 100.f) progress = 100.f;
+		num_frameset--; // Don't loop to start animation
 	}
 	else
 	{
@@ -531,7 +532,7 @@ int Mesh::animate(RenderObject* ro, const char* frame, float progress, int flags
 	int target_frame = start_frame + (int)((progress/100.f) * num_frameset);
 	if (target_frame >= numframes) {puts("ERROR: frame too big on animation! How could this happen"); return 0;}
 	int target_next_frame = target_frame+1;
-	if (target_next_frame >= start_frame + num_frameset) target_next_frame = start_frame;
+	if (target_next_frame >= start_frame + num_frameset && flags != 0) target_next_frame = start_frame;
 	if (target_next_frame >= numframes) target_next_frame = numframes-1;
 
 	double intpart;

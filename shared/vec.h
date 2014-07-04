@@ -1,6 +1,7 @@
 #ifndef __VEC_H__
 #define __VEC_H__
 
+#include <iostream>
 
 class vec
 {
@@ -19,6 +20,8 @@ class vec
 		float length();
 
 		static float angle(float in);
+
+		friend std::ostream& operator<< (std::ostream& o, vec const& vec);
 
     protected:
     private:

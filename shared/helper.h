@@ -46,4 +46,6 @@ float toRadians(float d);
 
 int random_range(int mx);
 
+float random(int mx);
+
 #endif // __HELPER_H__

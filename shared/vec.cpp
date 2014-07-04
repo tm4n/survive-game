@@ -72,3 +72,8 @@ float vec::angle(float in)
     while (in < -180) in += 360;
     return in;
 }
+
+std::ostream& operator<< (std::ostream& o, vec const& v)
+{
+  return o << "x="<<v.x<<",y="<<v.y<<",z="<<v.z;
+}

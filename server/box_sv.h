@@ -13,7 +13,6 @@ public:
 	virtual void frame(double time_delta);
 protected:
 	
-	float old_health;
 	int *box_counter;
 
 private:

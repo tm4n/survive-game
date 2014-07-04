@@ -74,17 +74,15 @@ void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
 
 bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor_hit)
 {
-	vec col_move_world, col_move_border_min, col_move_border_max, my_max, my_min;
-	actor *col_move_nearest[3];
+	vec col_move_world, col_move_border_min, col_move_border_max;
 	
-	// convert to world space
+	// get difference
 	col_move_world.x = to.x - from.x;
 	col_move_world.y = to.y - from.y;
 	col_move_world.z = to.z - from.z;
 	
 	col_move_border_min.set(border_min, border_min, border_ground);
 	col_move_border_max.set(border_max, border_max, border_height);
-	col_move_nearest[0] = NULL; col_move_nearest[1] = NULL; col_move_nearest[2] = NULL;
 
 	// int steps = to.dist(from);
 	int steps = 10000;
@@ -92,15 +90,16 @@ bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor
 	for (int i = 0; i < steps; i++)
 	{
 		// calculate current pos
-		curr_pos.x = from.x + col_move_world.x*(i/steps);
-		curr_pos.y = from.y + col_move_world.y*(i/steps);
-		curr_pos.z = from.z + col_move_world.z*(i/steps);
+		curr_pos.x = from.x + col_move_world.x*((float)i/(float)steps);
+		curr_pos.y = from.y + col_move_world.y*((float)i/(float)steps);
+		curr_pos.z = from.z + col_move_world.z*((float)i/(float)steps);
 
 		// check if pos out of world
 		if ((curr_pos.x < col_move_border_min.x || curr_pos.x > col_move_border_max.x) // out of x plane
 			|| (curr_pos.y < col_move_border_min.y || curr_pos.y > col_move_border_max.y) // out of y plane
 			|| (curr_pos.z < col_move_border_min.z || curr_pos.z > col_move_border_max.z)) // out of z plane
 		{
+			log(LOG_DEBUG_VERBOSE, "trace is out of world");
 			// out of world
 			hitpos->set(&curr_pos);
 			*actor_hit =  -1;

@@ -21,14 +21,14 @@ weaponmgr::weaponmgr(level *lvl, int *curr_weapon)
 
 int weaponmgr::get_curr_ammo()
 {
-	if (*curr_weapon < 0 && *curr_weapon >= WEAPON_ENTRIES) return 0;
+	if (*curr_weapon < 0 || *curr_weapon >= WEAPON_ENTRIES) {std::cout << "ERROR on getting curr ammo"; return -1;}
 
 	return ammo[*curr_weapon];
 }
 
 int weaponmgr::get_curr_magazin()
 {
-	if (*curr_weapon < 0 && *curr_weapon >= WEAPON_ENTRIES) return 0;
+	if (*curr_weapon < 0 || *curr_weapon >= WEAPON_ENTRIES) return -1;
 
 	return magazin[*curr_weapon];
 }

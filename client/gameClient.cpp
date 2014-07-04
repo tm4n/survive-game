@@ -349,8 +349,21 @@ void gameClient::handle_netevent(ENetEvent *event)
 					case NET_UPDATE_AMMO_MAGAZIN:
 					{
 						s_net_update_ammo_magazin *d = (s_net_update_ammo_magazin *)data;
+
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							pl->wpmgr->magazin[d->weapon_id] = (short)d->ammo_magazin;
+							pl->wpmgr->ammo[d->weapon_id] = d->ammo_magazin >> 16;
+
+							std::cout << "client received ammo update: " << pl->wpmgr->magazin[d->weapon_id] << " " << pl->wpmgr->ammo[d->weapon_id] << std::endl;
+
+							if (pl->curr_weapon == 0) pl->curr_weapon = d->weapon_id;
+
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
 						
-						
+						break;
 					}
 
 					default:
@@ -518,11 +531,11 @@ void gameClient::frame(double time_delta)
 
 		std::ostringstream s;
 
-		s << "Player x=" << pl->position.x << ", y=" << pl->position.y << ", z=" << pl->position.z;
+		s << "Player "<<pl->position << ", curr_weapon=" << pl->curr_weapon;
 
 		hud->set_debug(s.str());
 		
-		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_ammo(), wave, 0);
+		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, 0);
 	}
 
 

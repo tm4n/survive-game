@@ -194,14 +194,14 @@ struct s_net_update_health
 struct s_net_update_npc_orders
 {
     uint32_t actor_id;
-    int npc_orders;
+    uint32_t npc_orders;
 };
 
 struct s_net_update_ammo_magazin
 {
     uint32_t actor_id;
-    int weapon_id;
-	int ammo_magazin;
+    uint32_t weapon_id;
+	uint32_t ammo_magazin;
 };
 
 #pragma pack(pop)

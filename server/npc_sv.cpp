@@ -87,6 +87,7 @@ void npc_sv::frame(double time_delta)
 								{
 									t->health = 0; target = 0;
 								}
+								net_server->broadcast_update_health(t->id, t->health);
 							}
 							// else see npc()
 						}
@@ -124,7 +125,7 @@ void npc_sv::frame(double time_delta)
 	}
 	else
 	{
-		// TODO: dead
+		// TODO: dead, state will not be send
 		//if (integer(random(30)) == 0 && my.ai_type != NPC_AI_PLAYER_FLYING) new collectible_sv(lvl, COLLECTIBLE_TYPE_HEALTH, &position);
 		
 	}

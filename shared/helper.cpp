@@ -263,3 +263,8 @@ int random_range(int mx)
 	
 	return d(*gen);
 }
+
+float random(int mx)
+{
+	return rand() % mx;
+}

@@ -4,7 +4,7 @@
 #include "backends/b_weapons.h"
 #include "level.h"
 
-#define WEAPON_ENTRIES B_WEAPONS_ENTRIES
+#define WEAPON_ENTRIES 10
 
 class weaponmgr
 {
@@ -26,6 +26,7 @@ public:
 	short ammo[WEAPON_ENTRIES];
 	short magazin[WEAPON_ENTRIES];
 
+protected:
 	level* lvl;
 
 };

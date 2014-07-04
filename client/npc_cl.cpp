@@ -32,7 +32,6 @@ npc_cl::~npc_cl()
 void npc_cl::frame(double time_delta)
 {
 	//if (state == ST_WALKING && rnd(4000) == 0) snd_taunt();
-
 	movement(time_delta);
 
 	animate(time_delta);
@@ -87,10 +86,11 @@ void npc_cl::animate(double time_delta)
 
 	if (state == ST_DEATH)
 	{
+		anim_prog = std::min(anim_prog, 100.f);
 		getMesh()->animate (ro, "death", anim_prog, 0);
 		if (get_ai_type() == NPC_AI_PLAYER_FLYING) anim_prog += 17.f*(float)time_delta*anim_speed; else anim_prog += 5.f*(float)time_delta*anim_speed;
 		return;
 	}
 
-	if (anim_prog > 100.f && (state == 1 || state == 2)) {anim_prog -= 100.f;}
+	if (anim_prog > 100.f && (state == ST_WALKING || state == ST_IDLE)) {anim_prog -= 100.f;}
 }

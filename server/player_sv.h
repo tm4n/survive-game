@@ -29,7 +29,6 @@ class player_sv : public player
 
 		float send_pos_timer;
 		vec last_position;
-		float old_health;
 
     private:
 };

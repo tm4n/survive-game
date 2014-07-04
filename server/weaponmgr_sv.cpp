@@ -2,6 +2,8 @@
 
 #include "helper.h"
 #include "net_sv.h"
+#include "backends/b_weapons.h"
+#include <sstream>
 
 weaponmgr_sv::weaponmgr_sv(level *lvl, int *curr_weapon, ENetPeer *playerpeer, int player_id)
 	: weaponmgr(lvl, curr_weapon)
@@ -41,54 +43,54 @@ void weaponmgr_sv::give_weapon(int weapon_id)
 	}
 	
 	if (send_update) net_server->send_update_ammo_magazin(player_id, weapon_id, ammo[weapon_id], magazin[weapon_id], playerpeer);
+
+	if (*curr_weapon == 0) *curr_weapon = weapon_id;
 }
 
 void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 {
 	vec shoot_target;
 	
-	//int shoot_nums = wp_data[ent.weapon].bullets;
-	int shoot_nums = 1;
+	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
 
+	int shoot_nums = wdata->bullets;
+
+	if (abs(shoot_origin.dist(&shoot_dir) - wdata->range) > 500) {log(LOG_ERROR, "WARNING: Possible cheating attempt on shoot target!"); return;}
 	
 	int32_t seed = rand();
 	srand(seed);
 
 	while (shoot_nums > 0)
 	{
-		shoot_nums -= 1;
+		shoot_nums--;
 
 		shoot_target.set(&shoot_dir);
-		/*shoot_target.x += (random(10)-5) * 10 * wp_data[ent.weapon].accuracy;
-		shoot_target.y += (random(10)-5) * 10 * wp_data[ent.weapon].accuracy;
-		shoot_target.z += (random(10)-5) * 10 * wp_data[ent.weapon].accuracy;*/
+		shoot_target.x += (random(10)-5.f) * 10.f * wdata->accuracy;
+		shoot_target.y += (random(10)-5.f) * 10.f * wdata->accuracy;
+		shoot_target.z += (random(10)-5.f) * 10.f * wdata->accuracy;
 
-		log(LOG_DEBUG_VERBOSE, "Shooting on Server!");
+		/*std::ostringstream s;
+		s << "Shooting between " << shoot_origin << " and " << shoot_target;
+		log(LOG_DEBUG_VERBOSE, s.str().c_str());*/
+
 		vec hitpos;
 		int actor_hit = 0;
 		if (lvl->trace(player_id, shoot_origin, shoot_target, &hitpos, &actor_hit))
 		{
 			if (actor_hit >= 0) // hit someone
 			{
-				log(LOG_DEBUG_VERBOSE, "Hit something on server!");
 				actor *ac = lvl->actorlist.at(actor_hit);
 				if (ac->faction == 2) // hit a zombie
 				{
-					log(LOG_DEBUG_VERBOSE, "Hit zombie on server!");
 					if (ac->health > 0)
 					{
-						ac->health -= 100;//wp_data[ent.weapon].damage;
+						ac->health -= wdata->damage;
 						//game_score[ent.owner-1] += wp_data[ent.weapon].damage;
 						if (ac->health <= 0) {ac->health = 0;} //game_score[ent.owner-1] += npc_data[you.npc_type].bounty;}
 						net_server->broadcast_update_health(ac->id, ac->health);
 					}
-					else
-					{
-						//TODO: effect
-					}
 				}
 			}
-			else {log(LOG_DEBUG_VERBOSE, "trace reached outside of map");}
 		}
 	
 	}
