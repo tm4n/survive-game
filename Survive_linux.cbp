@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Survive_linux" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Survive_linux" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Survive_linux" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-Wall" />
+			<Add directory="shared" />
+			<Add directory="client" />
+		</Compiler>
+		<Linker>
+			<Add library="GL" />
+			<Add library="X11" />
+			<Add library="SDL2" />
+			<Add library="libs/enet/.libs/libenet.a" />
+			<Add library="SDL2_ttf" />
+		</Linker>
+		<Unit filename="client/GUI.cpp" />
+		<Unit filename="client/GUI.h" />
+		<Unit filename="client/GUIObject.cpp" />
+		<Unit filename="client/GUIObject.h" />
+		<Unit filename="client/Menu.cpp" />
+		<Unit filename="client/Menu.h" />
+		<Unit filename="client/Mesh.cpp" />
+		<Unit filename="client/Mesh.h" />
+		<Unit filename="client/MeshGUI.cpp" />
+		<Unit filename="client/MeshGUI.h" />
+		<Unit filename="client/MeshTerrain.cpp" />
+		<Unit filename="client/MeshTerrain.h" />
+		<Unit filename="client/RenderObject.cpp" />
+		<Unit filename="client/RenderObject.h" />
+		<Unit filename="client/ResourceLoader.cpp" />
+		<Unit filename="client/ResourceLoader.h" />
+		<Unit filename="client/Texture.cpp" />
+		<Unit filename="client/Texture.h" />
+		<Unit filename="client/box_cl.cpp" />
+		<Unit filename="client/box_cl.h" />
+		<Unit filename="client/collectible_cl.cpp" />
+		<Unit filename="client/collectible_cl.h" />
+		<Unit filename="client/gameClient.cpp" />
+		<Unit filename="client/gameClient.h" />
+		<Unit filename="client/gameRenderer.cpp" />
+		<Unit filename="client/gameRenderer.h" />
+		<Unit filename="client/gl_core_2_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="client/gl_core_2_1.h" />
+		<Unit filename="client/gui_hud.cpp" />
+		<Unit filename="client/gui_hud.h" />
+		<Unit filename="client/level_cl.cpp" />
+		<Unit filename="client/level_cl.h" />
+		<Unit filename="client/main.cpp" />
+		<Unit filename="client/net_cl.cpp" />
+		<Unit filename="client/net_cl.h" />
+		<Unit filename="client/npc_cl.cpp" />
+		<Unit filename="client/npc_cl.h" />
+		<Unit filename="client/player_cl.cpp" />
+		<Unit filename="client/player_cl.h" />
+		<Unit filename="client/weaponmgr_cl.cpp" />
+		<Unit filename="client/weaponmgr_cl.h" />
+		<Unit filename="server/box_sv.cpp" />
+		<Unit filename="server/box_sv.h" />
+		<Unit filename="server/collectible_sv.cpp" />
+		<Unit filename="server/collectible_sv.h" />
+		<Unit filename="server/gameServer.cpp" />
+		<Unit filename="server/gameServer.h" />
+		<Unit filename="server/level_sv.cpp" />
+		<Unit filename="server/level_sv.h" />
+		<Unit filename="server/net_sv.cpp" />
+		<Unit filename="server/net_sv.h" />
+		<Unit filename="server/npc_sv.cpp" />
+		<Unit filename="server/npc_sv.h" />
+		<Unit filename="server/player_sv.cpp" />
+		<Unit filename="server/player_sv.h" />
+		<Unit filename="server/weaponmgr_sv.cpp" />
+		<Unit filename="server/weaponmgr_sv.h" />
+		<Unit filename="shared/Timer.cpp" />
+		<Unit filename="shared/Timer.h" />
+		<Unit filename="shared/actor.cpp" />
+		<Unit filename="shared/actor.h" />
+		<Unit filename="shared/backends/b_npcs.cpp" />
+		<Unit filename="shared/backends/b_npcs.h" />
+		<Unit filename="shared/backends/b_weapons.cpp" />
+		<Unit filename="shared/backends/b_weapons.h" />
+		<Unit filename="shared/box.cpp" />
+		<Unit filename="shared/box.h" />
+		<Unit filename="shared/collectible.cpp" />
+		<Unit filename="shared/collectible.h" />
+		<Unit filename="shared/defs.h" />
+		<Unit filename="shared/game.cpp" />
+		<Unit filename="shared/game.h" />
+		<Unit filename="shared/helper.cpp" />
+		<Unit filename="shared/helper.h" />
+		<Unit filename="shared/level.cpp" />
+		<Unit filename="shared/level.h" />
+		<Unit filename="shared/net.cpp" />
+		<Unit filename="shared/net.h" />
+		<Unit filename="shared/npc.cpp" />
+		<Unit filename="shared/npc.h" />
+		<Unit filename="shared/player.cpp" />
+		<Unit filename="shared/player.h" />
+		<Unit filename="shared/vec.cpp" />
+		<Unit filename="shared/vec.h" />
+		<Unit filename="shared/weaponmgr.cpp" />
+		<Unit filename="shared/weaponmgr.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
