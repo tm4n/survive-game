@@ -9,8 +9,8 @@ b_weapons::b_weapons()
 	// Colt 1911, WP_COLT
 	
 	wp_data[WP_COLT].name.assign("Colt M1911");
-	//wp_data[WP_COLT].model = str_create("colt.mdl");
-	//wp_data[WP_COLT].handmodel = str_create("colt_hand.mdl");
+	wp_data[WP_COLT].wp_mesh = ResourceLoader::meshType::Colt;
+	wp_data[WP_COLT].hand_mesh = ResourceLoader::meshType::Colt_hand;
 	wp_data[WP_COLT].wp_type = WP_TYPE_BULLET;
 	wp_data[WP_COLT].damage = 4.f;
 	wp_data[WP_COLT].magazin_size = 7;
@@ -31,8 +31,8 @@ b_weapons::b_weapons()
 	// Chainsaw, WP_CHAINSAW
 	
 	wp_data[WP_CHAINSAW].name.assign("Chainsaw");
-	//wp_data[WP_CHAINSAW].model = str_create("chainsaw.mdl");
-	//wp_data[WP_CHAINSAW].handmodel = str_create("chainsaw_hands.mdl");
+	wp_data[WP_CHAINSAW].wp_mesh = ResourceLoader::meshType::Chainsaw;
+	wp_data[WP_CHAINSAW].hand_mesh = ResourceLoader::meshType::Chainsaw_hand;
 	wp_data[WP_CHAINSAW].wp_type = WP_TYPE_MEELE;
 	wp_data[WP_CHAINSAW].damage = 4.f;
 	wp_data[WP_CHAINSAW].magazin_size = 1;
@@ -54,8 +54,8 @@ b_weapons::b_weapons()
 		// Smith 'n Wesson, WP_WESSON
 	
 	wp_data[WP_WESSON].name.assign("Smith 'n Wesson");
-	//wp_data[WP_WESSON].model = str_create("wesson.mdl");
-	//wp_data[WP_WESSON].handmodel = str_create("wesson_hand.mdl");
+	wp_data[WP_WESSON].wp_mesh = ResourceLoader::meshType::Wesson;
+	wp_data[WP_WESSON].hand_mesh = ResourceLoader::meshType::Wesson_hand;
 	wp_data[WP_WESSON].wp_type = WP_TYPE_BULLET;
 	wp_data[WP_WESSON].damage = 12.f;
 	wp_data[WP_WESSON].magazin_size = 6;
@@ -77,8 +77,8 @@ b_weapons::b_weapons()
 	// H&K SL8, WP_HKSL8
 	
 	wp_data[WP_HKSL8].name.assign("H&K SL8");
-	//wp_data[WP_HKSL8].model = str_create("hksl8.mdl");
-	//wp_data[WP_HKSL8].handmodel = str_create("hksl8_hand.mdl");
+	wp_data[WP_HKSL8].wp_mesh = ResourceLoader::meshType::HKSL8;
+	wp_data[WP_HKSL8].hand_mesh = ResourceLoader::meshType::HKSL8_hand;
 	wp_data[WP_HKSL8].wp_type = WP_TYPE_BULLET;
 	wp_data[WP_HKSL8].damage = 4.f;
 	wp_data[WP_HKSL8].magazin_size = 30;
@@ -101,8 +101,8 @@ b_weapons::b_weapons()
 	// Shotgun, WP_SHOTGUN
 	
 	wp_data[WP_SHOTGUN].name.assign("Shotgun");
-	//wp_data[WP_SHOTGUN].model = str_create("shotgun.mdl");
-	//wp_data[WP_SHOTGUN].handmodel = str_create("shotgun_hand.mdl");
+	wp_data[WP_SHOTGUN].wp_mesh = ResourceLoader::meshType::Shotgun;
+	wp_data[WP_SHOTGUN].hand_mesh = ResourceLoader::meshType::Shotgun_hand;
 	wp_data[WP_SHOTGUN].wp_type = WP_TYPE_BULLET;
 	wp_data[WP_SHOTGUN].damage = 4.5f;
 	wp_data[WP_SHOTGUN].magazin_size = 2;
@@ -124,8 +124,8 @@ b_weapons::b_weapons()
 	// USAS 12, WP_USAS12
 	
 	wp_data[WP_USAS12].name.assign("USAS 12");
-	//wp_data[WP_USAS12].model = str_create("usas12.mdl");
-	//wp_data[WP_USAS12].handmodel = str_create("usas12_hand.mdl");
+	wp_data[WP_USAS12].wp_mesh = ResourceLoader::meshType::USAS12;
+	wp_data[WP_USAS12].hand_mesh = ResourceLoader::meshType::USAS12_hand;
 	wp_data[WP_USAS12].wp_type = WP_TYPE_BULLET;
 	wp_data[WP_USAS12].damage = 3.8f;
 	wp_data[WP_USAS12].magazin_size = 50;

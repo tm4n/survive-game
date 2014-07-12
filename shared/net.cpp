@@ -281,14 +281,14 @@ int net::send_shoot(uint actor_id, vec *shoot_dir, int rnd_seed, ENetPeer *recei
 
 int net::send_change_weapon(uint actor_id, int new_weapon_id, ENetPeer *receiver)
 {
-	s_net_change_weapon s;
+	s_net_update_curr_weapon s;
 
 	s.actor_id = actor_id;
 	s.new_weapon_id = new_weapon_id;
 
 	puts("Sending weapon change");
 
-	return send_event(NET_CHANGE_WEAPON, (const char*)&s, sizeof(s_net_change_weapon), receiver);
+	return send_event(NET_CHANGE_WEAPON, (const char*)&s, sizeof(s_net_update_curr_weapon), receiver);
 }
 
 int net::send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *receiver)

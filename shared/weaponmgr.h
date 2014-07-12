@@ -22,6 +22,7 @@ public:
 	bool wp_ready;
 	float wp_cooldown;
 	int wp_reloading;
+	int wp_switching;
 
 	short ammo[WEAPON_ENTRIES];
 	short magazin[WEAPON_ENTRIES];

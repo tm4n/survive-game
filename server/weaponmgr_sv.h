@@ -16,6 +16,8 @@ public:
 
 	void frame(float time_frame);
 
+	void wp_switch_impl(int num);
+
 
 protected:
 	ENetPeer *playerpeer;

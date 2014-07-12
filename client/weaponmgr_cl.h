@@ -8,7 +8,8 @@
 class weaponmgr_cl : public weaponmgr
 {
 public:
-	weaponmgr_cl(level *lvl, int *curr_weapon, gameRenderer *renderer, int player_id);
+	weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, gameRenderer *renderer, int player_id);
+	~weaponmgr_cl();
 
 	void input_shoot(vec &cam_pos, vec &cam_angle);
 	int input_switch(int num);
@@ -17,7 +18,11 @@ public:
 
 	void frame(double time_frame);
 
+	void set_mag_ammo(int weapon_id, short magazin, short ammo);
+	void switch_cl(int new_weapon_id);
+
 protected:
+	bool *local_player;
 	gameRenderer *renderer;
 	int player_id;
 
@@ -27,6 +32,7 @@ protected:
 	RenderObject *ro;
 
 	void set_anim_state(int new_state);
+	Mesh *getMesh(int weapon_id);
 
 };
 

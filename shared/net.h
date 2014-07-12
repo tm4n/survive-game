@@ -48,8 +48,8 @@
 #define NET_UPDATE_ANG 53
 #define NET_UPDATE_HEALTH 54
 #define NET_UPDATE_CURR_WEAPON 55
-#define NET_UPDATE_NPC_ORDERS 56
-#define NET_UPDATE_AMMO_MAGAZIN 57
+#define NET_UPDATE_NPC_ORDERS 57
+#define NET_UPDATE_AMMO_MAGAZIN 58
 
 ////////////////////////////////////////////////
 // syncronization data
@@ -154,7 +154,7 @@ struct s_net_shoot
 	int32_t rnd_seed;
 };
 
-struct s_net_change_weapon
+struct s_net_update_curr_weapon
 {
 	uint32_t actor_id;
 	uint32_t new_weapon_id;
@@ -225,7 +225,7 @@ public:
 	int host_service (ENetEvent *event, enet_uint32 timeout);
 	void host_connect (const ENetAddress *address, size_t channelCount, enet_uint32 data);
 	
-	// networking functions
+	// networking functions, used by both server and client
 	int send_input_keys(uint actor_id, int input, ENetPeer *);
 	int send_take(uint actor_id, int taken_id, ENetPeer *);
 	int send_shoot(uint actor_id, vec *shoot_dir, int rnd_seed, ENetPeer *);

@@ -4,12 +4,14 @@ weaponmgr::weaponmgr(level *lvl, int *curr_weapon)
 {
 	this->lvl = lvl;
 
-	this->pickups = 0;
+	this->pickups = (1 << WP_COLT);
 	this->curr_weapon = curr_weapon;
+	*curr_weapon = 1;
 
 	this->wp_ready = true;
 	this->wp_cooldown = 0.f;
 	this->wp_reloading = 0;
+	this->wp_switching = 0;
 
 	for (int i = 0; i < WEAPON_ENTRIES; i++)
 	{

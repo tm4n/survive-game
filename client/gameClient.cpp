@@ -353,16 +353,46 @@ void gameClient::handle_netevent(ENetEvent *event)
 						player_cl *pl= lvl_cl->get_player(d->actor_id);
 						if (pl != NULL)
 						{
-							pl->wpmgr->magazin[d->weapon_id] = (short)d->ammo_magazin;
-							pl->wpmgr->ammo[d->weapon_id] = d->ammo_magazin >> 16;
-
-							std::cout << "client received ammo update: " << pl->wpmgr->magazin[d->weapon_id] << " " << pl->wpmgr->ammo[d->weapon_id] << std::endl;
-
-							if (pl->curr_weapon == 0) pl->curr_weapon = d->weapon_id;
-
+							pl->wpmgr->set_mag_ammo(d->weapon_id, (short)d->ammo_magazin, d->ammo_magazin >> 16);
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
 						
+						break;
+					}
+
+					case NET_CHANGE_WEAPON:
+					{
+						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
+
+						// get player
+     
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							// start teh change
+							log(LOG_ERROR, "Received NET_CHANGE_WEAPON, starting change animation");
+							pl->wpmgr->switch_cl(d->new_weapon_id);
+						}
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+
+						break;
+					}
+
+					case NET_UPDATE_CURR_WEAPON:
+					{
+						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
+
+						// get player
+     
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							pl->curr_weapon = d->new_weapon_id;
+							pl->wpmgr->wp_ready = true;
+							pl->wpmgr->wp_switching = 0;
+						}
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+
 						break;
 					}
 
@@ -609,8 +639,8 @@ void gameClient::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_MOUSEWHEEL)
 	{
-		if (evt->wheel.x > 0) pl->wpmgr->input_scroll_up();
-		if (evt->wheel.x < 0) pl->wpmgr->input_scroll_down();
+		if (evt->wheel.y > 0) pl->wpmgr->input_scroll_up();
+		if (evt->wheel.y < 0) pl->wpmgr->input_scroll_down();
 	}
 	if (evt->type == SDL_KEYDOWN)
 	{

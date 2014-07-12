@@ -12,7 +12,7 @@ player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health
 
 	ro = new RenderObject();
 
-	wpmgr = new weaponmgr_cl(lvl, &curr_weapon, renderer, id);
+	wpmgr = new weaponmgr_cl(lvl, &curr_weapon, &local_player, renderer, id);
         	
     ro->translation[0] = pos->x;
     ro->translation[1] = pos->y;

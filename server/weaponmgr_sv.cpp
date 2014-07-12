@@ -96,13 +96,45 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 	
 	}
 
-	wp_cooldown = 10.f;
+	// TODO: a way to use cooldown on server
+	//wp_cooldown = 10.f;
 	
 	// send including random seed
 	net_server->broadcast_shoot(player_id, &shoot_dir, seed);
 }
 
+void weaponmgr_sv::wp_switch_impl(int num)
+{
+	log(LOG_DEBUG, "Server wp switch received");
+	if (wp_cooldown > 0.f && wp_reloading == 0) {return;}
+	if (num < 0 || num > WEAPON_ENTRIES) {return;}
+	if (!(pickups & (1<<num)) || *curr_weapon == num) {return;}
+	
+	wp_ready = false;
+	wp_reloading = 0; // cancel reloading
+	
+	wp_switching = num;
+	wp_cooldown += 10.f;
+	
+	// send change back to client for animation
+	net_server->send_change_weapon(player_id, num, playerpeer);
+	log(LOG_DEBUG, "Server wp switch send out");
+}
+
+
 void weaponmgr_sv::frame(float time_frame)
 {
-
+	if (wp_switching != 0)
+	{
+		if (wp_cooldown > 0.f)  wp_cooldown -= time_frame;
+		else
+		{
+			*curr_weapon = wp_switching;
+			wp_switching = 0;
+	
+			net_server->broadcast_update_curr_weapon(player_id, *curr_weapon);
+	
+			wp_ready = true;
+		}
+	}
 }

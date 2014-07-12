@@ -25,7 +25,12 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
     
     net_server->broadcast_sync_player(id, pos, ang, health, name, curr_weapon, input, object_taken);
 
-	wpmgr->give_weapon(WP_COLT);
+	// wpmgr->give_weapon(WP_COLT); now automatically given
+	wpmgr->give_weapon(WP_WESSON);
+	wpmgr->give_weapon(WP_CHAINSAW);
+	wpmgr->give_weapon(WP_HKSL8);
+	wpmgr->give_weapon(WP_SHOTGUN);
+	wpmgr->give_weapon(WP_USAS12);
 }
 
 player_sv::~player_sv()
@@ -38,6 +43,8 @@ player_sv::~player_sv()
 void player_sv::frame(double time_delta)
 {
 	movement((float)time_delta);
+
+	wpmgr->frame((float)time_delta);
 
 
 	// send pos only to other players

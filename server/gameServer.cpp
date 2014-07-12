@@ -632,6 +632,28 @@ void gameServer::handle_netevent(ENetEvent *event)
 						break;
 					}
 
+					case NET_CHANGE_WEAPON:
+					{
+						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								// start teh change
+								pl->wpmgr->wp_switch_impl(d->new_weapon_id);
+							}
+							else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for actor thats not owned by this client");
+
+						break;
+					}
+
 					default:
 						log(LOG_ERROR, "Packed with unkown/invalid type received");
                     

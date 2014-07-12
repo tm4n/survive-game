@@ -375,3 +375,13 @@ int net_sv::broadcast_shoot(uint actor_id, vec *shoot_dir, int32_t rnd_seed)
 
 	return broadcast_event(NET_SHOOT, (const char *)&s, sizeof(s_net_shoot));
 }
+
+int net_sv::broadcast_update_curr_weapon(uint actor_id, uint new_weapon_id)
+{
+	s_net_update_curr_weapon s;
+
+	s.actor_id = actor_id;
+	s.new_weapon_id = new_weapon_id;
+
+	return broadcast_event(NET_UPDATE_CURR_WEAPON, (const char *)&s, sizeof(s_net_update_curr_weapon));
+}
