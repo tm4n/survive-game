@@ -14,6 +14,8 @@ public:
 
 	void shoot(vec &shoot_origin, vec &shoot_dir);
 
+	void frame(float time_frame);
+
 
 protected:
 	ENetPeer *playerpeer;

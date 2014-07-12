@@ -21,7 +21,12 @@ protected:
 	gameRenderer *renderer;
 	int player_id;
 
+	int anim_state;
+	float anim_count;
+
 	RenderObject *ro;
+
+	void set_anim_state(int new_state);
 
 };
 

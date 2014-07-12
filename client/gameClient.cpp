@@ -524,8 +524,8 @@ void gameClient::frame(double time_delta)
 				if (abs(cam_bob_offset) < CAMERA_BOB_STOP_RATE*time_delta) cam_bob_offset = 0;
 				else
 				{
-					if (cam_bob_offset > 0) {cam_bob_offset -= CAMERA_BOB_STOP_RATE*time_delta;}
-					else {cam_bob_offset += CAMERA_BOB_STOP_RATE*time_delta;}
+					if (cam_bob_offset > 0) {cam_bob_offset -= CAMERA_BOB_STOP_RATE*(float)time_delta;}
+					else {cam_bob_offset += CAMERA_BOB_STOP_RATE*(float)time_delta;}
 				}
 			}
 
@@ -571,6 +571,8 @@ void gameClient::frame(double time_delta)
 
 void gameClient::event_mouse(SDL_Event *evt)
 {
+	if (input_enable == false) return;
+
 	player_cl *pl = get_own_player();
 	
 	if (evt->type == SDL_MOUSEMOTION)
@@ -592,7 +594,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 				// shoot
 				vec pos(renderer->CameraPos.x, renderer->CameraPos.y, renderer->CameraPos.z);
 				vec ang(renderer->CameraAngle.x, renderer->CameraAngle.y, renderer->CameraAngle.z);
-				if (pl->health > 0 && !(input & INPUT_SPRINT)) pl->wpmgr->input_shoot(pos, ang);
+				if (pl->health > 0 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_shoot(pos, ang);
 			}
 		}
 		if (evt->button.button == SDL_BUTTON_RIGHT)

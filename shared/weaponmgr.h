@@ -19,9 +19,9 @@ public:
 
 	int *curr_weapon;
 
-	float wp_ready;
+	bool wp_ready;
 	float wp_cooldown;
-	float wp_reloading;
+	int wp_reloading;
 
 	short ammo[WEAPON_ENTRIES];
 	short magazin[WEAPON_ENTRIES];

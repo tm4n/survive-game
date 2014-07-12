@@ -8,6 +8,8 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, gameRenderer *renderer,
 {
 	this->renderer = renderer;
 	this->player_id = player_id;
+	this->anim_state = 0;
+	this->anim_count = 0.f;
 
 	s_weapons *wdata = b_weapons::instance()->at(1);
 	ro = new RenderObject();
@@ -20,10 +22,12 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, gameRenderer *renderer,
 
 void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 {
+	if (wp_ready == false || get_curr_magazin() <= 0)  return;
+
 	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
 
 	wp_ready = 0;
-	wp_cooldown += 10;
+	wp_cooldown += 10.f;
 
 	// get target
 	vec v;
@@ -33,12 +37,13 @@ void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 	v.y += (float) (sin(toRadians(cam_angle.x))*cos(toRadians(cam_angle.y))) * wdata->range;
 	v.z += (float) (sin(toRadians(cam_angle.y))) * wdata->range;
 
-	/*vec_set(player.shoot_dir, vector(screen_size.x/2, screen_size.y/2, wp_data[player.weapon].range));
-	vec_for_screen (player.shoot_dir, camera);
-	if (player.shoot_dir == 0) {player.shoot_dir = 0.001;}*/
 
 	// send to server
 	net_client->send_shoot(player_id, &v, 0, net_client->serverpeer);
+
+	set_anim_state(1);
+	// TODO: shoot-sound
+	// TODO: muzzle flash effect
 	
 	/*gui_shoot_animation();
 	
@@ -87,6 +92,17 @@ void weaponmgr_cl::input_scroll_down()
 
 void weaponmgr_cl::frame(double time_frame)
 {
+	// count down cooldown
+	if (wp_cooldown > 0.f)
+	{
+		wp_cooldown -= b_weapons::instance()->at(*curr_weapon)->shootspeed*(float)time_frame;
+		if (wp_cooldown <= 0) wp_ready = true;
+	}
+
+
+
+	// display weapon
+
 	ro->translation[0] = renderer->CameraPos.x;
     ro->translation[1] = renderer->CameraPos.y;
 	ro->translation[2] = renderer->CameraPos.z;
@@ -112,4 +128,25 @@ void weaponmgr_cl::frame(double time_frame)
 	ro->rotation[0] = renderer->CameraAngle.x;
 	ro->rotation[1] = -renderer->CameraAngle.y;
 	ro->rotation[2] = renderer->CameraAngle.z;
+
+
+	// animate weapon
+	if (anim_state == 1)
+	{
+		renderer->resources.getMesh(ResourceLoader::meshType::Colt_hand)->animate(ro, "fire", anim_count, 0);
+		anim_count += b_weapons::instance()->at(*curr_weapon)->shootspeed*10.f*(float)time_frame;
+		if (anim_count >= 100.f) set_anim_state(0);
+	}
+}
+
+void weaponmgr_cl::set_anim_state(int new_state)
+{
+	anim_count = 0.f;
+
+	if (anim_state == 0)
+	{
+		renderer->resources.getMesh(ResourceLoader::meshType::Colt_hand)->animate(ro, "fire", 0.f, 0);
+	}
+
+	anim_state = new_state;
 }

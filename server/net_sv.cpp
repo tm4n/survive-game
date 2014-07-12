@@ -364,3 +364,14 @@ int net_sv::send_update_ammo_magazin(int actor_id, int weapon_id, short ammo, sh
 	return send_event(NET_UPDATE_AMMO_MAGAZIN, (const char*)&s, sizeof(s_net_update_ammo_magazin), receiver);
 
 }
+
+int net_sv::broadcast_shoot(uint actor_id, vec *shoot_dir, int32_t rnd_seed)
+{
+    s_net_shoot s;
+
+	s.actor_id = actor_id;
+	s.shoot_dir.set(shoot_dir);
+	s.rnd_seed = rnd_seed;
+
+	return broadcast_event(NET_SHOOT, (const char *)&s, sizeof(s_net_shoot));
+}

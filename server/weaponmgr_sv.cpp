@@ -55,8 +55,9 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 
 	int shoot_nums = wdata->bullets;
 
-	if (abs(shoot_origin.dist(&shoot_dir) - wdata->range) > 500) {log(LOG_ERROR, "WARNING: Possible cheating attempt on shoot target!"); return;}
-	
+	if (abs(shoot_origin.dist(&shoot_dir) - wdata->range) > 250) {log(LOG_ERROR, "WARNING: Possible cheating attempt on shoot target!"); return;}
+	// TODO: create a flexible way to check cooldown
+
 	int32_t seed = rand();
 	srand(seed);
 
@@ -94,8 +95,14 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 		}
 	
 	}
+
+	wp_cooldown = 10.f;
 	
-	//net_server->broadcast_shoot();
 	// send including random seed
-	//enet_send_skills(enet_ent_globpointer(me), SK_SHOOT_DIR, SK_SHOOT_DIR+3, BROADCAST);
+	net_server->broadcast_shoot(player_id, &shoot_dir, seed);
+}
+
+void weaponmgr_sv::frame(float time_frame)
+{
+
 }
