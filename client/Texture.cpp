@@ -176,4 +176,5 @@ Texture::~Texture()
 		delete[] (tgaFile->imageData);
 		delete tgaFile;
 	}
+	glDeleteTextures(1, &mTextureID);
 }

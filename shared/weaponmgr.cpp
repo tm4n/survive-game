@@ -4,9 +4,7 @@ weaponmgr::weaponmgr(level *lvl, int *curr_weapon)
 {
 	this->lvl = lvl;
 
-	this->pickups = (1 << WP_COLT);
 	this->curr_weapon = curr_weapon;
-	*curr_weapon = 1;
 
 	this->wp_ready = true;
 	this->wp_cooldown = 0.f;
@@ -18,6 +16,12 @@ weaponmgr::weaponmgr(level *lvl, int *curr_weapon)
 		ammo[i] = 0;
 		magazin[i] = 0;
 	}
+	
+	// give colt by default
+	*curr_weapon = 1;
+	this->pickups = (1 << WP_COLT);
+	this->magazin[WP_COLT] = 7;
+	this->ammo[WP_COLT] = -1;
 }
 
 

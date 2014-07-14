@@ -80,7 +80,7 @@ GUI::GUI()
     glGenBuffers(2, glbuffer);
     mVertexBuffer = glbuffer[0];
     mTexCoordBuffer = glbuffer[1];
-	delete glbuffer;
+	delete[] glbuffer;
         
     // upload vertex list
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
@@ -366,6 +366,8 @@ bool GUI::updateText(int id, const std::string &txt, Uint8 cred, Uint8 cgreen, U
 	
 	SDL_Color c = {cred, cgreen, cblue};
 	Texture *t = new Texture(txt, elem->fnt, c);
+	
+	elem->txt.assign(txt);
 	
 	delete elements.at(id)->textures[0];
 	elements.at(id)->textures[0] = t;

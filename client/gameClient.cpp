@@ -507,6 +507,7 @@ void gameClient::disconnect()
 
 void gameClient::frame(double time_delta)
 {
+	
 	// deferred creation
 	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources);
 	
