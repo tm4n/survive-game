@@ -99,7 +99,7 @@ bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor
 			|| (curr_pos.y < col_move_border_min.y || curr_pos.y > col_move_border_max.y) // out of y plane
 			|| (curr_pos.z < col_move_border_min.z || curr_pos.z > col_move_border_max.z)) // out of z plane
 		{
-			log(LOG_DEBUG_VERBOSE, "trace is out of world");
+			//log(LOG_DEBUG_VERBOSE, "trace is out of world");
 			// out of world
 			hitpos->set(&curr_pos);
 			*actor_hit =  -1;

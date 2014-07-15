@@ -47,3 +47,13 @@ int net_cl::send_chat(const char* msg, uint len, ENetPeer *receiver)
 {
 	return send_event(NET_CHAT, msg, len, receiver);
 }
+
+
+int net_cl::send_reload(uint actor_id, ENetPeer *receiver)
+{
+	s_net_reload s;
+
+	s.actor_id = actor_id;
+
+	return send_event(NET_RELOAD, (const char*)&s, sizeof(s_net_reload), receiver);
+}

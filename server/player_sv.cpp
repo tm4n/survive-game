@@ -42,6 +42,11 @@ player_sv::~player_sv()
 
 void player_sv::frame(double time_delta)
 {
+	if (input & INPUT_SPRINT)
+	{
+		wpmgr->cancel_reload();
+	}
+
 	movement((float)time_delta);
 
 	wpmgr->frame((float)time_delta);

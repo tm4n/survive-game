@@ -528,6 +528,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 									if (box->position.dist(&pl->position) < 2000000.f && pl->object_taken < 0)
 									{
 										pl->object_taken = d->taken_id;
+										pl->wpmgr->cancel_reload();
 										box->taker_id = d->actor_id;
 										box->state = BOX_STATE_TAKEN;
 										
@@ -650,6 +651,28 @@ void gameServer::handle_netevent(ENetEvent *event)
 							
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for actor thats not owned by this client");
+
+						break;
+					}
+
+					case NET_RELOAD:
+					{
+						s_net_reload *d = (s_net_reload*)data;
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+
+						if (d->actor_id == pd->player_actor_id)
+						{
+							player_sv *pl= lvl_sv->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								// start reload
+								pl->wpmgr->wp_reload_impl();
+							}
+							else log(LOG_ERROR, "Received NET_RELOAD for non-player actor");
+							
+						}
+						else log(LOG_ERROR, "Received NET_RELOAD for actor thats not owned by this client");
 
 						break;
 					}
@@ -807,7 +830,7 @@ void gameServer::spawner(double time_frame)
 			if (sv_spawned_npcs < sv_amount_npcs && sv_num_npcs < sv_num_npcs_limit)
 			{
 				// roll the dice
-				dice = random_range(100);
+				dice = (int)random_range(100);
 
 				// decide which to spawn
 				
@@ -917,7 +940,7 @@ void gameServer::spawner(double time_frame)
 	{
 		sv_barrier_timer -= 0.5;
 		
-		if ((float)random_range(100) < sv_barrier_probability)
+		if (random_range(100) < sv_barrier_probability)
 		{
 			if (wave >= 2 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_CHAINSAW] == false)
 			{
@@ -986,12 +1009,12 @@ void gameServer::npc_spawn(int etype, float ebonus)
 	sv_debug(str_temp);*/
 	
 	// determine where they should spawn
-	float ang = toRadians((float)random_range(360));
+	float ang = toRadians(random_range(360));
 	vec v;
 	v.x = cos(ang) * lvl->level_size;
 	v.y = sin(ang) * lvl->level_size;
 	
-	if (b_npcs::instance()->at(etype)->ai_type == NPC_AI_PLAYER_FLYING) v.z = 200.f + (float)random_range(400);
+	if (b_npcs::instance()->at(etype)->ai_type == NPC_AI_PLAYER_FLYING) v.z = 200.f + random_range(400);
 	else v.z = lvl->level_ground;
 	
 	npc_sv *np = new npc_sv(lvl_sv, etype, &v, NULL, &sv_num_npcs);
@@ -1006,11 +1029,11 @@ void gameServer::box_spawn()
 	log(LOG_DEBUG, "Spawning barrier crate");
 		
 	// get position anywhere on the level^
-	pos.x = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
-	pos.y = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
+	pos.x = random_range(lvl->level_size*2.f) - lvl->level_size;
+	pos.y = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.z = 1500.f;
 	
-	dice = random_range(75);
+	dice = (int)random_range(75);
 	if (dice <= 12)
 	{
 		if (dice <= 1.5)
@@ -1030,8 +1053,8 @@ void gameServer::wpdrop_spawn(int wtype)
 	log(LOG_DEBUG, "Spawning weapon crate, Type ");
 	
 	// get position anywhere on the level^
-	pos.x = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
-	pos.y = (float)random_range((int)lvl->level_size*2) - lvl->level_size;
+	pos.x = random_range(lvl->level_size*2.f) - lvl->level_size;
+	pos.y = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.z = 1500.f;
 	
 	new collectible_sv(lvl_sv, (char)wtype, &pos);

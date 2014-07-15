@@ -65,8 +65,9 @@ public:
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
 	int broadcast_update_health(uint actor_id, float health);
 
-	int send_update_ammo_magazin(int actor_id, int weapon_id, short ammo, short magazin, ENetPeer*);
+	int send_update_ammo_magazin(uint actor_id, int weapon_id, short ammo, short magazin, ENetPeer*);
 	int broadcast_update_curr_weapon(uint actor_id, uint curr_weapon);
+	int broadcast_reload(uint actor_id);
 
 	int broadcast_shoot(uint actor_id, vec *shoot_dir, int32_t rnd_seed);
 };

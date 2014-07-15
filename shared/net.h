@@ -41,6 +41,7 @@
 #define NET_TAKE 41
 #define NET_SHOOT 42
 #define NET_CHANGE_WEAPON 43
+#define NET_RELOAD 44
 
 #define NET_UPDATE_STATE 50
 #define NET_UPDATE_TARGET 51
@@ -158,6 +159,11 @@ struct s_net_update_curr_weapon
 {
 	uint32_t actor_id;
 	uint32_t new_weapon_id;
+};
+
+struct s_net_reload
+{
+	uint32_t actor_id;
 };
 
 struct s_net_update_state

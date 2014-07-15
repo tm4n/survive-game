@@ -98,7 +98,8 @@ void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int 
 		s.str(""); s << health;
 		gui->updateText(health_txt_id, s.str().c_str());
 		
-		s.str(""); s << ammo;
+		s.str("");
+		if (ammo >= 0) s << ammo; else s << " ";
 		gui->updateText(ammo_txt_id, s.str().c_str());
 		
 		s.str(""); s << magazin;

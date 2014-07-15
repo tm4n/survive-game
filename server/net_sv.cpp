@@ -350,7 +350,7 @@ int net_sv::broadcast_update_health(uint actor_id, float health)
     return broadcast_event(NET_UPDATE_HEALTH, (const char *)&s, sizeof(s_net_update_health));
 }
 
-int net_sv::send_update_ammo_magazin(int actor_id, int weapon_id, short ammo, short magazin, ENetPeer* receiver)
+int net_sv::send_update_ammo_magazin(uint actor_id, int weapon_id, short ammo, short magazin, ENetPeer* receiver)
 {
 	s_net_update_ammo_magazin s;
 
@@ -384,4 +384,13 @@ int net_sv::broadcast_update_curr_weapon(uint actor_id, uint new_weapon_id)
 	s.new_weapon_id = new_weapon_id;
 
 	return broadcast_event(NET_UPDATE_CURR_WEAPON, (const char *)&s, sizeof(s_net_update_curr_weapon));
+}
+
+int net_sv::broadcast_reload(uint actor_id)
+{
+	s_net_reload s;
+
+	s.actor_id = actor_id;
+
+	return broadcast_event(NET_RELOAD, (const char*)&s, sizeof(s_net_reload));
 }

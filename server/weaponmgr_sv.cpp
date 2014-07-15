@@ -28,6 +28,7 @@ void weaponmgr_sv::give_weapon(int weapon_id)
 		log(LOG_DEBUG, "Weapon given to player");
 		
 		magazin[weapon_id] = wdata->magazin_size;
+		ammo[weapon_id] = wdata->ammo_size;
 		send_update = true;
 	}
 	
@@ -58,17 +59,22 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 	if (abs(shoot_origin.dist(&shoot_dir) - wdata->range) > 250) {log(LOG_ERROR, "WARNING: Possible cheating attempt on shoot target!"); return;}
 	// TODO: create a flexible way to check cooldown
 
+	if (magazin[*curr_weapon] <= 0) {log(LOG_ERROR, "WARNING: Possible cheating attempt, no ammo on client!"); return;}
+
+	// reduce ammo (if not unlimited)
+	if (wdata->ammo_size != -2) magazin[*curr_weapon] -= 1;
+
 	int32_t seed = rand();
-	srand(seed);
+	random_seed(seed);
 
 	while (shoot_nums > 0)
 	{
 		shoot_nums--;
 
 		shoot_target.set(&shoot_dir);
-		shoot_target.x += (random(10)-5.f) * 10.f * wdata->accuracy;
-		shoot_target.y += (random(10)-5.f) * 10.f * wdata->accuracy;
-		shoot_target.z += (random(10)-5.f) * 10.f * wdata->accuracy;
+		shoot_target.x += (random_range(10)-5.f) * 10.f * wdata->accuracy;
+		shoot_target.y += (random_range(10)-5.f) * 10.f * wdata->accuracy;
+		shoot_target.z += (random_range(10)-5.f) * 10.f * wdata->accuracy;
 
 		/*std::ostringstream s;
 		s << "Shooting between " << shoot_origin << " and " << shoot_target;
@@ -121,6 +127,26 @@ void weaponmgr_sv::wp_switch_impl(int num)
 	log(LOG_DEBUG, "Server wp switch send out");
 }
 
+void weaponmgr_sv::wp_reload_impl()
+{
+
+	wp_ready = false;
+	wp_cooldown += 10.f;
+	wp_reloading = 1;
+	
+	net_server->broadcast_reload(player_id);
+}
+
+void weaponmgr_sv::cancel_reload()
+{
+	if (wp_reloading != 0)
+	{
+		wp_reloading = 0;
+		wp_ready = true;
+		wp_cooldown = 0.f;
+	}
+}
+
 
 void weaponmgr_sv::frame(float time_frame)
 {
@@ -135,6 +161,42 @@ void weaponmgr_sv::frame(float time_frame)
 			net_server->broadcast_update_curr_weapon(player_id, *curr_weapon);
 	
 			wp_ready = true;
+		}
+	}
+
+	if (wp_reloading != 0)
+	{
+		if (wp_cooldown > 0.f)  wp_cooldown -= b_weapons::instance()->at(*curr_weapon)->reloadspeed *time_frame;
+		else
+		{
+			int num_ammo = ammo[*curr_weapon];
+			int num_fired = b_weapons::instance()->at(*curr_weapon)->magazin_size - magazin[*curr_weapon];
+		
+			if (b_weapons::instance()->at(*curr_weapon)->ammo_size > 0)
+			{
+				if (num_ammo < num_fired)
+				{
+					// ammo has run out
+					ammo[*curr_weapon] = 0;
+					magazin[*curr_weapon] += num_ammo;
+				}
+				else
+				{
+					// enough ammo there
+					ammo[*curr_weapon] = num_ammo - num_fired;
+					magazin[*curr_weapon] += num_fired;
+				}
+			}
+			else
+			{
+				// weapon has unlimited ammo
+				magazin[*curr_weapon] = b_weapons::instance()->at(*curr_weapon)->magazin_size;
+			}
+
+			wp_ready = true;
+			wp_reloading = 0;
+		
+			net_server->send_update_ammo_magazin(player_id, *curr_weapon, ammo[*curr_weapon], magazin[*curr_weapon], playerpeer);
 		}
 	}
 }

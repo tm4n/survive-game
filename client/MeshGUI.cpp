@@ -101,7 +101,7 @@ void MeshGUI::draw(glm::mat4 mVPMatrix)
 		}
 	        
 	    // Draw the triangles
-	    glDrawArrays(GL_TRIANGLES, 0, numtris*3);
+		glDrawArrays(GL_TRIANGLES, 0, numtris*3);
 
 		err = glGetError();
 		if (err != 0) {

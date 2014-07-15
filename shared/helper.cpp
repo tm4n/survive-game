@@ -255,16 +255,11 @@ void random_seed(int seed)
 	gen = new std::minstd_rand(seed);
 }
 
-int random_range(int mx)
+float random_range(float mx)
 {
 	if (gen == NULL) gen = new std::minstd_rand();
 	
-	std::uniform_int_distribution<> d(0, mx);
+	std::uniform_real_distribution<float> d(0, mx);
 	
-	return d(*gen);
-}
-
-float random(int mx)
-{
-	return rand() % mx;
+	return (float)d(*gen);
 }

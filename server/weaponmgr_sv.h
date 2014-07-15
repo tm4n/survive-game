@@ -18,6 +18,9 @@ public:
 
 	void wp_switch_impl(int num);
 
+	void wp_reload_impl();
+	void cancel_reload();
+
 
 protected:
 	ENetPeer *playerpeer;

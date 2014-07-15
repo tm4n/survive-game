@@ -11,7 +11,6 @@
 #define INPUT_LEFT	(1<<5)
 #define INPUT_RIGHT	(1<<6)
 #define INPUT_SPRINT (1<<7)
-#define INPUT_RELOAD (1<<10)
 
 
 class player : public actor

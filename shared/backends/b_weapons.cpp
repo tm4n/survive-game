@@ -36,7 +36,7 @@ b_weapons::b_weapons()
 	wp_data[WP_CHAINSAW].wp_type = WP_TYPE_MEELE;
 	wp_data[WP_CHAINSAW].damage = 4.f;
 	wp_data[WP_CHAINSAW].magazin_size = 1;
-	wp_data[WP_CHAINSAW].ammo_size = -1;
+	wp_data[WP_CHAINSAW].ammo_size = -2;
 	wp_data[WP_CHAINSAW].bullets = 8;
 	wp_data[WP_CHAINSAW].accuracy = 0.2f;
 	wp_data[WP_CHAINSAW].shootspeed = 1.f;

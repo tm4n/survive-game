@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "SDL2/SDL.h"
+#include "helper.h"
 
 // base header
 typedef struct {
@@ -517,6 +518,7 @@ int Mesh::animate(RenderObject* ro, const char* frame, float progress, int flags
 		}
 		ct++;
 	}
+	if (num_frameset == 0) return -1;
 
 	if (flags == 0)
 	{
@@ -530,9 +532,9 @@ int Mesh::animate(RenderObject* ro, const char* frame, float progress, int flags
 	}
 
 	int target_frame = start_frame + (int)((progress/100.f) * num_frameset);
-	if (target_frame >= numframes) {puts("ERROR: frame too big on animation! How could this happen"); return 0;}
+	if (target_frame >= numframes) {log(LOG_ERROR, "ERROR: frame too big on animation! How could this happen"); return -1;}
 	int target_next_frame = target_frame+1;
-	if (target_next_frame >= start_frame + num_frameset && flags != 0) target_next_frame = start_frame;
+	if (target_next_frame >= start_frame + num_frameset) {if (flags != 0) target_next_frame = start_frame; else target_next_frame = target_frame;}
 	if (target_next_frame >= numframes) target_next_frame = numframes-1;
 
 	double intpart;

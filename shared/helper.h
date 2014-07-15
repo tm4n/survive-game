@@ -44,8 +44,7 @@ void check_heap(char *file, int line);
 
 float toRadians(float d);
 
-int random_range(int mx);
-
-float random(int mx);
+float random_range(float mx);
+void random_seed(int seed);
 
 #endif // __HELPER_H__

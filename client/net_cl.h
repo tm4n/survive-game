@@ -13,8 +13,10 @@ public:
 
 	int send_sync_client(const char *name, ENetPeer *receiver);
 	int send_request_join(ENetPeer *receiver);
+	int send_reload(uint actor_id, ENetPeer *receiver);
 
 	int send_chat(const char *msg, uint len, ENetPeer *receiver);
+
 	
 	ENetPeer *serverpeer;
 };

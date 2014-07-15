@@ -77,7 +77,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 				char *data = (char*)(event->packet -> data) +sizeof(short);
 
 				////////////////////////////
-				// differentiate net type
+				// differentiate packet type
 				//
 
 				switch(net_type)
@@ -257,6 +257,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 								if (box != NULL)
 								{
 									pl->object_taken = -1;
+									if (!(input & INPUT_SPRINT)) pl->wpmgr->show_wp();
 									box->taker_id = -1;
 									box->state = BOX_STATE_DEFAULT;
 								}
@@ -272,6 +273,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 								if (box != NULL)
 								{
 									pl->object_taken = d->taken_id;
+									pl->wpmgr->cancel_reload();
+									pl->wpmgr->hide_wp();
 									box->taker_id = d->actor_id;
 									box->state = BOX_STATE_TAKEN;
 								}
@@ -360,6 +363,24 @@ void gameClient::handle_netevent(ENetEvent *event)
 						break;
 					}
 
+					case NET_SHOOT:
+					{
+						s_net_shoot *d = (s_net_shoot *)data;
+
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							vec shoot_origin;
+							shoot_origin.x = pl->position.x;
+							shoot_origin.y = pl->position.y;
+							shoot_origin.z = pl->position.z+pl->bb_max.z-CAMERA_VIEW_HEIGHT;
+							pl->wpmgr->shoot(shoot_origin, d->shoot_dir, d->rnd_seed);
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
+						
+						break;
+					}
+
 					case NET_CHANGE_WEAPON:
 					{
 						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
@@ -390,6 +411,22 @@ void gameClient::handle_netevent(ENetEvent *event)
 							pl->curr_weapon = d->new_weapon_id;
 							pl->wpmgr->wp_ready = true;
 							pl->wpmgr->wp_switching = 0;
+						}
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+
+						break;
+					}
+
+					case NET_RELOAD:
+					{
+						s_net_reload *d = (s_net_reload*)data;
+
+						// get player
+     
+						player_cl *pl= lvl_cl->get_player(d->actor_id);
+						if (pl != NULL)
+						{
+							pl->wpmgr->reload();
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
 
@@ -579,7 +616,7 @@ void gameClient::frame(double time_delta)
 
 		std::ostringstream s;
 
-		s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon;
+		s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
 
 		hud->set_debug(s.str());
 		
@@ -667,9 +704,35 @@ void gameClient::event_mouse(SDL_Event *evt)
 		case SDLK_RSHIFT:
 		case SDLK_LSHIFT:
 			input |= INPUT_SPRINT;
+			// cancel reload
+			pl->wpmgr->cancel_reload();
+			pl->wpmgr->hide_wp();
 			break;
 		case SDLK_SPACE:
 			input |= INPUT_JUMP;
+			break;
+
+		case SDLK_r:
+			pl->wpmgr->input_reload();
+			break;
+
+		case SDLK_1:
+			pl->wpmgr->input_switch(1);
+			break;
+		case SDLK_2:
+			pl->wpmgr->input_switch(2);
+			break;
+		case SDLK_3:
+			pl->wpmgr->input_switch(3);
+			break;
+		case SDLK_4:
+			pl->wpmgr->input_switch(4);
+			break;
+		case SDLK_5:
+			pl->wpmgr->input_switch(5);
+			break;
+		case SDLK_6:
+			pl->wpmgr->input_switch(6);
 			break;
 		}
 	}
@@ -697,6 +760,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			case SDLK_RSHIFT:
 			case SDLK_LSHIFT:
 				input &= ~INPUT_SPRINT;
+				if (pl->object_taken == -1) pl->wpmgr->show_wp();
 				break;
 			case SDLK_SPACE:
 				input &= ~INPUT_JUMP;
