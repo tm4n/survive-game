@@ -38,7 +38,7 @@ void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 	// reduce ammo if weapon doesn't have unlimited amount
 	if (wdata->ammo_size != -2) magazin[*curr_weapon] -= 1;
 
-	wp_ready = 0;
+	wp_ready = false;
 	wp_cooldown += 10.f;
 
 	// get target
@@ -107,6 +107,8 @@ void weaponmgr_cl::input_reload()
 		|| get_curr_magazin() >= b_weapons::instance()->at(*curr_weapon)->magazin_size)  return;
 
 	net_client->send_reload(player_id, net_client->serverpeer);
+
+	reload();
 }
 
 void weaponmgr_cl::frame(double time_frame)
@@ -300,6 +302,21 @@ void weaponmgr_cl::switch_cl(int new_weapon_id)
 	wp_cooldown = 10.f;
 
 	set_anim_state(2);
+}
+
+void weaponmgr_cl::update_curr_weapon(int new_curr_weapon)
+{
+	*curr_weapon = new_curr_weapon;
+	wp_ready = true;
+	wp_switching = 0;
+
+	if (getMesh(new_curr_weapon) != curr_mesh) 
+	{
+		// switch weapon mesh
+		curr_mesh->removeRenderObject(ro);
+		curr_mesh = getMesh(new_curr_weapon);
+		curr_mesh->addRenderObject(ro);
+	}
 }
 
 MeshGUI *weaponmgr_cl::getMesh(int weapon_id)

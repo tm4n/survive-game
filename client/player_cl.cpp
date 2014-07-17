@@ -9,6 +9,7 @@ player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health
 {
 	renderer = arenderer;
 	local_player = false;
+	input_shoot = false;
 
 	ro = new RenderObject();
 
@@ -87,6 +88,21 @@ void player_cl::frame(double time_delta)
 {
 	// turn player with camera
 	angle.x = renderer->CameraAngle.x;
+
+	// shooting
+	if (wpmgr->wp_ready == true && input_shoot == true)
+	{
+		vec pos(renderer->CameraPos.x, renderer->CameraPos.y, renderer->CameraPos.z);
+		vec ang(renderer->CameraAngle.x, renderer->CameraAngle.y, renderer->CameraAngle.z);
+		if (health > 0 && !(input & INPUT_SPRINT) && object_taken == -1) wpmgr->input_shoot(pos, ang);
+	}
+
+	// reloading
+	if (wpmgr->get_curr_magazin() == 0 && wpmgr->get_curr_ammo() != 0 && wpmgr->wp_ready == true && wpmgr->wp_reloading == 0
+		&& !(input & INPUT_SPRINT) && object_taken == -1)
+	{
+		wpmgr->input_reload();
+	}
 	
 	// send regularly
 	send_angle_timer += (float)time_delta;

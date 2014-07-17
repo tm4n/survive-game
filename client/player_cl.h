@@ -10,6 +10,8 @@ class player_cl : public player
 public:
 	bool local_player;
 
+	bool input_shoot;
+
 	RenderObject *ro;
 
 	weaponmgr_cl *wpmgr;

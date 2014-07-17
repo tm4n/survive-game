@@ -22,6 +22,7 @@ public:
 
 	void set_mag_ammo(int weapon_id, short magazin, short ammo);
 	void switch_cl(int new_weapon_id);
+	void update_curr_weapon(int new_curr_weapon);
 	void shoot(vec &shoot_origin, vec &shoot_dir, int random_seed);
 	void reload();
 	void cancel_reload();

@@ -408,9 +408,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						player_cl *pl= lvl_cl->get_player(d->actor_id);
 						if (pl != NULL)
 						{
-							pl->curr_weapon = d->new_weapon_id;
-							pl->wpmgr->wp_ready = true;
-							pl->wpmgr->wp_switching = 0;
+							pl->wpmgr->update_curr_weapon(d->new_weapon_id);
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
 
@@ -426,7 +424,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 						player_cl *pl= lvl_cl->get_player(d->actor_id);
 						if (pl != NULL)
 						{
-							pl->wpmgr->reload();
+							//pl->wpmgr->reload();
+							// is done locally now
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
 
@@ -616,7 +615,9 @@ void gameClient::frame(double time_delta)
 
 		std::ostringstream s;
 
-		s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
+		//s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
+
+		s << "DEBUG wp_ready: " << pl->wpmgr->wp_ready << ", wp_reloading: " << pl->wpmgr->wp_reloading << "wp->anim_state=" << pl->wpmgr->anim_state;
 
 		hud->set_debug(s.str());
 		
@@ -660,9 +661,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			if (local_state == 2)
 			{
 				// shoot
-				vec pos(renderer->CameraPos.x, renderer->CameraPos.y, renderer->CameraPos.z);
-				vec ang(renderer->CameraAngle.x, renderer->CameraAngle.y, renderer->CameraAngle.z);
-				if (pl->health > 0 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_shoot(pos, ang);
+				pl->input_shoot = true;
 			}
 		}
 		if (evt->button.button == SDL_BUTTON_RIGHT)
@@ -673,6 +672,13 @@ void gameClient::event_mouse(SDL_Event *evt)
 				if (pl != NULL) pl->order_take_object();
 				
 			}
+		}
+	}
+	if (evt->type == SDL_MOUSEBUTTONUP)
+	{
+		if (evt->button.button == SDL_BUTTON_LEFT)
+		{
+			if (local_state == 2) pl->input_shoot = false;
 		}
 	}
 	if (evt->type == SDL_MOUSEWHEEL)
@@ -713,7 +719,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			break;
 
 		case SDLK_r:
-			pl->wpmgr->input_reload();
+			if (!(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
 			break;
 
 		case SDLK_1:
