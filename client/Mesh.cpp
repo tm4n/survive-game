@@ -353,7 +353,7 @@ void Mesh::draw(glm::mat4 mVPMatrix)
 	    mFinalMatrix = mVPMatrix * mTransformationMatrix;
 	
 	    // Apply the projection and view transformation
-	    glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, &mFinalMatrix[0][0]);
+	    glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, glm::value_ptr(mFinalMatrix));
 	        
 	    // Upload other values
 	    glUniform1f(mAnimProgressHandle, obj->animProgress);

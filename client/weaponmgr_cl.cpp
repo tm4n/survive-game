@@ -14,7 +14,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	this->anim_state = 0;
 	this->anim_count = 0.f;
 
-	s_weapons *wdata = b_weapons::instance()->at(1);
+	//s_weapons *wdata = b_weapons::instance()->at(1);
 	ro = new RenderObject();
 	ro->translation[0] = 5;
     ro->translation[1] = -2;
