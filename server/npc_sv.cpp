@@ -7,6 +7,7 @@ npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan, int* counter
 	npc_target_timer = 0.f;
 	send_pos_timer = 0.f;
 	jump_timer = 0.f;
+	death_timer = 0.f;
 	sv_attack_done = false;
 	old_target = target;
 	last_position.zero();
@@ -125,6 +126,14 @@ void npc_sv::frame(double time_delta)
 	}
 	else
 	{
+		death_timer += (float)time_delta;
+
+		if (death_timer > 5.f*16.f)
+		{
+			delete this;
+			return;
+		}
+
 		// TODO: dead, state will not be send
 		//if (integer(random(30)) == 0 && my.ai_type != NPC_AI_PLAYER_FLYING) new collectible_sv(lvl, COLLECTIBLE_TYPE_HEALTH, &position);
 		

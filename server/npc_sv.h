@@ -24,6 +24,7 @@ class npc_sv : public npc
 		float npc_target_timer;
 		float send_pos_timer;
 		float jump_timer;
+		float death_timer;
 		bool sv_attack_done;
 		int old_target;
 		vec last_position;
