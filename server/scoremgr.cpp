@@ -1,6 +1,7 @@
 #include "scoremgr.h"
 #include "net_sv.h"
 
+#include <sstream>
 
 void scoremgr::add_points(uint actor_id, int num_points)
 {
@@ -99,4 +100,26 @@ void scoremgr::update_points(ENetPeer *p)
 		net_server->send_update_score(pd->score, p);
 	}
 
+}
+
+void scoremgr::get_full_string(std::string *str)
+{
+	std::ostringstream ss;
+
+	int ct = 0;
+	for (uint i = 0; i < net_server->eHost->peerCount; i++)
+	{
+		ENetPeer *p = &net_server->eHost->peers[i];
+		if (p->state == ENET_PEER_STATE_CONNECTED)
+		{
+			s_peer_data *pd = (s_peer_data *)p->data;
+			if (pd != NULL)
+			{
+				ss << pd->player_name << "§" << pd->score << "§" << p->roundTripTime << "§";
+			}
+		}
+	}
+	ss << "Record goes here!";
+
+	str->assign(ss.str());
 }

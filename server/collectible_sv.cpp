@@ -3,7 +3,7 @@
 #include <sstream>
 
 collectible_sv::collectible_sv(level_sv *lvl_sv, char acollectible_type, vec *pos)
-	: collectible(lvl_sv, collectible_type, pos)
+	: collectible(lvl_sv, acollectible_type, pos)
 {
 	this->lvl_sv = lvl_sv;
 	
@@ -36,6 +36,12 @@ void collectible_sv::frame(double time_frame)
 		player_sv *pl = lvl_sv->get_player(id);
 		if (pl != NULL)
 		{
+			if (collectible_type == COLLECTIBLE_TYPE_WP_COLT) pl->wpmgr->give_weapon(WP_COLT);
+			if (collectible_type == COLLECTIBLE_TYPE_WP_CHAINSAW) pl->wpmgr->give_weapon(WP_CHAINSAW);
+			if (collectible_type == COLLECTIBLE_TYPE_WP_WESSON) pl->wpmgr->give_weapon(WP_WESSON);
+			if (collectible_type == COLLECTIBLE_TYPE_WP_HKSL8) pl->wpmgr->give_weapon(WP_HKSL8);
+			if (collectible_type == COLLECTIBLE_TYPE_WP_SHOTGUN) pl->wpmgr->give_weapon(WP_SHOTGUN);
+			if (collectible_type == COLLECTIBLE_TYPE_WP_USAS12) pl->wpmgr->give_weapon(WP_USAS12);
 			// do smth
 		}
 	}

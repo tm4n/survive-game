@@ -22,7 +22,7 @@ public:
 
 	enum class texType : int { Pointer = 1, MenuBackground = 2, MenuPlay = 3, MenuMultiplayer = 4, MenuHelp = 5, MenuOptions = 6, MenuQuit = 7,
 		 MenuPlaySel = 8, MenuMultiplayerSel = 9, MenuHelpSel = 10, MenuOptionsSel = 11, MenuQuitSel = 12,
-		 GuiAmmo = 20, GuiHealth = 21, GuiCrosshair = 22
+		 GuiAmmo = 20, GuiHealth = 21, GuiCrosshair = 22, GuiScoreboard = 23
 	};
 
 	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};

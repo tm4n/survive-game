@@ -16,6 +16,7 @@ collectible_cl::collectible_cl(level *lvl, uint actor_id, char collectible_type,
 	Mesh *wpm = getWpMesh();
 	if (wpm != NULL)
 	{
+		ro_wp = new RenderObject();
 		ro_wp->rotation[0] = 85.f; ro_wp->rotation[1] = 0.f; ro_wp->rotation[2] = 90.f;
 		wpm->addRenderObject(ro_wp);
 	}
@@ -37,6 +38,7 @@ collectible_cl::~collectible_cl()
 	if (wpm != NULL)
 	{
 		wpm->removeRenderObject(ro_wp);
+		delete ro_wp;
 	}
 	
 	if (ro_parachute != NULL)
@@ -93,7 +95,7 @@ void collectible_cl::frame(double time_delta)
 	
 	if (ro_wp != NULL)
 	{
-		ro->translation[0] = position.x - 4.f; ro->translation[1] = position.y - 15.f; ro->translation[2] = position.z+11; 
+		ro_wp->translation[0] = position.x - 4.f; ro_wp->translation[1] = position.y - 15.f; ro_wp->translation[2] = position.z+11; 
 	}
 	
 	if (ro_parachute != NULL)

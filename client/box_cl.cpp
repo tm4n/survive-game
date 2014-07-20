@@ -1,9 +1,11 @@
 #include "box_cl.h"
 
-box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, gameRenderer *arenderer)
+box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, gameRenderer *arenderer, gui_hud *ahud)
 	: box(lvl, actor_id, box_type, pos, health)
 {
-	renderer = arenderer;
+	this->renderer = arenderer;
+	this->hud = ahud;
+	this->old_health = health;
 
 	ro = new RenderObject();	
     ro->translation[0] = pos->x;
@@ -98,11 +100,11 @@ void box_cl::frame(double time_delta)
 		{
 			if (box_type == BOX_TYPE_GENERATOR)
 			{
-			  	/*if (old_health != health) 
+			  	if (old_health != health) 
 			  	{
-			  		if (!gui_message_visible()) show_message("The generator is under attack! Protect it!");
-			  		old_health = my.health;
-			  	}*/
+			  		if (!hud->message_visible()) hud->show_message("The generator is under attack! Protect it!");
+			  		old_health = health;
+			  	}
 			  	ro->coloring[0] = (500.f - health) / 700.f;
 			}
 			else

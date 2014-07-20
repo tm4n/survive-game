@@ -3,11 +3,12 @@
 
 #include "box.h"
 #include "gameRenderer.h"
+#include "gui_hud.h"
 
 class box_cl : public box
 {
 public:
-	box_cl(level *lvl, uint actor_id, char box_type, vec *, float health, gameRenderer *arenderer);
+	box_cl(level *lvl, uint actor_id, char box_type, vec *, float health, gameRenderer *arenderer, gui_hud *hud);
 	virtual ~box_cl();
 	
 	virtual void frame(double time_delta);
@@ -17,6 +18,8 @@ public:
 
 protected:
 	gameRenderer *renderer;
+	gui_hud *hud;
+	float old_health;
 
 
 	RenderObject *ro, *ro_dmg, *ro_parachute;

@@ -92,6 +92,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (d->version != DEF_VERSION)
 						{
 							log(LOG_ERROR, "Tried to connect to server with different version number.");
+							hud->show_status_wrongver();
 						}
 						else
 						{
@@ -134,7 +135,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (lvl != NULL)
 						{
 							// create a box at given position
-							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer);
+							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer, hud);
 						}
 						else log(LOG_ERROR, "Received NET_SYNC_BOX without level");
 
@@ -149,6 +150,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 						{
 							// create a box at given position
 							new collectible_cl(lvl, d->actor_id, d->collectible_type, &d->pos, renderer);
+
+							if (d->collectible_type < 10) hud->show_message("A new weapon has been dropped!");
 						}
 						else log(LOG_ERROR, "Received NET_SYNC_COLLECTIBLE without level");
 
@@ -173,6 +176,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						// mark client as joinable
 						local_state = 1;
+
+						hud->show_status_join(false);
 
 						break;
 					}
@@ -207,9 +212,14 @@ void gameClient::handle_netevent(ENetEvent *event)
 							own_actor_id = d->own_actor_id;
 							local_state = 2;
 
+							hud->hide_status();
+
 							player_cl *pl = get_own_player();
 							if (pl != NULL) pl->local_player = true;
-							 else log(LOG_ERROR, "FATAL! Invalid actor_id on NET_JOIN!");
+								else log(LOG_ERROR, "FATAL! Invalid actor_id on NET_JOIN!");
+
+							// display help
+							if (points == 0) hud->show_message("Use the crates to build a defence. Move them with right-click.");
 
 						}
 						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
@@ -222,6 +232,12 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_game_state *d = (s_net_game_state*)data;
 						
 						state = d->state;
+
+						if (state == GAME_STATE_END)
+						{
+							local_state = 3;
+							hud->show_status_end();
+						}
 						
 						break;
 					}
@@ -240,6 +256,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_wave_wait_timer *d = (s_net_wave_wait_timer*)data;
 						
 						wave_wait_timer = d->wave_wait_timer;
+
+						if (wave_wait_timer > 0) hud->show_wave_timer(wave_wait_timer);
+						else hud->hide_wave_timer();
 						
 						break;
 					}
@@ -357,6 +376,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 						player_cl *pl= lvl_cl->get_player(d->actor_id);
 						if (pl != NULL)
 						{
+							if (!(pl->wpmgr->pickups & (1 << d->weapon_id))) hud->show_message("You've picked up a new weapon! Change weapons with mouse wheel or number keys.");
+
 							pl->wpmgr->set_mag_ammo(d->weapon_id, (short)d->ammo_magazin, d->ammo_magazin >> 16);
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
@@ -440,6 +461,13 @@ void gameClient::handle_netevent(ENetEvent *event)
 							// is done locally now
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+
+						break;
+					}
+
+					case NET_SCOREBOARD:
+					{
+						hud->update_scoreboard(data);
 
 						break;
 					}
@@ -637,6 +665,11 @@ void gameClient::frame(double time_delta)
 
 		pl->wpmgr->frame(time_delta);
 	}
+	if (local_state == 3)
+	{
+		// game end
+		hud->set_state(gui_hud::hud_state::game_end);
+	}
 
 
 	if (lvl != NULL)
@@ -660,6 +693,8 @@ void gameClient::event_mouse(SDL_Event *evt)
 	{
 		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
 		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+
+		renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
 	}
 	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -752,6 +787,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 		case SDLK_6:
 			pl->wpmgr->input_switch(6);
 			break;
+
+		case SDLK_TAB:
+			if (!net_client->local_only) hud->show_scoreboard();
+			break;
 		}
 	}
 	if (evt->type == SDL_KEYUP)
@@ -782,7 +821,11 @@ void gameClient::event_mouse(SDL_Event *evt)
 				break;
 			case SDLK_SPACE:
 				input &= ~INPUT_JUMP;
-			break;
+				break;
+
+			case SDLK_TAB:
+				if (!net_client->local_only) hud->hide_scoreboard();
+				break;
 		}
 	}
 }

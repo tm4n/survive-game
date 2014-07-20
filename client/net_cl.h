@@ -17,6 +17,7 @@ public:
 
 	int send_chat(const char *msg, uint len, ENetPeer *receiver);
 
+	int send_scoreboard(ENetPeer *receiver);
 	
 	ENetPeer *serverpeer;
 };

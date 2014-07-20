@@ -57,3 +57,8 @@ int net_cl::send_reload(uint actor_id, ENetPeer *receiver)
 
 	return send_event(NET_RELOAD, (const char*)&s, sizeof(s_net_reload), receiver);
 }
+
+int net_cl::send_scoreboard(ENetPeer *receiver)
+{
+	return send_event(NET_SCOREBOARD, NULL, 0, receiver);
+}

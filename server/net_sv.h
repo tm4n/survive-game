@@ -72,6 +72,8 @@ public:
 	int broadcast_reload(uint actor_id);
 
 	int broadcast_shoot(uint actor_id, vec *shoot_dir, int32_t rnd_seed);
+
+	int send_scoreboard(std::string &str, ENetPeer*);
 };
 
 

@@ -277,7 +277,6 @@ void weaponmgr_cl::set_mag_ammo(int weapon_id, short mag, short am)
 		pickups |= (1 << weapon_id);
 
 		//snd_pickup();
-		//show_message("You've picked up a new weapon!\nChange weapons with mouse wheel or number keys.");
 	}
 	else
 	{

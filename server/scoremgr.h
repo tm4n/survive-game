@@ -12,6 +12,7 @@ public:
 	static void update_points(uint actor_id);
 	static void update_points(ENetPeer *peer);
 	static void remove_points_death(uint actor_id);
+	static void get_full_string(std::string *str);
 	static void clear_all();
 };
 

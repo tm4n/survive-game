@@ -403,3 +403,8 @@ int net_sv::broadcast_reload(uint actor_id)
 
 	return broadcast_event(NET_RELOAD, (const char*)&s, sizeof(s_net_reload));
 }
+
+int net_sv::send_scoreboard(std::string &str, ENetPeer *receiver)
+{
+	return send_event(NET_SCOREBOARD, str.c_str(), str.length()+1, receiver); 
+}

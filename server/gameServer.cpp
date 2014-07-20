@@ -19,6 +19,7 @@ using namespace std;
 #include "level_sv.h"
 #include "player_sv.h"
 #include "collectible_sv.h"
+#include "scoremgr.h"
 
 
 
@@ -674,6 +675,20 @@ void gameServer::handle_netevent(ENetEvent *event)
 							
 						}
 						else log(LOG_ERROR, "Received NET_RELOAD for actor thats not owned by this client");
+
+						break;
+					}
+
+					case NET_SCOREBOARD:
+					{
+						// get player data
+                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
+
+						std::string scores;
+
+						scoremgr::get_full_string(&scores);
+
+						net_server->send_scoreboard(scores, event->peer);
 
 						break;
 					}
