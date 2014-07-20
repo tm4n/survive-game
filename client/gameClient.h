@@ -15,6 +15,8 @@ public:
 	bool input_enable;
 	uint local_state;
 	uint own_actor_id;
+
+	uint points;
 	
 	level_cl *lvl_cl;
 

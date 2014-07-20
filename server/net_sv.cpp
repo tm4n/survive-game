@@ -386,6 +386,15 @@ int net_sv::broadcast_update_curr_weapon(uint actor_id, uint new_weapon_id)
 	return broadcast_event(NET_UPDATE_CURR_WEAPON, (const char *)&s, sizeof(s_net_update_curr_weapon));
 }
 
+int net_sv::send_update_score(uint score, ENetPeer* receiver)
+{
+	s_net_update_score s;
+
+	s.score = score;
+
+	return send_event(NET_UPDATE_SCORE, (const char *)&s, sizeof(s_net_update_score), receiver);
+}
+
 int net_sv::broadcast_reload(uint actor_id)
 {
 	s_net_reload s;

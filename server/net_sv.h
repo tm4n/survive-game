@@ -11,6 +11,7 @@ struct s_peer_data
     uint clstate;
     uint player_actor_id;
     char *player_name;
+	uint score;
 };
 
 class net_sv : public net
@@ -67,6 +68,7 @@ public:
 
 	int send_update_ammo_magazin(uint actor_id, int weapon_id, short ammo, short magazin, ENetPeer*);
 	int broadcast_update_curr_weapon(uint actor_id, uint curr_weapon);
+	int send_update_score(uint score, ENetPeer*);
 	int broadcast_reload(uint actor_id);
 
 	int broadcast_shoot(uint actor_id, vec *shoot_dir, int32_t rnd_seed);

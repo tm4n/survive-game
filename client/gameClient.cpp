@@ -14,6 +14,7 @@ gameClient::gameClient(gameRenderer *arenderer)
 	renderer = arenderer;
 	local_state = 0;
 
+	points = 0;
 	input = 0;
 	input_enable = true;
 	cam_bob_offset = 0.f;
@@ -415,6 +416,17 @@ void gameClient::handle_netevent(ENetEvent *event)
 						break;
 					}
 
+					case NET_UPDATE_SCORE:
+					{
+						s_net_update_score *d = (s_net_update_score*)data;
+
+						// get player
+     
+						points = d->score;
+
+						break;
+					}
+
 					case NET_RELOAD:
 					{
 						s_net_reload *d = (s_net_reload*)data;
@@ -621,7 +633,7 @@ void gameClient::frame(double time_delta)
 
 		hud->set_debug(s.str());
 		
-		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, 0);
+		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, points);
 
 		pl->wpmgr->frame(time_delta);
 	}

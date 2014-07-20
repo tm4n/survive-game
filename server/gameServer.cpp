@@ -363,6 +363,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             ((s_peer_data*)event->peer->data)->clstate = 0;
             ((s_peer_data*)event->peer->data)->player_actor_id = -1;
             ((s_peer_data*)event->peer->data)->player_name = NULL;
+			((s_peer_data*)event->peer->data)->score = 0;
 
 
             // send my version information

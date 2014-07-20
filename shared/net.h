@@ -42,6 +42,7 @@
 #define NET_SHOOT 42
 #define NET_CHANGE_WEAPON 43
 #define NET_RELOAD 44
+#define NET_SCOREBOARD 45
 
 #define NET_UPDATE_STATE 50
 #define NET_UPDATE_TARGET 51
@@ -51,6 +52,7 @@
 #define NET_UPDATE_CURR_WEAPON 55
 #define NET_UPDATE_NPC_ORDERS 57
 #define NET_UPDATE_AMMO_MAGAZIN 58
+#define NET_UPDATE_SCORE 59
 
 ////////////////////////////////////////////////
 // syncronization data
@@ -208,6 +210,11 @@ struct s_net_update_ammo_magazin
     uint32_t actor_id;
     uint32_t weapon_id;
 	uint32_t ammo_magazin;
+};
+
+struct s_net_update_score
+{
+    uint32_t score;
 };
 
 #pragma pack(pop)

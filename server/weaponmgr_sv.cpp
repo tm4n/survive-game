@@ -2,6 +2,8 @@
 
 #include "helper.h"
 #include "net_sv.h"
+#include "npc_sv.h"
+#include "scoremgr.h"
 #include "backends/b_weapons.h"
 #include <sstream>
 
@@ -87,13 +89,15 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 			if (actor_hit >= 0) // hit someone
 			{
 				actor *ac = lvl->actorlist.at(actor_hit);
-				if (ac->faction == 2) // hit a zombie
+				if (ac->type == ACTOR_TYPE_NPC && ac->faction == 2) // hit a zombie
 				{
-					if (ac->health > 0)
+					npc_sv *np = (npc_sv *)ac;
+					if (np->health > 0)
 					{
-						ac->health -= wdata->damage;
-						//game_score[ent.owner-1] += wp_data[ent.weapon].damage;
-						if (ac->health <= 0) {ac->health = 0;} //game_score[ent.owner-1] += npc_data[you.npc_type].bounty;}
+						np->health -= wdata->damage;
+						
+						scoremgr::add_points(playerpeer, (uint)wdata->damage);
+						if (ac->health <= 0) {ac->health = 0; scoremgr::add_points(playerpeer, b_npcs::instance()->at(np->npc_type)->bounty);}
 						net_server->broadcast_update_health(ac->id, ac->health);
 					}
 				}
@@ -101,6 +105,8 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 		}
 	
 	}
+
+	scoremgr::update_points(playerpeer);
 
 	// TODO: a way to use cooldown on server
 	//wp_cooldown = 10.f;

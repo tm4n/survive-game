@@ -88,7 +88,7 @@ void gui_hud::set_debug(std::string s)
 	gui->updateText(debug_id, s);
 }
 
-void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, int points)
+void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, uint points)
 {
 	std::ostringstream s;
 	

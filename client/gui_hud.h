@@ -3,6 +3,7 @@
 
 #include "GUI.h"
 #include "ResourceLoader.h"
+#include "defs.h"
 
 class gui_hud
 {
@@ -16,11 +17,12 @@ public:
 
 	void set_debug(std::string s);
 
-	void frame(double time_frame, float health, int ammo, int magazin, int wave, int points);
+	void frame(double time_frame, float health, int ammo, int magazin, int wave, uint points);
 
 protected:
 	GUI *gui;
 	ResourceLoader *resources;
+
 	
 	hud_state state;
 
