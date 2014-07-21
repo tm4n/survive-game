@@ -80,14 +80,12 @@ void gui_hud::set_state(hud_state new_state)
 	gui->setVisible(ammo_txt_id, false);
 	gui->setVisible(ammo_mag_txt_id, false);
 	gui->setVisible(crosshair_id, false);
-	gui->setVisible(message_id, false);
 	gui->setVisible(wave_points_id, false);
 	
 	
 	if (new_state == hud_state::spectating)
 	{
 		gui->setVisible(debug_id, true);
-		gui->setVisible(message_id, true);
 		gui->setVisible(wave_points_id, true);
 	}
 	if (new_state == hud_state::playing)
@@ -99,7 +97,6 @@ void gui_hud::set_state(hud_state new_state)
 		gui->setVisible(ammo_txt_id, true);
 		gui->setVisible(ammo_mag_txt_id, true);
 		gui->setVisible(crosshair_id, true);
-		gui->setVisible(message_id, true);
 		gui->setVisible(wave_points_id, true);
 	}
 	

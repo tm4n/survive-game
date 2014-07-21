@@ -42,7 +42,20 @@ void collectible_sv::frame(double time_frame)
 			if (collectible_type == COLLECTIBLE_TYPE_WP_HKSL8) pl->wpmgr->give_weapon(WP_HKSL8);
 			if (collectible_type == COLLECTIBLE_TYPE_WP_SHOTGUN) pl->wpmgr->give_weapon(WP_SHOTGUN);
 			if (collectible_type == COLLECTIBLE_TYPE_WP_USAS12) pl->wpmgr->give_weapon(WP_USAS12);
-			// do smth
+			
+
+			if (collectible_type == COLLECTIBLE_TYPE_HEALTH)
+			{
+				if (pl->health < 100.f)
+				{
+					// give health
+					pl->change_health(50.f);
+					net_server->send_update_health(pl->id, pl->health, pl->owner);
+
+					delete this;
+					return;
+				}
+			}
 		}
 	}
 }

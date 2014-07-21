@@ -52,7 +52,11 @@ collectible_cl::~collectible_cl()
 
 Mesh *collectible_cl::getMesh()
 {
-	return renderer->resources.getMesh(ResourceLoader::meshType::Weaponcrate);
+	if (collectible_type < 20)
+	{
+		return renderer->resources.getMesh(ResourceLoader::meshType::Weaponcrate);
+	}
+	if (collectible_type == COLLECTIBLE_TYPE_HEALTH) return renderer->resources.getMesh(ResourceLoader::meshType::Powerup_health);
 }
 
 Mesh *collectible_cl::getWpMesh()
@@ -76,7 +80,6 @@ Mesh *collectible_cl::getWpMesh()
 			
 		case COLLECTIBLE_TYPE_WP_USAS12:
 			return renderer->resources.getMesh(ResourceLoader::meshType::USAS12);
-
 		
 	}
 	return NULL;
@@ -89,6 +92,11 @@ Mesh *collectible_cl::getWpMesh()
 void collectible_cl::frame(double time_delta)
 {
 	movement(time_delta);
+
+	if (collectible_type >= 20)
+	{
+		angle.x += (float)(time_delta*10);
+	}
 	
 	ro->translation[0] = position.x; ro->translation[1] = position.y; ro->translation[2] = position.z; 
 	ro->rotation[0] = angle.x; ro->rotation[1] = angle.y; ro->rotation[2] = angle.z;

@@ -9,6 +9,8 @@ player::player(level *lvl, vec *pos, vec *ang, float ahealth,
                : actor(lvl, ACTOR_TYPE_PLAYER, pos, ang)
 {
 	this->health = ahealth;
+	this->max_health = 100.f;
+
 	this->input = 0;
 	this->faction = 1;
 
@@ -40,6 +42,7 @@ player::player(level *lvl,
                : actor(lvl, actor_id, ACTOR_TYPE_PLAYER, pos, ang)
 {
 	this->health = ahealth;
+	this->max_health = 100.f;
 
 	this->curr_weapon = weapon;
 	this->input = input;

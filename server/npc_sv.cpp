@@ -1,5 +1,6 @@
 #include "npc_sv.h"
 #include "net_sv.h"
+#include "helper.h"
 #include <sstream>
 
 npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan, int* counter) : npc(lvl_sv, npc_type, pos, pan)
@@ -126,16 +127,20 @@ void npc_sv::frame(double time_delta)
 	}
 	else
 	{
+		if (death_timer == 0.0f)
+		{
+			if (random_range(31.f) <= 1.f && get_ai_type() != NPC_AI_PLAYER_FLYING)  new collectible_sv((level_sv*)lvl, COLLECTIBLE_TYPE_HEALTH, &position);
+		}
+
 		death_timer += (float)time_delta;
 
 		if (death_timer > 5.f*16.f)
 		{
+			
+
 			delete this;
 			return;
 		}
-
-		// TODO: dead, state will not be send
-		//if (integer(random(30)) == 0 && my.ai_type != NPC_AI_PLAYER_FLYING) new collectible_sv(lvl, COLLECTIBLE_TYPE_HEALTH, &position);
 		
 	}
 

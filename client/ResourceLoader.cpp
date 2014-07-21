@@ -57,10 +57,10 @@ void ResourceLoader::load()
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	/*m = new Mesh("assets/models/health.mdl", NULL);
+	m = new Mesh("assets/models/powerup_hp.mdl", NULL);
 	meshes[(int)meshType::Powerup_health] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
-	m->initShader();*/
+	m->initShader();
 	
 
 

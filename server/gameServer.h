@@ -25,7 +25,7 @@ public:
     bool quit; // Quit flag
     long frame; // number of frames already rendered
     
-    flist<ENetPeer> peers;
+    //flist<ENetPeer> peers;
 
     level_sv *lvl_sv;
 

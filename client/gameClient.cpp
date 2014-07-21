@@ -597,15 +597,16 @@ void gameClient::frame(double time_delta)
 	{
 		hud->set_state(gui_hud::hud_state::spectating);
 		
-		int key_vely = (input & INPUT_BACK ? 1 : 0) - (input & INPUT_FORW ? 1 : 0);
-		int key_velx = (input & INPUT_RIGHT ? 1 : 0) - (input & INPUT_LEFT ? 1 : 0);
+		float key_vely = ((input & INPUT_BACK ? 1 : 0) - (input & INPUT_FORW ? 1 : 0)) * 25.f * (float)time_delta;
+		float key_velx = ((input & INPUT_RIGHT ? 1 : 0) - (input & INPUT_LEFT ? 1 : 0)) * 20.f * (float)time_delta;
+		if (input & INPUT_SPRINT) {key_vely *= 3.f; key_velx *= 3.f;}
 
-		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
-		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
-		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely * 20.f;
+		renderer->CameraPos.x -= (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+		renderer->CameraPos.y -= (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * key_vely;
+		renderer->CameraPos.z -= (float) (sin(toRadians(renderer->CameraAngle.y))) * key_vely;
 
-		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
-		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx * 15.f;
+		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
+		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
 		
 		hud->frame(time_delta, 0, 0, 0, wave, 0);
 	}
@@ -645,6 +646,7 @@ void gameClient::frame(double time_delta)
 			}
 
 		}
+		else {local_state = 1;} // TODO: get more specific here
 
 		// stick camera to player
 		pl->ro->visible = false;
@@ -757,35 +759,38 @@ void gameClient::event_mouse(SDL_Event *evt)
 		case SDLK_RSHIFT:
 		case SDLK_LSHIFT:
 			input |= INPUT_SPRINT;
-			// cancel reload
-			pl->wpmgr->cancel_reload();
-			pl->wpmgr->hide_wp();
+			if (local_state == 2)
+			{
+				// cancel reload
+				pl->wpmgr->cancel_reload();
+				pl->wpmgr->hide_wp();
+			}
 			break;
 		case SDLK_SPACE:
 			input |= INPUT_JUMP;
 			break;
 
 		case SDLK_r:
-			if (!(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
+			if (local_state == 2 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
 			break;
 
 		case SDLK_1:
-			pl->wpmgr->input_switch(1);
+			if (local_state == 2) pl->wpmgr->input_switch(1);
 			break;
 		case SDLK_2:
-			pl->wpmgr->input_switch(2);
+			if (local_state == 2) pl->wpmgr->input_switch(2);
 			break;
 		case SDLK_3:
-			pl->wpmgr->input_switch(3);
+			if (local_state == 2) pl->wpmgr->input_switch(3);
 			break;
 		case SDLK_4:
-			pl->wpmgr->input_switch(4);
+			if (local_state == 2) pl->wpmgr->input_switch(4);
 			break;
 		case SDLK_5:
-			pl->wpmgr->input_switch(5);
+			if (local_state == 2) pl->wpmgr->input_switch(5);
 			break;
 		case SDLK_6:
-			pl->wpmgr->input_switch(6);
+			if (local_state == 2) pl->wpmgr->input_switch(6);
 			break;
 
 		case SDLK_TAB:
@@ -817,7 +822,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 			case SDLK_RSHIFT:
 			case SDLK_LSHIFT:
 				input &= ~INPUT_SPRINT;
-				if (pl->object_taken == -1) pl->wpmgr->show_wp();
+				if (local_state == 2 && pl->object_taken == -1) pl->wpmgr->show_wp();
 				break;
 			case SDLK_SPACE:
 				input &= ~INPUT_JUMP;
