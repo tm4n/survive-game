@@ -37,6 +37,58 @@ int net_sv::num_connected_clients()
 	}
 }
 
+s_peer_data *net_sv::get_peer_data_for_id(int id)
+{
+	if (local_only)
+	{
+		return (s_peer_data *)local_peer->data;
+	}
+	else
+	{
+		for (uint i = 0; i < eHost->peerCount; i++)
+		{
+			ENetPeer *p = &eHost->peers[i];
+			s_peer_data *d = (s_peer_data *)p->data;
+			if (d->clstate == 2 && d->player_actor_id == id) return d;
+		}
+	}
+	return NULL;
+}
+
+void net_sv::update_respawn_timers(float time_frame)
+{
+	if (local_only)
+	{
+		s_peer_data *d = (s_peer_data *)local_peer->data;
+		if (d->respawn_timer > 0.f && d->clstate == 3)
+		{
+			d->respawn_timer -= time_frame/16.f;
+			if (d->respawn_timer <= 0.f)
+			{
+				d->respawn_timer = 0.f;
+				d->clstate = 1;
+			}
+		}
+	}
+	else
+	{
+		for (uint i = 0; i < eHost->peerCount; i++)
+		{
+			ENetPeer *p = &eHost->peers[i];
+			s_peer_data *d = (s_peer_data *)p->data;
+			if (d->respawn_timer > 0.f && d->clstate == 3)
+			{
+				d->respawn_timer -= time_frame/16.f;
+				if (d->respawn_timer <= 0.f)
+				{
+					d->respawn_timer = 0.f;
+					d->clstate = 1;
+				}
+			}
+		}
+	}
+}
+
 /////////////////////////////////////////////////////////////////
 // specialized send functions
 // server

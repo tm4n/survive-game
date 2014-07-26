@@ -57,6 +57,8 @@ Mesh *collectible_cl::getMesh()
 		return renderer->resources.getMesh(ResourceLoader::meshType::Weaponcrate);
 	}
 	if (collectible_type == COLLECTIBLE_TYPE_HEALTH) return renderer->resources.getMesh(ResourceLoader::meshType::Powerup_health);
+
+	return NULL;
 }
 
 Mesh *collectible_cl::getWpMesh()

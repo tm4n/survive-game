@@ -13,6 +13,7 @@ gameClient::gameClient(gameRenderer *arenderer)
 {
 	renderer = arenderer;
 	local_state = 0;
+	respawn_timer = -1.f;
 
 	points = 0;
 	input = 0;
@@ -190,6 +191,16 @@ void gameClient::handle_netevent(ENetEvent *event)
 						{
 							// get actor at position
 							actor *ac = lvl->actorlist.at(d->actor_id);
+
+							// own player deleted
+							if (d->actor_id == own_actor_id)
+							{
+								if (local_state == 2)
+								{
+									local_state = 1;
+									respawn_timer = RESPAWN_TIME;
+								}
+							}
 
 							if (ac != NULL)
 							{
@@ -608,64 +619,74 @@ void gameClient::frame(double time_delta)
 		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
 		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
 		
-		hud->frame(time_delta, 0, 0, 0, wave, 0);
+		if (respawn_timer >= 0.f)
+		{
+
+			respawn_timer -= (float)(time_delta/16.);
+			if (respawn_timer < 0.f) {respawn_timer = 0.f; hud->show_status_join(true);}
+			else hud->show_status_respawn_timer(((int)respawn_timer)+1);
+
+		}
+
+		hud->frame(time_delta, 0, 0, 0, wave, points);
 	}
 	if (local_state == 2)
 	{
 		player_cl *pl = get_own_player();
-		if (pl == NULL) {log(LOG_ERROR, "Could not retreive own player!"); return;}
-		
-		hud->set_state(gui_hud::hud_state::playing);
-
-		// only when player is alive
-		if (pl->health > 0.f)
+		if (pl != NULL)
 		{
-			// bob camera
-			if ((input & INPUT_FORW || input & INPUT_BACK || input & INPUT_LEFT || input & INPUT_RIGHT) && !(input & INPUT_JUMP))
+		
+			hud->set_state(gui_hud::hud_state::playing);
+
+			// only when player is alive
+			if (pl->health > 0.f)
 			{
-				cam_bob_prog += pl->move_speed*6.2831853f*(float)time_delta;
-				cam_bob_offset = sin(toRadians(cam_bob_prog))*2.f;
-			}
-			else
-			{
-				cam_bob_prog = 0;
-				if (abs(cam_bob_offset) < CAMERA_BOB_STOP_RATE*time_delta) cam_bob_offset = 0;
+				// bob camera
+				if ((input & INPUT_FORW || input & INPUT_BACK || input & INPUT_LEFT || input & INPUT_RIGHT) && !(input & INPUT_JUMP))
+				{
+					cam_bob_prog += pl->move_speed*6.2831853f*(float)time_delta;
+					cam_bob_offset = sin(toRadians(cam_bob_prog))*2.f;
+				}
 				else
 				{
-					if (cam_bob_offset > 0) {cam_bob_offset -= CAMERA_BOB_STOP_RATE*(float)time_delta;}
-					else {cam_bob_offset += CAMERA_BOB_STOP_RATE*(float)time_delta;}
+					cam_bob_prog = 0;
+					if (abs(cam_bob_offset) < CAMERA_BOB_STOP_RATE*time_delta) cam_bob_offset = 0;
+					else
+					{
+						if (cam_bob_offset > 0) {cam_bob_offset -= CAMERA_BOB_STOP_RATE*(float)time_delta;}
+						else {cam_bob_offset += CAMERA_BOB_STOP_RATE*(float)time_delta;}
+					}
+				}
+
+				// give input to player
+				if (input != pl->input)
+				{
+					// update for this player and all others
+					pl->input = input;
+					net_client->send_input_keys(pl->id, input, net_client->serverpeer);
 				}
 			}
 
-			// give input to player
-			if (input != pl->input)
-			{
-				// update for this player and all others
-				pl->input = input;
-				net_client->send_input_keys(pl->id, input, net_client->serverpeer);
-			}
 
-		}
-		else {local_state = 1;} // TODO: get more specific here
+			// stick camera to player
+			pl->ro->visible = false;
 
-		// stick camera to player
-		pl->ro->visible = false;
+			renderer->CameraPos.x = pl->position.x;
+			renderer->CameraPos.y = pl->position.y;
+			renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
 
-		renderer->CameraPos.x = pl->position.x;
-		renderer->CameraPos.y = pl->position.y;
-		renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
+			std::ostringstream s;
 
-		std::ostringstream s;
+			//s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
 
-		//s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
+			s << "DEBUG wp_ready: " << pl->wpmgr->wp_ready << ", wp_reloading: " << pl->wpmgr->wp_reloading << "wp->anim_state=" << pl->wpmgr->anim_state;
 
-		s << "DEBUG wp_ready: " << pl->wpmgr->wp_ready << ", wp_reloading: " << pl->wpmgr->wp_reloading << "wp->anim_state=" << pl->wpmgr->anim_state;
-
-		hud->set_debug(s.str());
+			hud->set_debug(s.str());
 		
-		hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, points);
+			hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, points);
 
-		pl->wpmgr->frame(time_delta);
+			pl->wpmgr->frame(time_delta);
+		}
 	}
 	if (local_state == 3)
 	{

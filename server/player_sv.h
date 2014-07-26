@@ -28,6 +28,7 @@ class player_sv : public player
     protected:
 
 		float send_pos_timer;
+		float death_timer;
 		vec last_position;
 
     private:

@@ -12,6 +12,7 @@ struct s_peer_data
     uint player_actor_id;
     char *player_name;
 	uint score;
+	float respawn_timer;
 };
 
 class net_sv : public net
@@ -22,6 +23,8 @@ public:
 	net_sv(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
 	
 	int num_connected_clients();
+	s_peer_data *get_peer_data_for_id(int id);
+	void update_respawn_timers(float time_frame);
 	
 	///////////////////////////////////////////////
 	// special send functions for server

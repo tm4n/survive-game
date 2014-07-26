@@ -31,6 +31,7 @@ player_cl::~player_cl()
 	renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->removeRenderObject(ro);
 
 	delete ro;
+	delete wpmgr;
 }
 
 

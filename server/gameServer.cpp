@@ -166,7 +166,9 @@ void gameServer::run()
 
         while (net_server->host_service (&event, 0) > 0)
             handle_netevent(&event);
-            
+        
+		// update all respawn timers
+		net_server->update_respawn_timers((float)time_delta);
             
             
 		//////////////////////////////////////////////////
@@ -182,7 +184,11 @@ void gameServer::run()
 			spawner(time_delta);
 		
 			// check if the generator has been destroyed
-			if (lvl_sv->get_box(lvl_sv->get_generator()) == NULL) state = GAME_STATE_END;
+			if (lvl_sv->get_box(lvl_sv->get_generator()) == NULL)
+			{
+				state = GAME_STATE_END;
+				net_server->broadcast_game_state(state);
+			}
 			
 			// check if there are still players connected!
 			if (net_server->num_connected_clients() <= 0) state = GAME_STATE_END;
@@ -365,6 +371,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             ((s_peer_data*)event->peer->data)->player_actor_id = -1;
             ((s_peer_data*)event->peer->data)->player_name = NULL;
 			((s_peer_data*)event->peer->data)->score = 0;
+			((s_peer_data*)event->peer->data)->respawn_timer = 0.f;
 
 
             // send my version information
@@ -451,14 +458,14 @@ void gameServer::handle_netevent(ENetEvent *event)
 						
 						
 						// check player
-						if (state != GAME_STATE_RUNNING && pd->clstate == 1) // && respawn timer
+						if (state != GAME_STATE_END && pd->clstate == 1 && pd->respawn_timer <= 0.f)
 						{
 							if (state == GAME_STATE_WAITING) start_match();
 							
 							// create player
 							vec pos(0.f, 0.f, 0.f);
 							vec ang(0.f, 0.f, 0.f);
-							player_sv * pl = new player_sv(lvl, &pos, &ang, 100.f, pd->player_name, event->peer);
+							player_sv * pl = new player_sv(lvl, &pos, &ang, 1.f, pd->player_name, event->peer);
 							
 							pd->player_actor_id = pl->id;
 							
@@ -719,7 +726,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             {
 
                 // delete player
-                //player_sv * pl = (player_sv *)lvl->actorlist.elem[pd->player_id];
+				player_sv * pl = (player_sv *)lvl->actorlist.at(pd->player_actor_id);
 
 
                 if (1 != 0)
@@ -754,7 +761,7 @@ void gameServer::start_match()
 	
 	// add level starters
 	vec v, t;
-	// TODO: create generator
+	// create generator
 	v.set(0, 0, lvl->level_ground);
 	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
 	

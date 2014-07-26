@@ -9,7 +9,7 @@ box_sv::box_sv(level *lvl, char abox_type, vec *pos, int *counter)
 	// set health
 	if (abox_type == BOX_TYPE_WOOD) health = 100.f;
 	if (abox_type == BOX_TYPE_METAL) health = 300.f;
-	if (abox_type == BOX_TYPE_GENERATOR) health = 500.f;
+	if (abox_type == BOX_TYPE_GENERATOR) health = 1.f;
 	if (abox_type == BOX_TYPE_TURRET) health = 50.f;
 
 	// send creation to all connected players

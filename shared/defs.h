@@ -20,6 +20,7 @@ typedef unsigned char uchar;
 #define DEF_VERSION 110
 #define PLAYERNAME_LENGTH 32
 
+#define RESPAWN_TIME 5.f;
 #define MAX_PLAYERS 8
 #define TICK_UPDATE_LIMIT 16  // update interval for regular chances, in ticks
 #define CL_SEND_ANGLE_RATE 2.f

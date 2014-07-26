@@ -15,6 +15,7 @@ public:
 	bool input_enable;
 	uint local_state;
 	uint own_actor_id;
+	float respawn_timer;
 
 	uint points;
 	

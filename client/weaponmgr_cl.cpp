@@ -26,6 +26,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 
 weaponmgr_cl::~weaponmgr_cl()
 {
+	this->curr_mesh->removeRenderObject(ro);
 	delete ro;
 }
 

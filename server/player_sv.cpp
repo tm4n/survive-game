@@ -15,6 +15,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
     
     ang_count = 999;
 	send_pos_timer = 0.f;
+	death_timer = 0.f;
 
 
     std::ostringstream s;
@@ -26,7 +27,7 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
     net_server->broadcast_sync_player(id, pos, ang, health, name, curr_weapon, input, object_taken);
 
 	// wpmgr->give_weapon(WP_COLT); now automatically given
-	/*wpmgr->give_weapon(WP_WESSON);
+	/*wpmgr->give_weapon(WP_WESSON); cheats
 	wpmgr->give_weapon(WP_CHAINSAW);
 	wpmgr->give_weapon(WP_HKSL8);
 	wpmgr->give_weapon(WP_SHOTGUN);
@@ -36,6 +37,9 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 player_sv::~player_sv()
 {
     log(LOG_DEBUG_VERBOSE, "player_sv: deleting player");
+
+	net_server->broadcast_remove_actor(id);
+
 	delete wpmgr;
 }
 
@@ -61,6 +65,41 @@ void player_sv::frame(double time_delta)
 		{
 			last_position.set(&position);
 			net_server->broadcast_update_pos_except(id, &position, owner);
+		}
+	}
+
+	// Death
+	if (health <= 0.f)
+	{
+		death_timer += (float)time_delta;
+
+		if (death_timer > 2.f*16.f)
+		{
+			s_peer_data *d = net_server->get_peer_data_for_id(id);
+			if (d != NULL)
+			{
+				d->respawn_timer = RESPAWN_TIME;
+				d->clstate = 3;
+				d->player_actor_id = 0;
+			}
+
+			if (object_taken >= 0)
+			{
+				box_sv *box = ((level_sv*)lvl)->get_box((uint)object_taken);
+				if (box != NULL)
+				{
+					box->taker_id = -1;
+					box->state = BOX_STATE_DEFAULT;
+									
+					net_server->broadcast_take(id, box->id);
+					net_server->broadcast_update_pos(box->id, &box->position);
+
+					object_taken = -1;
+				}
+			}
+
+			delete this;
+			return;
 		}
 	}
 }
