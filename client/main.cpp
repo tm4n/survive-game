@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include <thread>
 
+bool quit = false;
 
 gameClient *cl = NULL;
 std::thread svthread;
@@ -21,13 +22,6 @@ Menu *menu = NULL;
 std::mutex m1, m2;
 std::list<ENetPacket*> l1, l2;
 
-// Callback classes
-class playCallback : public GUICallback {
-
-	public:
-		virtual void callback(int obj_id);
-
-};
 
 void thread_sv()
 {
@@ -37,6 +31,14 @@ void thread_sv()
 	sv = NULL;
 }
 
+
+// Callback classes
+class playCallback : public GUICallback {
+
+	public:
+		virtual void callback(int obj_id);
+
+};
 
 void playCallback::callback(int obj_id)
 {
@@ -50,6 +52,20 @@ void playCallback::callback(int obj_id)
 	cl->connect(&l2, &m2, &l1, &m1);
 }
 
+// Callback classes
+class quitCallback : public GUICallback {
+
+	public:
+		virtual void callback(int obj_id);
+
+};
+
+void quitCallback::callback(int obj_id)
+{
+	quit = true;
+}
+
+
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char **argv)
 {
@@ -61,13 +77,14 @@ int main(int argc, char **argv)
 	}
 
 
-	bool quit = false;
+	
 
 	renderer = new gameRenderer();
 
 	// create menu
 	playCallback *pcb = new playCallback();
-	menu = new Menu(renderer->gui, &renderer->resources, pcb);
+	quitCallback *qck = new quitCallback();
+	menu = new Menu(renderer->gui, &renderer->resources, pcb, qck);
 
 	// Timer used to calculate time_delta (frame time)
     Timer frametime;

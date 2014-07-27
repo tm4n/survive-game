@@ -45,11 +45,12 @@ protected:
 
 	bool hidden;
 
-	RenderObject *ro;
+	RenderObject *ro, *ro_mf;
 	MeshGUI *curr_mesh;
 
 	void set_anim_state(int new_state);
 	MeshGUI *getMesh(int weapon_id);
+	void show_muzzleflash(int weapon_id);
 
 };
 

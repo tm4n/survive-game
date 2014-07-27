@@ -18,8 +18,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_MUMMY].ai_type = NPC_AI_PLAYER_DIRECT;
 	npc_data[NPC_MUMMY].ai_max_z_diff = 80;
 	npc_data[NPC_MUMMY].anim_speed = 1;
-	npc_data[NPC_MUMMY].bb_max.x = 17.588631; npc_data[NPC_MUMMY].bb_max.y = 13.339565; npc_data[NPC_MUMMY].bb_max.z = 36.198421;
-	npc_data[NPC_MUMMY].bb_min.x = -11.324703; npc_data[NPC_MUMMY].bb_min.y = -15.327499; npc_data[NPC_MUMMY].bb_min.z = -32.460072;
+	npc_data[NPC_MUMMY].bb_max.x = 17.588631f; npc_data[NPC_MUMMY].bb_max.y = 13.339565f; npc_data[NPC_MUMMY].bb_max.z = 36.198421f;
+	npc_data[NPC_MUMMY].bb_min.x = -11.324703f; npc_data[NPC_MUMMY].bb_min.y = -15.327499f; npc_data[NPC_MUMMY].bb_min.z = -32.460072f;
 	//npc_data[NPC_MUMMY].snd_taunt1 = snd_create("zombie1.wav");
 	//npc_data[NPC_MUMMY].snd_taunt2 = snd_create("zombie2.wav");
 	
@@ -37,8 +37,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_WEREWOLF].ai_type = NPC_AI_PLAYER_JUMP;
 	npc_data[NPC_WEREWOLF].ai_max_z_diff = 99999;
 	npc_data[NPC_WEREWOLF].anim_speed = 0.6f;
-	npc_data[NPC_WEREWOLF].bb_max.x = 24.940651; npc_data[NPC_WEREWOLF].bb_max.y = 24.530399; npc_data[NPC_WEREWOLF].bb_max.z = 34.555672;
-	npc_data[NPC_WEREWOLF].bb_min.x = -29.585518; npc_data[NPC_WEREWOLF].bb_min.y = -27.091246; npc_data[NPC_WEREWOLF].bb_min.z = -29.055637;
+	npc_data[NPC_WEREWOLF].bb_max.x = 24.940651f; npc_data[NPC_WEREWOLF].bb_max.y = 24.530399f; npc_data[NPC_WEREWOLF].bb_max.z = 34.555672f;
+	npc_data[NPC_WEREWOLF].bb_min.x = -29.585518f; npc_data[NPC_WEREWOLF].bb_min.y = -27.091246f; npc_data[NPC_WEREWOLF].bb_min.z = -29.055637f;
 	
 	// NPC_SMASHER
 	npc_data[NPC_SMASHER].name = "Smasher";
@@ -53,8 +53,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_SMASHER].ai_type = NPC_AI_BARRIERS_DIRECT;
 	npc_data[NPC_SMASHER].ai_max_z_diff = 100;
 	npc_data[NPC_SMASHER].anim_speed = 1.f;
-	npc_data[NPC_SMASHER].bb_max.x = 30.127815; npc_data[NPC_SMASHER].bb_max.y = 34.833366; npc_data[NPC_SMASHER].bb_max.z = 30.635017;
-	npc_data[NPC_SMASHER].bb_min.x = -19.849461; npc_data[NPC_SMASHER].bb_min.y = -38.439285; npc_data[NPC_SMASHER].bb_min.z = -48.583107;
+	npc_data[NPC_SMASHER].bb_max.x = 30.127815f; npc_data[NPC_SMASHER].bb_max.y = 34.833366f; npc_data[NPC_SMASHER].bb_max.z = 30.635017f;
+	npc_data[NPC_SMASHER].bb_min.x = -19.849461f; npc_data[NPC_SMASHER].bb_min.y = -38.439285f; npc_data[NPC_SMASHER].bb_min.z = -48.583107f;
 	
 	// NPC_WITCH
 	npc_data[NPC_WITCH].name = "Witch";
@@ -68,10 +68,10 @@ b_npcs::b_npcs()
 	npc_data[NPC_WITCH].bounty = 30;
 	npc_data[NPC_WITCH].ai_type = NPC_AI_PLAYER_DIRECT;
 	npc_data[NPC_WITCH].ai_max_z_diff = 99999;
-	npc_data[NPC_WITCH].anim_speed = 1;
+	npc_data[NPC_WITCH].anim_speed = 1.f;
 	//npc_data[NPC_WITCH].npc_attach = str_create("witch_stick.mdl");
-	npc_data[NPC_WITCH].bb_max.x = 28.478836; npc_data[NPC_WITCH].bb_max.y = 12.757271; npc_data[NPC_WITCH].bb_max.z = 13.369316;
-	npc_data[NPC_WITCH].bb_min.x = -14.856464; npc_data[NPC_WITCH].bb_min.y = -16.691643; npc_data[NPC_WITCH].bb_min.z = -32.391720;
+	npc_data[NPC_WITCH].bb_max.x = 28.478836f; npc_data[NPC_WITCH].bb_max.y = 12.757271f; npc_data[NPC_WITCH].bb_max.z = 13.369316f;
+	npc_data[NPC_WITCH].bb_min.x = -14.856464f; npc_data[NPC_WITCH].bb_min.y = -16.691643f; npc_data[NPC_WITCH].bb_min.z = -32.391720f;
 	
 	// NPC_HOGMAN
 	npc_data[NPC_HOGMAN].name = "Hogman";
@@ -85,9 +85,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_HOGMAN].bounty = 50;
 	npc_data[NPC_HOGMAN].ai_type = NPC_AI_PLAYER_DIRECT;
 	npc_data[NPC_HOGMAN].ai_max_z_diff = 80;
-	npc_data[NPC_HOGMAN].anim_speed = 1;
-	npc_data[NPC_HOGMAN].bb_max.x = 44.935059; npc_data[NPC_HOGMAN].bb_max.y = 45.910545; npc_data[NPC_HOGMAN].bb_max.z = 34.989952;
-	npc_data[NPC_HOGMAN].bb_min.x = -27.529774; npc_data[NPC_HOGMAN].bb_min.y = -49.378990; npc_data[NPC_HOGMAN].bb_min.z = -58.357849;
+	npc_data[NPC_HOGMAN].anim_speed = 1.f;
+	npc_data[NPC_HOGMAN].bb_max.x = 44.935059f; npc_data[NPC_HOGMAN].bb_max.y = 45.910545f; npc_data[NPC_HOGMAN].bb_max.z = 34.989952f;
+	npc_data[NPC_HOGMAN].bb_min.x = -27.529774f; npc_data[NPC_HOGMAN].bb_min.y = -49.378990f; npc_data[NPC_HOGMAN].bb_min.z = -58.357849f;
 	//npc_data[NPC_HOGMAN].snd_taunt1 = snd_create("monster.wav");
 	
 	// NPC_KNIGHT
@@ -102,9 +102,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_KNIGHT].bounty = 30;
 	npc_data[NPC_KNIGHT].ai_type = NPC_AI_GENERATOR_DIRECT;
 	npc_data[NPC_KNIGHT].ai_max_z_diff = 80;
-	npc_data[NPC_KNIGHT].anim_speed = 1;
-	npc_data[NPC_KNIGHT].bb_max.x = 19.013863; npc_data[NPC_KNIGHT].bb_max.y = 19.674980; npc_data[NPC_KNIGHT].bb_max.z = 46.140266;
-	npc_data[NPC_KNIGHT].bb_min.x = -15.636204; npc_data[NPC_KNIGHT].bb_min.y = -21.021851; npc_data[NPC_KNIGHT].bb_min.z = -38.661064;
+	npc_data[NPC_KNIGHT].anim_speed = 1.f;
+	npc_data[NPC_KNIGHT].bb_max.x = 19.013863f; npc_data[NPC_KNIGHT].bb_max.y = 19.674980f; npc_data[NPC_KNIGHT].bb_max.z = 46.140266f;
+	npc_data[NPC_KNIGHT].bb_min.x = -15.636204f; npc_data[NPC_KNIGHT].bb_min.y = -21.021851f; npc_data[NPC_KNIGHT].bb_min.z = -38.661064f;
 	
 	// NPC_BAUUL
 	npc_data[NPC_BAUUL].name = "Bauul";
@@ -119,8 +119,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_BAUUL].ai_type = NPC_AI_PLAYER_JUMP;
 	npc_data[NPC_BAUUL].ai_max_z_diff = 99999;
 	npc_data[NPC_BAUUL].anim_speed = 0.5f;
-	npc_data[NPC_BAUUL].bb_max.x = 33.458138; npc_data[NPC_BAUUL].bb_max.y = 35.736652; npc_data[NPC_BAUUL].bb_max.z = 48.873466;
-	npc_data[NPC_BAUUL].bb_min.x = -29.541290; npc_data[NPC_BAUUL].bb_min.y = -41.254204; npc_data[NPC_BAUUL].bb_min.z = -43.599411;
+	npc_data[NPC_BAUUL].bb_max.x = 33.458138f; npc_data[NPC_BAUUL].bb_max.y = 35.736652f; npc_data[NPC_BAUUL].bb_max.z = 48.873466f;
+	npc_data[NPC_BAUUL].bb_min.x = -29.541290f; npc_data[NPC_BAUUL].bb_min.y = -41.254204f; npc_data[NPC_BAUUL].bb_min.z = -43.599411f;
 	
 	// NPC_HARPY
 	npc_data[NPC_HARPY].name = "Harpy";
@@ -134,9 +134,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_HARPY].bounty = 90;
 	npc_data[NPC_HARPY].ai_type = NPC_AI_PLAYER_FLYING;
 	npc_data[NPC_HARPY].ai_max_z_diff = 99999;
-	npc_data[NPC_HARPY].anim_speed = 0.5;
-	npc_data[NPC_HARPY].bb_max.x = 8.488274; npc_data[NPC_HARPY].bb_max.y = 70.; npc_data[NPC_HARPY].bb_max.z = 72.389915;
-	npc_data[NPC_HARPY].bb_min.x = -49.019192; npc_data[NPC_HARPY].bb_min.y = -70.; npc_data[NPC_HARPY].bb_min.z = 2.457153;
+	npc_data[NPC_HARPY].anim_speed = 0.5f;
+	npc_data[NPC_HARPY].bb_max.x = 8.488274f; npc_data[NPC_HARPY].bb_max.y = 70.f; npc_data[NPC_HARPY].bb_max.z = 72.389915f;
+	npc_data[NPC_HARPY].bb_min.x = -49.019192f; npc_data[NPC_HARPY].bb_min.y = -70.f; npc_data[NPC_HARPY].bb_min.z = 2.457153f;
 	//npc_data[NPC_HARPY].snd_taunt1 = snd_create("harpy1.wav");
 	//npc_data[NPC_HARPY].snd_taunt2 = snd_create("harpy2.wav");
 }

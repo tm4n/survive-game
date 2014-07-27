@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <glm/glm.hpp>
 
 #define clamp(x, a, b) (x > b ? b : (x < a ? a : x))
 
@@ -46,5 +47,7 @@ float toRadians(float d);
 
 float random_range(float mx);
 void random_seed(int seed);
+
+void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float byy, float byz);
 
 #endif // __HELPER_H__

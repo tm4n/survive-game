@@ -14,6 +14,8 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	this->anim_state = 0;
 	this->anim_count = 0.f;
 
+	// displayed weapon
+
 	//s_weapons *wdata = b_weapons::instance()->at(1);
 	ro = new RenderObject();
 	ro->translation[0] = 5;
@@ -22,12 +24,22 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
         	
 	this->curr_mesh = getMesh(*curr_weapon);
 	this->curr_mesh->addRenderObject(ro);
+
+	// muzzle flash
+	ro_mf = new RenderObject();
+	ro_mf->visible = false;
+	ro_mf->alpha = 0.f;
+
+	renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->addRenderObject(ro_mf);
 }
 
 weaponmgr_cl::~weaponmgr_cl()
 {
 	this->curr_mesh->removeRenderObject(ro);
 	delete ro;
+
+	renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->removeRenderObject(ro_mf);
+	delete ro_mf;
 }
 
 void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
@@ -60,7 +72,7 @@ void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 
 	set_anim_state(1);
 	// TODO: shoot-sound
-	// TODO: muzzle flash effect
+	show_muzzleflash(*curr_weapon);
 
 }
 
@@ -132,23 +144,30 @@ void weaponmgr_cl::frame(double time_frame)
     ro->translation[1] = renderer->CameraPos.y;
 	ro->translation[2] = renderer->CameraPos.z;
 
-	// move by x
-	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * 5.f;
-	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y))) * 5.f;
-	ro->translation[2] += (float) (sin(toRadians(renderer->CameraAngle.y))) * 5.f;
-
-	// move by y
-	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * 2.f;
-	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * 2.f;
-
-	// move by z
-	ro->translation[0] += (float) (cos(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
-	ro->translation[1] += (float) (sin(toRadians(renderer->CameraAngle.x))*cos(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
-	ro->translation[2] += (float) (sin(toRadians(renderer->CameraAngle.y-90.f))) * 74.f;
+	move_dir(ro->translation, renderer->CameraAngle, 5.f, -2.f, -74.f);
 
 	ro->rotation[0] = renderer->CameraAngle.x;
 	ro->rotation[1] = -renderer->CameraAngle.y;
 	ro->rotation[2] = renderer->CameraAngle.z;
+
+
+	// muzzle flash
+	if (ro_mf->alpha > 0.1f)
+	{
+		ro_mf->translation[0] = renderer->CameraPos.x;
+		ro_mf->translation[1] = renderer->CameraPos.y;
+		ro_mf->translation[2] = renderer->CameraPos.z;
+
+		s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
+		move_dir(ro_mf->translation, renderer->CameraAngle, wdata->muzzle_pos.x, wdata->muzzle_pos.y, wdata->muzzle_pos.z);
+
+		ro_mf->rotation[0] = renderer->CameraAngle.x;
+		ro_mf->rotation[1] = -renderer->CameraAngle.y;
+		ro_mf->rotation[2] = renderer->CameraAngle.z;
+
+		ro_mf->alpha -= 0.45f*time_frame_float;
+		if (ro_mf->alpha <= 0.1f) ro_mf->visible = false;
+	}
 
 
 	// animate weapon
@@ -377,4 +396,22 @@ void weaponmgr_cl::cancel_reload()
 	wp_reloading = 0;
 	wp_ready = true;
 	set_anim_state(0);
+}
+
+void weaponmgr_cl::show_muzzleflash(int weapon_id)
+{
+	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
+
+	if (wdata->muzzle_size <= 0.f) return;
+	
+	ro_mf->scale[0] = wdata->muzzle_size;
+	ro_mf->scale[1] = wdata->muzzle_size;
+	ro_mf->scale[2] = wdata->muzzle_size;
+
+	/*pl_muzzle.lightrange = 50;
+	pl_muzzle.green = 255; pl_muzzle.blue = 200; pl_muzzle.red = 255;*/
+
+	ro_mf->alpha = 0.8f;
+	ro_mf->rotation[2] = random_range(360.f);
+	ro_mf->visible = true;
 }

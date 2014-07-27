@@ -12,7 +12,7 @@ class Menu
 {
 public:
 
-	Menu(GUI* gui, ResourceLoader *resources, GUICallback *playCb);
+	Menu(GUI* gui, ResourceLoader *resources, GUICallback *playCb, GUICallback *quitCb);
 
 	void show();
 	void hide();

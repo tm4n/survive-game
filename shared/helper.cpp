@@ -263,3 +263,21 @@ float random_range(float mx)
 	
 	return (float)d(*gen);
 }
+
+
+void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float byy, float byz)
+{
+	// move by x
+	tomove[0] += (float) (cos(toRadians(direction.x))*cos(toRadians(direction.y))) * byx;
+	tomove[1] += (float) (sin(toRadians(direction.x))*cos(toRadians(direction.y))) * byx;
+	tomove[2] += (float) (sin(toRadians(direction.y))) * byx;
+
+	// move by y
+	tomove[0] -= (float) (cos(toRadians(direction.x-90.f))) * byy;
+	tomove[1] -= (float) (sin(toRadians(direction.x-90.f))) * byy;
+
+	// move by z
+	tomove[0] -= (float) (cos(toRadians(direction.x))*cos(toRadians(direction.y-90.f))) * byz;
+	tomove[1] -= (float) (sin(toRadians(direction.x))*cos(toRadians(direction.y-90.f))) * byz;
+	tomove[2] -= (float) (sin(toRadians(direction.y-90.f))) * byz;
+}
