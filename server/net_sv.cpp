@@ -30,7 +30,7 @@ int net_sv::num_connected_clients()
 		int ct = 0;
 		for (uint i = 0; i < eHost->peerCount; i++)
 		{
-			ENetPeer *p = &eHost->peers[i];
+			//ENetPeer *p = &eHost->peers[i];
 			if (eHost->peers[i].state == ENET_PEER_STATE_CONNECTED) ct++;
 		}
 		return ct;
@@ -49,7 +49,7 @@ s_peer_data *net_sv::get_peer_data_for_id(int id)
 		{
 			ENetPeer *p = &eHost->peers[i];
 			s_peer_data *d = (s_peer_data *)p->data;
-			if (d->clstate == 2 && d->player_actor_id == id) return d;
+			if (d->clstate == 2 && d->player_actor_id == (uint)id) return d;
 		}
 	}
 	return NULL;

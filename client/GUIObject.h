@@ -9,6 +9,7 @@ class GUICallback {
 
 	public:
 		virtual void callback(int obj_id) = 0;
+		virtual ~GUICallback();
 
 };
 

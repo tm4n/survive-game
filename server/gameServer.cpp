@@ -688,9 +688,6 @@ void gameServer::handle_netevent(ENetEvent *event)
 
 					case NET_SCOREBOARD:
 					{
-						// get player data
-                    	s_peer_data *pd = (s_peer_data *)event->peer->data;
-
 						std::string scores;
 
 						scoremgr::get_full_string(&scores);
@@ -726,7 +723,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             {
 
                 // delete player
-				player_sv * pl = (player_sv *)lvl->actorlist.at(pd->player_actor_id);
+				//player_sv * pl = (player_sv *)lvl->actorlist.at(pd->player_actor_id);
 
 
                 if (1 != 0)

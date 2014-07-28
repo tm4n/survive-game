@@ -6,7 +6,6 @@
 void scoremgr::add_points(uint actor_id, int num_points)
 {
 	// iterator through players
-	int ct = 0;
 	for (uint i = 0; i < net_server->eHost->peerCount; i++)
 	{
 		ENetPeer *p = &net_server->eHost->peers[i];
@@ -37,7 +36,6 @@ void scoremgr::add_points(ENetPeer *peer, int num_points)
 void scoremgr::remove_points_death(uint actor_id)
 {
 	// iterator through players
-	int ct = 0;
 	for (uint i = 0; i < net_server->eHost->peerCount; i++)
 	{
 		ENetPeer *p = &net_server->eHost->peers[i];
@@ -59,7 +57,6 @@ void scoremgr::remove_points_death(uint actor_id)
 void scoremgr::clear_all()
 {
 	// iterator through players
-	int ct = 0;
 	for (uint i = 0; i < net_server->eHost->peerCount; i++)
 	{
 		ENetPeer *p = &net_server->eHost->peers[i];
@@ -77,7 +74,6 @@ void scoremgr::clear_all()
 void scoremgr::update_points(uint actor_id)
 {
 	// iterator through players
-	int ct = 0;
 	for (uint i = 0; i < net_server->eHost->peerCount; i++)
 	{
 		ENetPeer *p = &net_server->eHost->peers[i];
@@ -105,8 +101,7 @@ void scoremgr::update_points(ENetPeer *p)
 void scoremgr::get_full_string(std::string *str)
 {
 	std::ostringstream ss;
-
-	int ct = 0;
+	
 	for (uint i = 0; i < net_server->eHost->peerCount; i++)
 	{
 		ENetPeer *p = &net_server->eHost->peers[i];

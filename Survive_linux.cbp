@@ -49,6 +49,8 @@
 		<Unit filename="client/Menu.h" />
 		<Unit filename="client/Mesh.cpp" />
 		<Unit filename="client/Mesh.h" />
+		<Unit filename="client/MeshBlend.cpp" />
+		<Unit filename="client/MeshBlend.h" />
 		<Unit filename="client/MeshGUI.cpp" />
 		<Unit filename="client/MeshGUI.h" />
 		<Unit filename="client/MeshTerrain.cpp" />
@@ -63,6 +65,8 @@
 		<Unit filename="client/box_cl.h" />
 		<Unit filename="client/collectible_cl.cpp" />
 		<Unit filename="client/collectible_cl.h" />
+		<Unit filename="client/effectmgr.cpp" />
+		<Unit filename="client/effectmgr.h" />
 		<Unit filename="client/gameClient.cpp" />
 		<Unit filename="client/gameClient.h" />
 		<Unit filename="client/gameRenderer.cpp" />
@@ -98,6 +102,8 @@
 		<Unit filename="server/npc_sv.h" />
 		<Unit filename="server/player_sv.cpp" />
 		<Unit filename="server/player_sv.h" />
+		<Unit filename="server/scoremgr.cpp" />
+		<Unit filename="server/scoremgr.h" />
 		<Unit filename="server/weaponmgr_sv.cpp" />
 		<Unit filename="server/weaponmgr_sv.h" />
 		<Unit filename="shared/Timer.cpp" />

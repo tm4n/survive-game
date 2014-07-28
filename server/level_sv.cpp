@@ -8,7 +8,7 @@ level_sv::level_sv(const char *filename) : level(filename)
 // TODO: destructor
 level_sv::~level_sv()
 {
-	for (int i = 0; i < actorlist.size; i++)
+	for (uint i = 0; i < actorlist.size; i++)
 	{
 		if (actorlist.at(i) != 0) delete actorlist.at(i);
 	}

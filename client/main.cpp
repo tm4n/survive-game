@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 	{
 		frametime.start();
 
-		Uint32 t = SDL_GetTicks();
+		//Uint32 t = SDL_GetTicks();
 		SDL_Event evt;
 		while( SDL_PollEvent(&evt) )
 		{

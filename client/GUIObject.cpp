@@ -50,3 +50,9 @@ GUIObject::~GUIObject()
 {
 	
 }
+
+GUICallback::~GUICallback()
+{
+	
+
+}
