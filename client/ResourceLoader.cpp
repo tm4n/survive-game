@@ -130,6 +130,10 @@ void ResourceLoader::load()
 	m->initShader();
 
 	// weapons
+	m = new Mesh("assets/models/bullet.mdl", NULL);
+	meshes[(int)meshType::Bullet] = m;
+	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
+	m->initShader();
 
 	m = new Mesh("assets/models/weapons/colt.mdl", NULL);
 	meshes[(int)meshType::Colt] = m;
@@ -222,6 +226,10 @@ void ResourceLoader::load()
 	textures[(int)texType::GuiHealth] = new Texture("assets/gui/gui_health.tga");
 	textures[(int)texType::GuiCrosshair] = new Texture("assets/gui/crosshair.tga");
 	textures[(int)texType::GuiScoreboard] = new Texture("assets/gui/score_bg.tga");
+
+	textures[(int)texType::IngameMenuBg] = new Texture("assets/gui/ingame_menu_bg.tga");
+	textures[(int)texType::FlashRed] = new Texture("assets/gui/flash_red.tga");
+	textures[(int)texType::FlashGreen] = new Texture("assets/gui/flash_green.tga");
 
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)

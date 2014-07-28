@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				if (evt.key.keysym.sym == SDLK_ESCAPE)
+				if ((evt.key.keysym.sym == SDLK_ESCAPE && cl == NULL) || evt.key.keysym.sym == SDLK_F10)
 				{
 					quit = true;
 					break;

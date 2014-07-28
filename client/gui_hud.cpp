@@ -5,11 +5,29 @@
 
 #include <sstream>
 
+// callbacks classes
+class closeCallback : public GUICallback {
+	public:
+		closeCallback(gui_hud *hud);
+		virtual void callback(int obj_id);
+		gui_hud *hud;
+};
+
+closeCallback::closeCallback(gui_hud *ahud) : GUICallback() {hud = ahud;}
+
+void closeCallback::callback(int obj_id)
+{
+	hud->hide_ingame_menu();
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
 {
 	this->gui = gui;
 	this->resources = resources;
 	this->scoreboard_visible = false;
+	this->ingame_menu_visible = false;
 	this->scoreboard_timer = 0.f;
 	this->msg_timer = 1200.f;
 
@@ -55,11 +73,32 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
 	highscore_txt_id = gui->addText(" ", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, 0.f, 125.f);
 	gui->setCentered(highscore_txt_id, true);
 
+	// ingame menu
+	ingame_menu_bg = gui->addPanel(resources->getTex(ResourceLoader::texType::IngameMenuBg), 3, GUIObject::Alignment::center, -150.f, -225.f);
+	gui->setAlpha(ingame_menu_bg, 0.8f);
+
+	SDL_Color c = {255, 255, 255};
+	SDL_Color sel = {255, 128, 128};
+	Texture *tex = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
+	Texture *tex_sel = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
+	ingame_but_disconnect = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -200.f, NULL);
+
+	tex = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
+	tex_sel = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
+	ingame_but_options = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -100.f, NULL);
+
+	closeCallback *cc = new closeCallback(this);
+	tex = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
+	tex_sel = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
+	ingame_but_close = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, 95.f, cc);
+
+
 	// hide everything default
 	hide_scoreboard();
 	set_state(hud_state::hidden);
 	show_status_connecting();
 	hide_wave_timer();
+	hide_ingame_menu();
 }
 
 gui_hud::~gui_hud()
@@ -296,4 +335,36 @@ void gui_hud::hide_scoreboard()
 	gui->setVisible(score_points_txt_id, false);
 	gui->setVisible(score_pings_txt_id, false);
 	gui->setVisible(highscore_txt_id, false);
+}
+
+
+// ingame menu
+
+void gui_hud::toggle_ingame_menu()
+{
+	if (ingame_menu_visible) hide_ingame_menu(); else show_ingame_menu();
+}
+
+void gui_hud::show_ingame_menu()
+{
+	ingame_menu_visible = true;
+	gui->setVisible(ingame_menu_bg, true);
+	gui->setVisible(ingame_but_disconnect, true);
+	gui->setVisible(ingame_but_options, true);
+	gui->setVisible(ingame_but_close, true);
+
+	// untrap mouse
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+void gui_hud::hide_ingame_menu()
+{
+	ingame_menu_visible = false;
+	gui->setVisible(ingame_menu_bg, false);
+	gui->setVisible(ingame_but_disconnect, false);
+	gui->setVisible(ingame_but_options, false);
+	gui->setVisible(ingame_but_close, false);
+
+	// trap mouse
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }

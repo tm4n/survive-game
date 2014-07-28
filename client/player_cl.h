@@ -4,6 +4,7 @@
 #include "player.h"
 #include "gameRenderer.h"
 #include "weaponmgr_cl.h"
+#include "effectmgr.h"
 
 class player_cl : public player
 {
@@ -17,7 +18,7 @@ public:
 	weaponmgr_cl *wpmgr;
 
 	player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
-               const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer);
+               const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer, effectmgr *effmgr);
 	virtual ~player_cl();
 
 	virtual void frame(double time_delta);

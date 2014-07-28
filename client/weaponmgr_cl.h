@@ -5,11 +5,12 @@
 #include "level.h"
 #include "gameRenderer.h"
 #include "MeshGUI.h"
+#include "effectmgr.h"
 
 class weaponmgr_cl : public weaponmgr
 {
 public:
-	weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, int player_id);
+	weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, effectmgr *effmgr, int player_id);
 	~weaponmgr_cl();
 
 	void input_shoot(vec &cam_pos, vec &cam_angle);
@@ -37,6 +38,7 @@ protected:
 	bool *local_player;
 	ushort *plstate;
 	gameRenderer *renderer;
+	effectmgr *effmgr;
 	int player_id;
 
 

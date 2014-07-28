@@ -7,6 +7,7 @@
 #include "net_cl.h"
 #include "level_cl.h"
 #include "gui_hud.h"
+#include "effectmgr.h"
 
 class gameClient : public game
 {
@@ -38,6 +39,7 @@ public:
 
 private:
 	gameRenderer *renderer;
+	effectmgr *effmgr;
 
 	int input;
 	float cam_bob_offset, cam_bob_prog;

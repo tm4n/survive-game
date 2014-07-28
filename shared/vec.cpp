@@ -22,7 +22,7 @@ vec::vec(float ax, float ay, float az)
     z = az;
 }
 
-float vec::dist2d(vec *v)
+float vec::dist2d(const vec *v) const
 {
     float tx = x - v->x;
     float ty = y - v->y;
@@ -30,7 +30,7 @@ float vec::dist2d(vec *v)
     return sqrt(tx*tx + ty*ty);
 }
 
-float vec::dist(vec *v)
+float vec::dist(const vec *v) const
 {
     float tx = x - v->x;
     float ty = y - v->y;

@@ -799,6 +799,9 @@ void gameServer::start_match()
 
 	v.set(400, 300, 0.f);
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
+
+	v.set(400, 300, lvl->border_ground);
+	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);

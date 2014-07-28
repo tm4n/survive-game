@@ -12,8 +12,8 @@ class vec
         vec(vec *);
         vec(float, float, float);
 
-        float dist(vec *);
-        float dist2d(vec *);
+        float dist(const vec *) const;
+        float dist2d(const vec *) const;
         void set(vec *);
         void set(float ax, float ay, float az);
         void zero();

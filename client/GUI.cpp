@@ -146,12 +146,26 @@ void GUI::event_mouse(SDL_Event *evt)
 		{
 			if (obj->type == GUIObject::Types::button && obj->visible == true)
 			{
-				// check if mouse is in object area
-				if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-					evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+				// TODO: more scale types
+				if (obj->alignment == GUIObject::Alignment::scaled)
 				{
-					if (obj->callback != NULL) obj->callback->callback(i);
-						else puts("No callback registered for clicked button");
+					// check if mouse is in object area
+					if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+						evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+					{
+						if (obj->callback != NULL) obj->callback->callback(i);
+							else puts("No callback registered for clicked button");
+					}
+				}
+				if (obj->alignment == GUIObject::Alignment::center)
+				{
+					// check if mouse is in object area TODO: all kinds of scalings!
+					if (evt->button.x > (screensize_x/2)+obj->x && evt->button.x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
+						evt->button.y > (screensize_y/2)+obj->y && evt->button.y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+					{
+						if (obj->callback != NULL) obj->callback->callback(i);
+							else puts("No callback registered for clicked button");
+					}
 				}
 			}
 			i++;
@@ -179,15 +193,20 @@ void GUI::draw()
 	{
 		if (obj->type == GUIObject::Types::button && obj->visible == true)
 		{
-			// check if mouse is in object area TODO: all kinds of scalings!
-			if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-				raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+			// TODO: more scale types
+			if (obj->alignment == GUIObject::Alignment::scaled)
 			{
-				obj->current_tex = 1;
+				// check if mouse is in object area TODO: all kinds of scalings!
+				if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+					raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+				obj->current_tex = 1; else obj->current_tex = 0;
 			}
-			else
+			if (obj->alignment == GUIObject::Alignment::center)
 			{
-				obj->current_tex = 0;
+				// check if mouse is in object area TODO: all kinds of scalings!
+				if (raw_x > (screensize_x/2)+obj->x && raw_x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
+					raw_y > (screensize_y/2)+obj->y && raw_y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+				obj->current_tex = 1; else obj->current_tex = 0;
 			}
 		}
 	}

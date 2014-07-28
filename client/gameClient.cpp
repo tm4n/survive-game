@@ -20,6 +20,8 @@ gameClient::gameClient(gameRenderer *arenderer)
 	input_enable = true;
 	cam_bob_offset = 0.f;
 
+	effmgr = new effectmgr(renderer);
+
 	hud = NULL;
 }
 
@@ -122,7 +124,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (lvl != NULL)
 						{
 							// create a player at given position
-							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, (char*)d->name, d->weapon, d->input, d->object_taken, renderer);
+							new player_cl(lvl, d->actor_id, &d->pos, &d->ang, d->health, (char*)d->name, d->weapon, d->input, d->object_taken, renderer, effmgr);
 						}
 						else log(LOG_ERROR, "Receiver NET_SYNC_PLAYER without level");
 
@@ -356,8 +358,17 @@ void gameClient::handle_netevent(ENetEvent *event)
 						actor * ac = lvl_cl->actorlist.at(d->actor_id);
 						if (ac != NULL)
 						{
+							if (local_state == 2 && ac->type == ACTOR_TYPE_PLAYER && ac->id == own_actor_id)
+							{
+								//printf("setting health for own player %i \n", d->actor_id);
+								if (ac->health > d->health) effmgr->eff_pl_flash(1);
+								if (ac->health < d->health) effmgr->eff_pl_flash(2);
+							}
+
 							//printf("setting health for %i \n", d->actor_id);
 							ac->health = d->health;
+
+							
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_HEALTH for invalid actor");
 						
@@ -694,6 +705,7 @@ void gameClient::frame(double time_delta)
 		hud->set_state(gui_hud::hud_state::game_end);
 	}
 
+	effmgr->frame(time_delta);
 
 	if (lvl != NULL)
 	{
@@ -714,33 +726,43 @@ void gameClient::event_mouse(SDL_Event *evt)
 	
 	if (evt->type == SDL_MOUSEMOTION)
 	{
-		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
-		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+		if (!hud->ingame_menu_visible)
+		{
+			renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
+			renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
 
-		renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
+			renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
+		}
 	}
 	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
-		if (evt->button.button == SDL_BUTTON_LEFT)
+		if (hud->ingame_menu_visible)
 		{
-			if (local_state == 1)
-			{
-				// send request to join
-				net_client->send_request_join(net_client->serverpeer);
-			}
-			if (local_state == 2)
-			{
-				// shoot
-				pl->input_shoot = true;
-			}
+			renderer->gui->event_mouse(evt);
 		}
-		if (evt->button.button == SDL_BUTTON_RIGHT)
+		else
 		{
-			if (local_state == 2)
+			if (evt->button.button == SDL_BUTTON_LEFT)
 			{
-				// take
-				if (pl != NULL) pl->order_take_object();
+				if (local_state == 1)
+				{
+					// send request to join
+					net_client->send_request_join(net_client->serverpeer);
+				}
+				if (local_state == 2)
+				{
+					// shoot
+					pl->input_shoot = true;
+				}
+			}
+			if (evt->button.button == SDL_BUTTON_RIGHT)
+			{
+				if (local_state == 2)
+				{
+					// take
+					if (pl != NULL) pl->order_take_object();
 				
+				}
 			}
 		}
 	}
@@ -816,6 +838,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 
 		case SDLK_TAB:
 			if (!net_client->local_only) hud->show_scoreboard();
+			break;
+
+		case SDLK_ESCAPE:
+			hud->toggle_ingame_menu();
 			break;
 		}
 	}

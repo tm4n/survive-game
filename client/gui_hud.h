@@ -38,6 +38,11 @@ public:
 	void hide_scoreboard();
 	bool scoreboard_visible;
 
+	void toggle_ingame_menu();
+	void show_ingame_menu();
+	void hide_ingame_menu();
+	bool ingame_menu_visible;
+
 protected:
 	GUI *gui;
 	ResourceLoader *resources;
@@ -51,6 +56,8 @@ protected:
 	int status_id, message_id, wave_points_id, wave_timer_txt_id, wave_timer_id;
 
 	int score_bg_id, score_names_txt_id, score_points_txt_id, score_pings_txt_id, highscore_txt_id;
+
+	int ingame_menu_bg, ingame_but_disconnect, ingame_but_options, ingame_but_close;
 };
 
 

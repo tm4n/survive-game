@@ -4,12 +4,13 @@
 #include "helper.h"
 #include "net_cl.h"
 
-weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, int player_id)
+weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, effectmgr *effmgr, int player_id)
 	: weaponmgr(lvl, curr_weapon)
 {
 	this->local_player = local_player;
 	this->plstate = plstate;
 	this->renderer = renderer;
+	this->effmgr = effmgr;
 	this->player_id = player_id;
 	this->anim_state = 0;
 	this->anim_count = 0.f;
@@ -152,19 +153,19 @@ void weaponmgr_cl::frame(double time_frame)
 
 
 	// muzzle flash
+	ro_mf->translation[0] = renderer->CameraPos.x;
+	ro_mf->translation[1] = renderer->CameraPos.y;
+	ro_mf->translation[2] = renderer->CameraPos.z;
+
+	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
+	move_dir(ro_mf->translation, renderer->CameraAngle, wdata->muzzle_pos.x, wdata->muzzle_pos.y, wdata->muzzle_pos.z);
+
+	ro_mf->rotation[0] = renderer->CameraAngle.x;
+	ro_mf->rotation[1] = -renderer->CameraAngle.y;
+	//ro_mf->rotation[2] = renderer->CameraAngle.z;
+
 	if (ro_mf->alpha > 0.1f)
 	{
-		ro_mf->translation[0] = renderer->CameraPos.x;
-		ro_mf->translation[1] = renderer->CameraPos.y;
-		ro_mf->translation[2] = renderer->CameraPos.z;
-
-		s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
-		move_dir(ro_mf->translation, renderer->CameraAngle, wdata->muzzle_pos.x, wdata->muzzle_pos.y, wdata->muzzle_pos.z);
-
-		ro_mf->rotation[0] = renderer->CameraAngle.x;
-		ro_mf->rotation[1] = -renderer->CameraAngle.y;
-		ro_mf->rotation[2] = renderer->CameraAngle.z;
-
 		ro_mf->alpha -= 0.45f*time_frame_float;
 		if (ro_mf->alpha <= 0.1f) ro_mf->visible = false;
 	}
@@ -378,6 +379,21 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 					// TODO: blood
 				}
 			}
+		}
+
+		if (*local_player == true)
+		{
+			vec orig;
+			orig.x = ro_mf->translation[0]; orig.y = ro_mf->translation[1]; orig.z = ro_mf->translation[2];
+
+			effmgr->eff_bullettrail(&orig, &shoot_target);
+		}
+		else
+		{
+			vec orig;
+			orig.set(&shoot_origin);
+			orig.z -= 7.f;
+			effmgr->eff_bullettrail(&orig, &shoot_target);
 		}
 	
 	}
