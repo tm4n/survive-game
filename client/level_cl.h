@@ -22,6 +22,8 @@ protected:
 
 	RenderObject *roTerrain;
 
+	std::list<RenderObject*> env;
+
 };
 
 

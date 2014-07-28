@@ -27,9 +27,10 @@ gameClient::gameClient(gameRenderer *arenderer)
 
 gameClient::~gameClient()
 {
+	if (hud != NULL) delete hud;
+	if (lvl_cl != NULL) delete lvl_cl;
+	delete effmgr;
 	if (net_client != NULL) delete net_client;
-
-	delete hud;
 }
 
 
@@ -605,9 +606,8 @@ void gameClient::disconnect()
 
 void gameClient::frame(double time_delta)
 {
-	
 	// deferred creation
-	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources);
+	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources, &quit);
 	
 	// Handle packages
 	ENetEvent event;

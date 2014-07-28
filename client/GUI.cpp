@@ -141,34 +141,36 @@ void GUI::event_mouse(SDL_Event *evt)
 {
 	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
-		int i = 0;
-		for(GUIObject *obj : elements)
+		for (uint i = 0; i < elements.size; i++)
 		{
-			if (obj->type == GUIObject::Types::button && obj->visible == true)
+			GUIObject *obj = elements.at(i);
+			if (obj != NULL)
 			{
-				// TODO: more scale types
-				if (obj->alignment == GUIObject::Alignment::scaled)
+				if (obj->type == GUIObject::Types::button && obj->visible == true)
 				{
-					// check if mouse is in object area
-					if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-						evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+					// TODO: more scale types
+					if (obj->alignment == GUIObject::Alignment::scaled)
 					{
-						if (obj->callback != NULL) obj->callback->callback(i);
-							else puts("No callback registered for clicked button");
+						// check if mouse is in object area
+						if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+							evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+						{
+							if (obj->callback != NULL) obj->callback->callback(i);
+								else puts("No callback registered for clicked button");
+						}
 					}
-				}
-				if (obj->alignment == GUIObject::Alignment::center)
-				{
-					// check if mouse is in object area TODO: all kinds of scalings!
-					if (evt->button.x > (screensize_x/2)+obj->x && evt->button.x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
-						evt->button.y > (screensize_y/2)+obj->y && evt->button.y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+					if (obj->alignment == GUIObject::Alignment::center)
 					{
-						if (obj->callback != NULL) obj->callback->callback(i);
-							else puts("No callback registered for clicked button");
+						// check if mouse is in object area TODO: all kinds of scalings!
+						if (evt->button.x > (screensize_x/2)+obj->x && evt->button.x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
+							evt->button.y > (screensize_y/2)+obj->y && evt->button.y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+						{
+							if (obj->callback != NULL) obj->callback->callback(i);
+								else puts("No callback registered for clicked button");
+						}
 					}
 				}
 			}
-			i++;
 		}
 	}
 }
@@ -189,24 +191,28 @@ void GUI::draw()
 	int raw_x, raw_y;
 	SDL_GetMouseState(&raw_x, &raw_y);
 
-	for(GUIObject *obj : elements)
+	for (uint i = 0; i < elements.size; i++)
 	{
-		if (obj->type == GUIObject::Types::button && obj->visible == true)
+		GUIObject *obj = elements.at(i);
+		if (obj != NULL)
 		{
-			// TODO: more scale types
-			if (obj->alignment == GUIObject::Alignment::scaled)
+			if (obj->type == GUIObject::Types::button && obj->visible == true)
 			{
-				// check if mouse is in object area TODO: all kinds of scalings!
-				if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-					raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
-				obj->current_tex = 1; else obj->current_tex = 0;
-			}
-			if (obj->alignment == GUIObject::Alignment::center)
-			{
-				// check if mouse is in object area TODO: all kinds of scalings!
-				if (raw_x > (screensize_x/2)+obj->x && raw_x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
-					raw_y > (screensize_y/2)+obj->y && raw_y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
-				obj->current_tex = 1; else obj->current_tex = 0;
+				// TODO: more scale types
+				if (obj->alignment == GUIObject::Alignment::scaled)
+				{
+					// check if mouse is in object area TODO: all kinds of scalings!
+					if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+						raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+					obj->current_tex = 1; else obj->current_tex = 0;
+				}
+				if (obj->alignment == GUIObject::Alignment::center)
+				{
+					// check if mouse is in object area TODO: all kinds of scalings!
+					if (raw_x > (screensize_x/2)+obj->x && raw_x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
+						raw_y > (screensize_y/2)+obj->y && raw_y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+					obj->current_tex = 1; else obj->current_tex = 0;
+				}
 			}
 		}
 	}
@@ -244,75 +250,79 @@ void GUI::draw()
         
     for (int layer = 0; layer < 10; layer++)
     {
-	    for (GUIObject *elem : elements)
-		{	        	
-	        if (elem->layer == layer && elem->visible == true)
-	        {				
-	        	// bind texture of this element
-				glBindTexture(GL_TEXTURE_2D, elem->textures[elem->current_tex]->mTextureID);
+	    for (uint i = 0; i < elements.size; i++)
+		{
+			GUIObject *elem = elements.at(i);
+			if (elem != NULL)
+			{	        	
+				if (elem->layer == layer && elem->visible == true)
+				{				
+	        		// bind texture of this element
+					glBindTexture(GL_TEXTURE_2D, elem->textures[elem->current_tex]->mTextureID);
 	        		
-	        	// calculate and upload size and position
-				// TODO: auto-scale
-				float trans_x;
-				float trans_y;
-				float size_x = (float)elem->size_x/((float)screensize_x) * elem->scale_x;
-				float size_y = (float)elem->size_y/((float)screensize_y) * elem->scale_y;
-				switch (elem->alignment)
-				{
-				case GUIObject::Alignment::center:
-					trans_x = to_glscreen_x(elem->x + screensize_x/2);
-					trans_y = to_glscreen_y(elem->y + screensize_y/2);
-				break;
+	        		// calculate and upload size and position
+					// TODO: auto-scale
+					float trans_x;
+					float trans_y;
+					float size_x = (float)elem->size_x/((float)screensize_x) * elem->scale_x;
+					float size_y = (float)elem->size_y/((float)screensize_y) * elem->scale_y;
+					switch (elem->alignment)
+					{
+					case GUIObject::Alignment::center:
+						trans_x = to_glscreen_x(elem->x + screensize_x/2);
+						trans_y = to_glscreen_y(elem->y + screensize_y/2);
+					break;
 
-				case GUIObject::Alignment::upleft:
-					trans_x = to_glscreen_x(elem->x);
-					trans_y = to_glscreen_y(elem->y);
-				break;
+					case GUIObject::Alignment::upleft:
+						trans_x = to_glscreen_x(elem->x);
+						trans_y = to_glscreen_y(elem->y);
+					break;
 
-				case GUIObject::Alignment::upcenter:
-					trans_x = to_glscreen_x(elem->x + screensize_x/2);
-					trans_y = to_glscreen_y(elem->y);
-				break;
+					case GUIObject::Alignment::upcenter:
+						trans_x = to_glscreen_x(elem->x + screensize_x/2);
+						trans_y = to_glscreen_y(elem->y);
+					break;
 
-				case GUIObject::Alignment::upright:
-					trans_x = to_glscreen_x(elem->x+screensize_x);
-					trans_y = to_glscreen_y(elem->y);
-				break;
+					case GUIObject::Alignment::upright:
+						trans_x = to_glscreen_x(elem->x+screensize_x);
+						trans_y = to_glscreen_y(elem->y);
+					break;
 
-				case GUIObject::Alignment::downright:
-					trans_x = to_glscreen_x(elem->x+screensize_x);
-					trans_y = to_glscreen_y(elem->y+screensize_y);
-				break;
+					case GUIObject::Alignment::downright:
+						trans_x = to_glscreen_x(elem->x+screensize_x);
+						trans_y = to_glscreen_y(elem->y+screensize_y);
+					break;
 
-				case GUIObject::Alignment::downcenter:
-					trans_x = to_glscreen_x(elem->x + screensize_x/2);
-					trans_y = to_glscreen_y(elem->y + screensize_y);
-				break;
+					case GUIObject::Alignment::downcenter:
+						trans_x = to_glscreen_x(elem->x + screensize_x/2);
+						trans_y = to_glscreen_y(elem->y + screensize_y);
+					break;
 
-				case GUIObject::Alignment::downleft:
-					trans_x = to_glscreen_x(elem->x);
-					trans_y = to_glscreen_y(elem->y+screensize_y);
-				break;
+					case GUIObject::Alignment::downleft:
+						trans_x = to_glscreen_x(elem->x);
+						trans_y = to_glscreen_y(elem->y+screensize_y);
+					break;
 
-				case GUIObject::Alignment::scaled: // TODO:
-					trans_x = ((elem->x*2.f)-1.f);
-					trans_y = ((elem->y*2.f)-1.f);
-					//size_x = 20;
-					//size_y = 20;
-				break;
+					case GUIObject::Alignment::scaled: // TODO:
+						trans_x = ((elem->x*2.f)-1.f);
+						trans_y = ((elem->y*2.f)-1.f);
+						size_x = ((float)elem->size_x / 1920.f) * elem->scale_x;
+						size_y = ((float)elem->size_y / 1080.f) * elem->scale_y;
+					break;
 					
-				}
+					}
 
-				if (elem->centered == false) {trans_x += size_x; trans_y += size_y;}
+					if (elem->centered == false) {trans_x += size_x; trans_y += size_y;}
 		        	
-		        glUniform4f(mChangeHandle, size_x, trans_x, size_y, trans_y);
+					glUniform4f(mChangeHandle, size_x, trans_x, size_y, trans_y);
 		        	
-		        // Upload element alpha to fragment shader
-		        glUniform1f(mAlphaHandle, elem->alpha);
+					// Upload element alpha to fragment shader
+					glUniform1f(mAlphaHandle, elem->alpha);
 		        	
-		    	// Draw the triangle
-		    	glDrawArrays(GL_TRIANGLES, 0, 6);
-	        }
+		    		// Draw the triangle
+		    		glDrawArrays(GL_TRIANGLES, 0, 6);
+				}
+			}
 	    }
     }
 
@@ -333,9 +343,7 @@ int GUI::addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, 
 {
 	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, align, x, y, NULL);
 		
-	elements.push_back(elem);
-		
-	return elements.size()-1;
+	return (int)elements.add(elem);
 }
 
 int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback)
@@ -347,18 +355,14 @@ int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignme
 
 	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, align, x, y, callback);
 
-	elements.push_back(elem);
-		
-	return elements.size()-1;
+	return (int)elements.add(elem);
 }
 
 int GUI::addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y)
 {
 	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, align, x, y, NULL);
 		
-	elements.push_back(elem);
-		
-	return elements.size()-1;
+	return (int)elements.add(elem);
 }
 
 int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, Uint8 cred, Uint8 cgreen, Uint8 cblue)
@@ -371,9 +375,24 @@ int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Al
 	elem->txt.assign(txt);
 	elem->fnt = fnt;
 		
-	elements.push_back(elem);
-		
-	return elements.size()-1;
+	return (int)elements.add(elem);
+}
+
+bool GUI::removeObject(int id)
+{
+	GUIObject *elem = elements.at(id);
+	if (elem == NULL) return false;
+
+	if (elem->type == GUIObject::Types::text)
+	{
+		// delete textures as they are managed by this object
+		for (Texture *t : elem->textures) delete t;
+	}
+
+	delete elem;
+
+	if (elements.remove(id) == false) log(LOG_ERROR, "Fatal error in GUI::removeObject: failed to remove id");
+	return true;
 }
 
 bool GUI::updateText(int id, const std::string &txt, Uint8 cred, Uint8 cgreen, Uint8 cblue)
@@ -463,4 +482,11 @@ void GUI::setScaleY(int id, float scale_y)
 void GUI::setAlpha(int id, float alpha)
 {
 	elements.at(id)->alpha = alpha;
+}
+
+// getter
+
+float GUI::getAlpha(int id)
+{
+	return elements.at(id)->alpha;
 }

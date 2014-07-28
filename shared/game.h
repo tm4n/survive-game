@@ -18,6 +18,8 @@ public:
 	game();
 	virtual ~game();
 
+	bool quit;
+
     level *lvl;
 
 	int state;

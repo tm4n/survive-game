@@ -44,6 +44,9 @@ void playCallback::callback(int obj_id)
 {
 	menu->hide();
 	
+	l2.clear();
+	l1.clear();
+
 	// start server thread
 	svthread = std::thread(thread_sv);
 	
@@ -144,6 +147,21 @@ int main(int argc, char **argv)
 		fct++;
 
 		time_delta = ((double)frametime.get_ticks()) / (1000./16.);
+
+		// check if client has quit
+		if (cl) 
+		{
+			if (cl->quit == true)
+			{
+				delete cl; 
+				cl = NULL;
+
+				sv->quit = true;
+				svthread.join();
+				delete sv;
+				menu->show();
+			}
+		}
 	}
 
 	if (sv != NULL)

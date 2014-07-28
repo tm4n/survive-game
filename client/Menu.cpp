@@ -10,12 +10,9 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 
 
 	// add menu background
-	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::center, 0.0f, 0.0f);
-	gui->setCentered(bg_id, true);
-	gui->setScaleX(bg_id, gui->screensize_x/1920.f);
-	gui->setScaleY(bg_id, gui->screensize_y/1080.f);
-	//gui->setScaleX(bg_id, 0.01f);
-	//gui->setScaleY(bg_id, 0.01f);
+	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
+	//gui->setScaleX(bg_id, gui->screensize_x/1920.f); not needed anymore
+	//gui->setScaleY(bg_id, gui->screensize_y/1080.f);
 
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
@@ -41,6 +38,9 @@ void Menu::show()
 	{
 		gui->setVisible(button_ids[i], true);
 	}
+
+	// untrap mouse
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 void Menu::hide()

@@ -10,7 +10,7 @@ class gui_hud
 public:
 	enum hud_state {hidden, spectating, playing, game_end};
 	
-	gui_hud(GUI *gui, ResourceLoader *resources);
+	gui_hud(GUI *gui, ResourceLoader *resources, bool *quit);
 	~gui_hud();
 
 	void set_state(hud_state new_state);
@@ -46,6 +46,7 @@ public:
 protected:
 	GUI *gui;
 	ResourceLoader *resources;
+	bool *quit;
 
 	float scoreboard_timer;
 	float msg_timer;
@@ -58,6 +59,9 @@ protected:
 	int score_bg_id, score_names_txt_id, score_points_txt_id, score_pings_txt_id, highscore_txt_id;
 
 	int ingame_menu_bg, ingame_but_disconnect, ingame_but_options, ingame_but_close;
+
+	std::list<GUICallback*> callbacks;
+	std::list<Texture*> textures;
 };
 
 

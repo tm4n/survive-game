@@ -2,6 +2,8 @@
 
 game::game()
 {
+	quit = false;
+
 	state = GAME_STATE_WAITING;
 	wave = 0;
 	

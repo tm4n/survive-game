@@ -58,6 +58,13 @@ gameServer::gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_qu
 }
 
 
+//////////////////////////////////////
+// destructor
+gameServer::~gameServer()
+{
+	if (lvl_sv) delete lvl_sv;
+	delete net_server;
+}
 
 ////////////////////////////////////
 // initialize/deinitialize  needed subsystems
@@ -285,13 +292,6 @@ void gameServer::run()
 }
 
 
-//////////////////////////////////////
-// destructor
-gameServer::~gameServer()
-{
-	
-}
-
 int gameServer::get_num_players()
 {
 	// iterator through players
@@ -465,7 +465,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 							// create player
 							vec pos(0.f, 0.f, 0.f);
 							vec ang(0.f, 0.f, 0.f);
-							player_sv * pl = new player_sv(lvl, &pos, &ang, 1.f, pd->player_name, event->peer);
+							player_sv * pl = new player_sv(lvl, &pos, &ang, 100.f, pd->player_name, event->peer);
 							
 							pd->player_actor_id = pl->id;
 							

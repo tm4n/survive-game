@@ -4,6 +4,33 @@
 effectmgr::effectmgr(gameRenderer *renderer)
 	: renderer(renderer)
 {
+	// creates panels
+	flashred_id = renderer->gui->addPanel(renderer->resources.getTex(ResourceLoader::texType::FlashRed), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
+	flashgreen_id = renderer->gui->addPanel(renderer->resources.getTex(ResourceLoader::texType::FlashGreen), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
+	renderer->gui->setVisible(flashred_id, false);
+	renderer->gui->setAlpha(flashred_id, 0.0f);
+	renderer->gui->setScaleX(flashred_id, 1920.f/640.f);
+	renderer->gui->setScaleY(flashred_id, 1080.f/480.f);
+
+	renderer->gui->setVisible(flashgreen_id, false);
+	renderer->gui->setAlpha(flashgreen_id, 0.0f);
+	renderer->gui->setScaleX(flashgreen_id, 920.f/640.f);
+	renderer->gui->setScaleY(flashgreen_id, 1080.f/480.f);
+}
+
+effectmgr::~effectmgr()
+{
+	// delete bullets
+	for(bullet_entry* i : bullets)
+	{
+		renderer->resources.getMesh(ResourceLoader::meshType::Bullet)->removeRenderObject(i->ro);
+		delete i->ro;
+		delete i;
+	}
+
+	// delete panels
+	renderer->gui->removeObject(flashred_id);
+	renderer->gui->removeObject(flashgreen_id);
 }
 
 void effectmgr::eff_bullettrail(const vec *start, const vec *end)
@@ -35,6 +62,16 @@ void effectmgr::eff_bullettrail(const vec *start, const vec *end)
 void effectmgr::eff_pl_flash(int color)
 {
 	// TODO: implement. is already called
+	if (color  == 1) // red
+	{
+		renderer->gui->setVisible(flashred_id, true);
+		renderer->gui->setAlpha(flashred_id, 0.5f);
+	}
+	else
+	{
+		renderer->gui->setVisible(flashgreen_id, true);
+		renderer->gui->setAlpha(flashgreen_id, 0.5f);
+	}
 }
 
 void effectmgr::frame(double frame_delta)
@@ -60,6 +97,28 @@ void effectmgr::frame(double frame_delta)
 			(*i)->dist_traveled += (float)frame_delta*400.f;
 
 			++i;
+		}
+	}
+
+	// flash effects
+	float alpha = renderer->gui->getAlpha(flashred_id);
+	if (alpha > 0.0f)
+	{
+		renderer->gui->setAlpha(flashred_id, alpha - 0.1f*((float)frame_delta));
+		if (alpha - 0.1f*((float)frame_delta) <= 0.0f) 
+		{
+			renderer->gui->setAlpha(flashred_id, 0.0f);
+			renderer->gui->setVisible(flashred_id, false);
+		}
+	}
+	alpha = renderer->gui->getAlpha(flashgreen_id);
+	if (alpha > 0.0f)
+	{
+		renderer->gui->setAlpha(flashgreen_id, alpha - 0.1f*((float)frame_delta));
+		if (alpha - 0.1f*((float)frame_delta) <= 0.0f) 
+		{
+			renderer->gui->setAlpha(flashgreen_id, 0.0f);
+			renderer->gui->setVisible(flashgreen_id, false);
 		}
 	}
 }

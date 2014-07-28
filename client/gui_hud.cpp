@@ -20,12 +20,27 @@ void closeCallback::callback(int obj_id)
 	hud->hide_ingame_menu();
 }
 
+class disconCallback : public GUICallback {
+	public:
+		disconCallback(bool *quit);
+		virtual void callback(int obj_id);
+		bool *quit;
+};
+
+disconCallback::disconCallback(bool *aquit) : GUICallback() {quit = aquit;}
+
+void disconCallback::callback(int obj_id)
+{
+	*quit = true;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
-gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
+gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 {
 	this->gui = gui;
 	this->resources = resources;
+	this->quit = quit;
 	this->scoreboard_visible = false;
 	this->ingame_menu_visible = false;
 	this->scoreboard_timer = 0.f;
@@ -79,18 +94,25 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
 
 	SDL_Color c = {255, 255, 255};
 	SDL_Color sel = {255, 128, 128};
+	disconCallback *dc = new disconCallback(quit);
 	Texture *tex = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	Texture *tex_sel = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
-	ingame_but_disconnect = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -200.f, NULL);
+	ingame_but_disconnect = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -200.f, dc);
+	callbacks.push_back(dc);
+	textures.push_back(tex); textures.push_back(tex_sel);
 
 	tex = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	tex_sel = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
 	ingame_but_options = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -100.f, NULL);
+	//callbacks.push_back(dc);
+	textures.push_back(tex); textures.push_back(tex_sel);
 
 	closeCallback *cc = new closeCallback(this);
 	tex = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	tex_sel = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
 	ingame_but_close = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, 95.f, cc);
+	callbacks.push_back(cc);
+	textures.push_back(tex); textures.push_back(tex_sel);
 
 
 	// hide everything default
@@ -103,6 +125,46 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources)
 
 gui_hud::~gui_hud()
 {
+	/*set_state(hud_state::hidden);
+	hide_ingame_menu();
+	hide_scoreboard();
+	hide_status();
+	hide_wave_timer();*/
+
+	// delete added stuff
+	gui->removeObject(debug_id);
+	// delete health info
+	gui->removeObject(health_bg_id);
+	gui->removeObject(health_txt_id);
+	// delete ammo info
+	gui->removeObject(ammo_bg_id);
+	gui->removeObject(ammo_mag_txt_id);
+	gui->removeObject(ammo_txt_id);
+	// delete crosshair
+	gui->removeObject(crosshair_id);
+	// delete game status message indicator
+	gui->removeObject(status_id);
+	gui->removeObject(message_id);
+	gui->removeObject(wave_points_id);
+	// delete wave timer
+	gui->removeObject(wave_timer_txt_id);
+	gui->removeObject(wave_timer_id);
+
+	// delete highscore:
+	gui->removeObject(score_bg_id);
+	gui->removeObject(score_names_txt_id);
+	gui->removeObject(score_points_txt_id);
+	gui->removeObject(score_pings_txt_id);
+	gui->removeObject(highscore_txt_id);
+
+	// delete ingame menu
+	gui->removeObject(ingame_menu_bg);
+	gui->removeObject(ingame_but_disconnect);
+	gui->removeObject(ingame_but_options);
+	gui->removeObject(ingame_but_close);
+
+	for (GUICallback *c : callbacks) delete c;
+	for (Texture *t : textures) delete t;
 }
 
 void gui_hud::set_state(hud_state new_state)

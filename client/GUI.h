@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "GUIObject.h"
 #include "SDL2/SDL.h"
+#include "flist.h"
 
 class GUI
 {
@@ -20,6 +21,7 @@ public:
 	int addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback);
 	int addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y);
 	int addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, Uint8 cred = 255, Uint8 cgreen = 255, Uint8 cblue = 255);
+	bool removeObject(int id);
 	void clear();
 
 	void updateTexture(int id, Texture *newtex, int texnum = 0);
@@ -35,6 +37,8 @@ public:
 	void setScaleX(int id, float scale_x);
 	void setScaleY(int id, float scale_y);
 	void setAlpha(int id, float alpha);
+
+	float getAlpha(int id);
 
 	void draw();
 	void event_mouse(SDL_Event *evt);
@@ -63,7 +67,7 @@ private:
 	
 	static float squareTexCoords[12];
 
-	std::vector<GUIObject*> elements;
+	flist<GUIObject> elements;
 };
 
 

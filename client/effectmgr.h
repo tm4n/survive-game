@@ -15,6 +15,7 @@ class effectmgr
 {
 public:
 	effectmgr(gameRenderer *renderer);
+	virtual ~effectmgr();
 
 	void eff_bullettrail(const vec *start, const vec *end);
 	void eff_pl_flash(int color);
@@ -25,6 +26,8 @@ protected:
 	gameRenderer *renderer;
 
 	std::list<bullet_entry*> bullets;
+
+	int flashred_id, flashgreen_id;
 };
 
 #endif
