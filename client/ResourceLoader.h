@@ -26,7 +26,8 @@ public:
 		 MenuPlaySel = 8, MenuMultiplayerSel = 9, MenuHelpSel = 10, MenuOptionsSel = 11, MenuQuitSel = 12,
 		 GuiAmmo = 20, GuiHealth = 21, GuiCrosshair = 22, GuiScoreboard = 23,
 		 IngameMenuBg = 25,
-		 FlashRed = 30, FlashGreen = 40
+		 FlashRed = 30, FlashGreen = 40,
+		 pBlood1 = 50, pBlood2 = 51, pSpark = 52
 	};
 
 	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};

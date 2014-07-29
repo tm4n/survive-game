@@ -7,6 +7,7 @@
 #include "SDL2/SDL_opengl.h"
 #include "ResourceLoader.h"
 #include "GUI.h"
+#include "particlemgr.h"
 #define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
 
@@ -16,11 +17,12 @@ class gameRenderer
 public:
 	ResourceLoader resources;
 	GUI *gui;
+	particlemgr *partmgr;
 
 	gameRenderer();
 	~gameRenderer();
 
-	void drawFrame();
+	void drawFrame(double time_delta);
 
 	glm::vec3 CameraPos;
 	glm::vec3 CameraAngle;

@@ -726,7 +726,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 	
 	if (evt->type == SDL_MOUSEMOTION)
 	{
-		if (!hud->ingame_menu_visible)
+		if (hud != NULL && !hud->ingame_menu_visible)
 		{
 			renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
 			renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
@@ -736,7 +736,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
-		if (hud->ingame_menu_visible)
+		if (hud != NULL && hud->ingame_menu_visible)
 		{
 			renderer->gui->event_mouse(evt);
 		}

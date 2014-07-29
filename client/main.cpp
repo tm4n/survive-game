@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 		
 		if (cl) cl->frame(time_delta);
 
-		renderer->drawFrame();
+		renderer->drawFrame(time_delta);
 
 		//if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
 		fct++;

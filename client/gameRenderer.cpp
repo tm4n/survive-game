@@ -60,6 +60,9 @@ gameRenderer::gameRenderer()
 	// initialize gzu
 	gui = new GUI();
 	gui->setScreensize(ss_x, ss_y);
+
+	// initialize particle manager
+	partmgr = new particlemgr(&resources);
 }
 
 gameRenderer::~gameRenderer()
@@ -71,7 +74,7 @@ gameRenderer::~gameRenderer()
 	SDL_DestroyWindow(window);
 }
 
-void gameRenderer::drawFrame()
+void gameRenderer::drawFrame(double time_delta)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -87,6 +90,10 @@ void gameRenderer::drawFrame()
 
 	mVPMatrix = mProjMatrix * mVMatrix;
 
+	// TODO: draw skybox
+
+	// Draw particles
+	partmgr->draw(time_delta, mVPMatrix, CameraPos);
 
 	// draw all meshes
     for (int i = 0; i < MAX_MESHES; i ++) {

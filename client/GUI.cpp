@@ -21,7 +21,7 @@ float GUI::squareTexCoords[] = { // in counterclockwise order:
 };
 
 const char *GUI::mVertexShaderCode = 
-	"#version 120 \n"
+	"#version 110 \n"
 	"attribute vec4 vPosition; \n"
 	"uniform vec4 vChange; \n"
 	"attribute vec2 TexCoordIn; \n" 
@@ -32,7 +32,7 @@ const char *GUI::mVertexShaderCode =
 	"}";
 
 const char *GUI::mFragmentShaderCode =
-	"#version 120 \n"
+	"#version 110 \n"
 	"uniform float Alpha; \n" 
 	"varying vec2 TexCoordOut; \n"
 	"uniform sampler2D Texture; \n" 

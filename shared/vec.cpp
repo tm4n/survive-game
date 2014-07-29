@@ -39,7 +39,7 @@ float vec::dist(const vec *v) const
     return sqrt(tx*tx + ty*ty + tz*tz);
 }
 
-void vec::set(vec *v)
+void vec::set(const vec *v)
 {
     x = v->x;
     y = v->y;

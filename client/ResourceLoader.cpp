@@ -231,6 +231,12 @@ void ResourceLoader::load()
 	textures[(int)texType::FlashRed] = new Texture("assets/gui/flash_red.tga");
 	textures[(int)texType::FlashGreen] = new Texture("assets/gui/flash_green.tga");
 
+	// particles
+	textures[(int)texType::pBlood1] = new Texture("assets/textures/blood1.tga");
+	textures[(int)texType::pBlood2] = new Texture("assets/textures/blood2.tga");
+	textures[(int)texType::pSpark] = new Texture("assets/textures/spark.tga");
+
+
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
 	{

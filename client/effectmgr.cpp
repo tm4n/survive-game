@@ -74,6 +74,45 @@ void effectmgr::eff_pl_flash(int color)
 	}
 }
 
+// wall hit particle effect
+void wallhit_cb(particle_data *pdata, float time_delta)
+{
+	pdata->alpha -= 8.f*time_delta;
+	if (pdata->alpha <= 0.f)
+	{ pdata->lifespan = 0.f; }
+}
+
+void wallhit_init(particle_data *pdata)
+{
+	pdata->vel.x *= random_range(5.f) - 1.f;
+	pdata->vel.y *= random_range(5.f) - 1.f;
+	pdata->vel.z *= random_range(5.f) - 1.f+5.f;
+
+	pdata->vel.x += random_range(6.f)-3.f;
+	pdata->vel.y += random_range(6.f)-3.f;
+	pdata->vel.z += random_range(6.f)-3.f;
+
+	pdata->gravity = 3.f;
+
+	pdata->lifespan = 9999.f;
+
+	//p.red = 255; p.green = 255; p.blue = 100;
+
+	pdata->size = 1.5f;
+	pdata->alpha = 75.f + random_range(25.f);
+
+	//set(p, TRANSLUCENT | STREAK | MOVE);
+   //p.event= eff_hit_fade; // change to a shorter, faster function
+}
+
+void effectmgr::eff_wallhit(const vec *position, const vec *normal)
+{
+	renderer->partmgr->emit(10, ResourceLoader::texType::pSpark, &wallhit_cb, &wallhit_init, position, normal);
+}
+
+
+
+
 void effectmgr::frame(double frame_delta)
 {
 	// bullets

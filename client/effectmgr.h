@@ -20,6 +20,8 @@ public:
 	void eff_bullettrail(const vec *start, const vec *end);
 	void eff_pl_flash(int color);
 
+	void eff_wallhit(const vec *position, const vec *normal);
+
 	void frame(double frame_delta);
 
 protected:

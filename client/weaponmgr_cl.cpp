@@ -378,6 +378,16 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 				{
 					// TODO: blood
 				}
+				else
+				{
+					vec v(0, 0, 0);
+					effmgr->eff_wallhit(&hitpos, &v);
+				}
+			}
+			else
+			{
+				vec v(0, 0, 0);
+				effmgr->eff_wallhit(&hitpos, &v);
 			}
 		}
 
