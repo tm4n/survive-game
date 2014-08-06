@@ -84,6 +84,8 @@
 		<Unit filename="client/net_cl.h" />
 		<Unit filename="client/npc_cl.cpp" />
 		<Unit filename="client/npc_cl.h" />
+		<Unit filename="client/particlemgr.cpp" />
+		<Unit filename="client/particlemgr.h" />
 		<Unit filename="client/player_cl.cpp" />
 		<Unit filename="client/player_cl.h" />
 		<Unit filename="client/weaponmgr_cl.cpp" />
