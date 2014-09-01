@@ -77,7 +77,7 @@ void effectmgr::eff_pl_flash(int color)
 // wall hit particle effect
 void wallhit_cb(particle_data *pdata, float time_delta)
 {
-	pdata->alpha -= 8.f*time_delta;
+	pdata->alpha -= 0.08f*time_delta;
 	if (pdata->alpha <= 0.f)
 	{ pdata->lifespan = 0.f; }
 }
@@ -99,7 +99,7 @@ void wallhit_init(particle_data *pdata)
 	//p.red = 255; p.green = 255; p.blue = 100;
 
 	pdata->size = 1.5f;
-	pdata->alpha = 75.f + random_range(25.f);
+	pdata->alpha = 0.75f + random_range(0.25f);
 
 	//set(p, TRANSLUCENT | STREAK | MOVE);
    //p.event= eff_hit_fade; // change to a shorter, faster function

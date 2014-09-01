@@ -92,14 +92,16 @@ void gameRenderer::drawFrame(double time_delta)
 
 	// TODO: draw skybox
 
-	// Draw particles
-	partmgr->draw(time_delta, mVPMatrix, CameraPos);
-
 	// draw all meshes
     for (int i = 0; i < MAX_MESHES; i ++) {
 		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
         if (m != NULL) m->draw(mVPMatrix);
     }
+
+	// Draw particles
+	partmgr->draw(time_delta, mVPMatrix, CameraPos);
+
+	
 
 	// draw gui over it
 	gui->draw();
