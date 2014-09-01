@@ -1,10 +1,17 @@
 #ifndef __TEXTURE_H__
 #define __TEXTURE_H__
 
-#include "gl_core_2_1.h"
 #include <stdint.h>
 #include <string>
 #include "SDL2/SDL_ttf.h"
+
+
+#ifdef ANDROID
+#include "SDL_opengles2.h"
+#else
+#include "gl_core_2_1.h"
+#endif
+
 
 typedef struct
 {

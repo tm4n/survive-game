@@ -14,7 +14,8 @@ using namespace std;
 
 void get_workdir(std::string *out)
 {
-    char *tmp = get_current_dir_name();
+    //char *tmp = get_current_dir_name(); TODO: check if the same
+    char * tmp = getcwd(NULL, PATH_MAX);
 
     if (tmp!= NULL)
     {

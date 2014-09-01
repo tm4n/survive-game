@@ -1,10 +1,16 @@
 #ifndef __GAMERENDERER_H__
 #define __GAMERENDERER_H__
 
-
-#include "gl_core_2_1.h"
 #include "SDL2/SDL.h"
+
+#ifdef ANDROID
+#include "SDL_opengles2.h"
+#include <GLES2/gl2.h>
+#else
+#include "gl_core_2_1.h"
 #include "SDL2/SDL_opengl.h"
+#endif
+
 #include "ResourceLoader.h"
 #include "GUI.h"
 #include "particlemgr.h"

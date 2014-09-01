@@ -313,7 +313,9 @@ bool gui_hud::message_visible()
 
 void gui_hud::show_wave_timer(int time)
 {
-	std::string str_timer = std::to_string(time);
+	std::ostringstream os ;
+    os << time ;;
+	std::string str_timer(os.str());
 
 	std::string s;
 	if (time < 100) s.assign("  ");

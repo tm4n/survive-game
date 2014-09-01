@@ -1,7 +1,14 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
+
+#ifdef ANDROID
+#include "SDL_opengles2.h"
+#else
 #include "gl_core_2_1.h"
+#endif
+
+
 #include <vector>
 #include "Texture.h"
 #include "GUIObject.h"

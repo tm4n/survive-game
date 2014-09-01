@@ -34,16 +34,23 @@ gameRenderer::gameRenderer()
 		exit(-3);
 	}
 
+	#ifndef ANDROID
+	// load openGL wrapped functions
 	if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
 	{
 		exit(-3);
 	}
+	#endif // ANDROID
 
 	// Initialize OpenGL features
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
        
     glEnable(GL_DEPTH_TEST);            //Enables Depth Testing
+    #ifdef ANDROID
+	glClearDepthf(1.0f);                     //Depth Buffer Setup
+	#else
 	glClearDepth(1.0f);                     //Depth Buffer Setup
+	#endif
     glDepthFunc(GL_LEQUAL);             //The Type Of Depth Testing To Do
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);

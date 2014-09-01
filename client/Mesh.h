@@ -6,8 +6,13 @@
 #include <vector>
 #include "vec.h"
 #include <string>
-#include "gl_core_2_1.h"
 #include "glm/glm.hpp"
+
+#ifdef ANDROID
+#include "SDL_opengles2.h"
+#else
+#include "gl_core_2_1.h"
+#endif
 
 class Mesh
 {
