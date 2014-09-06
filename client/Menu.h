@@ -20,10 +20,11 @@ public:
 	void frame();
 
 	bool visible;
+	
+	ResourceLoader *resources;
+	GUI *gui;
 
 private:
-	GUI *gui;
-	ResourceLoader *resources;
 
 	int bg_id;
 

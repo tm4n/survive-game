@@ -78,8 +78,12 @@ void gameClient::handle_netevent(ENetEvent *event)
 			{
 
 				// extract packet data
-				short net_type = *((short*) event->packet->data);
-				char *data = (char*)(event->packet -> data) +sizeof(short);
+				int net_type = *((short*) event->packet->data);
+				char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
+				
+				/*std::ostringstream ss;
+				ss << "Client received packet " << net_type << std::endl;
+				log(LOG_DEBUG, ss.str().c_str());*/
 
 				////////////////////////////
 				// differentiate packet type
@@ -504,6 +508,10 @@ void gameClient::handle_netevent(ENetEvent *event)
 			}
 			/* Clean up the packet now that we're done using it. */
 			enet_packet_destroy (event->packet);
+			
+			/*std::ostringstream ss;
+			ss << "Client done with packet";
+			log(LOG_DEBUG, ss.str().c_str());*/
 
 			break;
 		}
@@ -734,7 +742,77 @@ void gameClient::event_mouse(SDL_Event *evt)
 			renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
 		}
 	}
-	if (evt->type == SDL_MOUSEBUTTONDOWN)
+	if (evt->type == SDL_JOYAXISMOTION)
+	{
+		//log(LOG_DEBUG, "AXIS EVENT!");
+		if (hud != NULL && !hud->ingame_menu_visible)
+		{
+			if (evt->jaxis.axis == 0)
+			{
+				if (evt->jaxis.value > 3200) input |= INPUT_RIGHT; else input &= ~INPUT_RIGHT;
+				if (evt->jaxis.value < -3200) input |= INPUT_LEFT; else input &= ~INPUT_LEFT;
+			}
+			if (evt->jaxis.axis == 1)
+			{
+				if (evt->jaxis.value > 3200) input |= INPUT_BACK; else input &= ~INPUT_BACK;
+				if (evt->jaxis.value < -3200) input |= INPUT_FORW; else input &= ~INPUT_FORW;
+			}
+			if (evt->jaxis.axis == 2)
+			{
+				renderer->CameraJoyInputX = evt->jaxis.value*0.00008f;
+			}
+			if (evt->jaxis.axis == 3)
+			{
+				renderer->CameraJoyInputY = evt->jaxis.value*0.00008f;
+			}
+			if (evt->jaxis.axis == 5) // shoot
+			{
+				if (evt->jaxis.value > 3200)
+				{
+					if (local_state == 1)
+					{
+						// send request to join
+						net_client->send_request_join(net_client->serverpeer);
+					}
+					if (local_state == 2)
+					{
+						// shoot
+						pl->input_shoot = true;
+					}
+				}
+				else
+				{
+					if (local_state == 2)
+					{
+						// shoot
+						pl->input_shoot = false;
+					}
+				}
+			}
+			if (evt->jaxis.axis == 4) // sprint
+			{
+				if (evt->jaxis.value > 3200)
+				{
+					input |= INPUT_SPRINT;
+					if (local_state == 2)
+					{
+						// cancel reload
+						pl->wpmgr->cancel_reload();
+						pl->wpmgr->hide_wp();
+					}
+				}
+				else
+				{
+					input &= ~INPUT_SPRINT;
+					if (local_state == 2 && pl->object_taken == -1) pl->wpmgr->show_wp();
+				}
+			}
+
+			renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
+		}
+	}
+	
+	if (evt->type == SDL_MOUSEBUTTONDOWN || evt->type == SDL_JOYBUTTONDOWN)
 	{
 		if (hud != NULL && hud->ingame_menu_visible)
 		{
@@ -778,6 +856,54 @@ void gameClient::event_mouse(SDL_Event *evt)
 		if (evt->wheel.y > 0) pl->wpmgr->input_scroll_up();
 		if (evt->wheel.y < 0) pl->wpmgr->input_scroll_down();
 	}
+	if (evt->type == SDL_JOYBUTTONDOWN)
+	{
+		if (hud != NULL && hud->ingame_menu_visible)
+		{
+			renderer->gui->event_mouse(evt);
+		}
+		else
+		{
+			if (evt->jbutton.button == 0)
+			{
+				if (local_state == 2)
+				{
+					// take
+					if (pl != NULL) pl->order_take_object();
+				
+				}
+			}
+			/*if (evt->jbutton.button == 1)
+			{
+				if (local_state == 2)
+				{
+					// take
+					if (pl != NULL) pl->order_take_object();
+				
+				}
+			}*/
+			if (evt->jbutton.button == 10)
+			{
+				if (local_state == 2 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
+			}
+			
+			if (evt->jbutton.button == 11) input |= INPUT_FORW;
+			if (evt->jbutton.button == 12) input |= INPUT_BACK;
+			if (evt->jbutton.button == 13) input |= INPUT_LEFT;
+			if (evt->jbutton.button == 14) input |= INPUT_RIGHT;
+			std::ostringstream ss;
+			ss << "button " << (int)evt->jbutton.button << " pressed";
+			log(LOG_DEBUG, ss.str().c_str());
+		}
+	}
+	if (evt->type == SDL_JOYBUTTONUP)
+	{
+		if (evt->jbutton.button == 11) input &= ~INPUT_FORW;
+		if (evt->jbutton.button == 12) input &= ~INPUT_BACK;
+		if (evt->jbutton.button == 13) input &= ~INPUT_LEFT;
+		if (evt->jbutton.button == 14) input &= ~INPUT_RIGHT;
+	}
+	
 	if (evt->type == SDL_KEYDOWN)
 	{
 		switch( evt->key.keysym.sym )

@@ -236,8 +236,14 @@ void check_heap(char *file, int line)
 
 #endif
 
+#ifdef ANDROID
+	#include <android/log.h>
+#endif // ANDROID
 void log(int prop, char const* str)
 {
+	#ifdef ANDROID
+	__android_log_print(ANDROID_LOG_VERBOSE, "libsdl", "%s", str);
+	#endif // ANDROID
 	puts(str);
 }
 

@@ -80,8 +80,9 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	filename.assign(mesh_file);
 
-
+	
 	// open file
+	//__android_log_print(ANDROID_LOG_VERBOSE, "libsdl", "opening file: %s", mesh_file);
 	SDL_RWops *file = SDL_RWFromFile(mesh_file, "rb");
 	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening file: " << mesh_file << std::endl;  return;}
 
@@ -125,7 +126,9 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			// When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
 			glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 			
+			#ifndef ANDROID
 			glTexParameteri(GL_TEXTURE_2D,GL_GENERATE_MIPMAP,GL_TRUE);  // not in 3.x
+			#endif
 
 			// read skin header
 			SDL_RWread(file,&(skins[i]), sizeof(mdl5_skin_t), 1);
@@ -146,15 +149,20 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture);
         	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, texture);
-        	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
-        	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);
+        	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
+        	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+        	
+        	//if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
+        	//if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);
         	
 			int err = glGetError();
 			if (err != 0) {
 				std::cout << "OGL error code: " << err << " on uploading skin " << i << ", skintype " << skins[i].skintype<< std::endl;
 			}
 
-        	//glGenerateMipmap(GL_TEXTURE_2D); // not in opengl 2.1
+			#ifdef ANDROID
+        	glGenerateMipmap(GL_TEXTURE_2D); // not in opengl 2.1
+        	#endif
 
 			delete[] texture;
 		}
@@ -196,8 +204,6 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	delete[] skinverts;
 	delete[] texCoordBuffer;
-
-
 
 	///////////////////////////////////////////////////////
 	// read frames
@@ -399,6 +405,10 @@ void Mesh::setShader() {
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shade
 			"#version 110 \n"
+			"#ifdef GL_ES \n"
+			"precision mediump float; \n"
+			"#endif \n"
+			
             "uniform mat4 uMVPMatrix; \n"
             "uniform float animProgress; \n"
 
@@ -414,6 +424,10 @@ void Mesh::setShader() {
 
     fragmentShaderCode =
 			"#version 110 \n"
+			"#ifdef GL_ES \n"
+			"precision mediump float; \n"
+			"#endif \n"
+			
             "varying vec2 TexCoordOut; \n" 
             "uniform sampler2D Texture; \n"
 			"uniform float alpha; \n"
@@ -484,7 +498,8 @@ int Mesh::loadShader(int type, const char *shaderCode) {
 
 		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
 		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
-        std::cout << "Shader compile error: " << strInfoLog << std::endl;
+        log(LOG_ERROR, "Shader compile error: ");
+        log(LOG_ERROR, strInfoLog);
 		delete[] strInfoLog;
 		
 		exit(-3);

@@ -12,7 +12,7 @@ Texture::Texture(const char* filename)
     short int sintBad;
     long imageSize;
     int colorMode;
-    //unsigned char colorSwap;
+    unsigned char colorSwap;
 
 	loaded = false;
 
@@ -63,6 +63,7 @@ Texture::Texture(const char* filename)
 
 	if( (imagedescriptor & 0x0020) == 0 )
 	{
+		log(LOG_DEBUG, "tga from back to front");
 		// read image data from back to front
 		int index = (tgaFile->imageHeight-1) * tgaFile->imageWidth;
         for (int y = (tgaFile->imageHeight-1); y >= 0; y--)
@@ -77,16 +78,17 @@ Texture::Texture(const char* filename)
 	else
 	{
 		// Read the image data normally
+		log(LOG_DEBUG, "tga normal");
 		SDL_RWread(file, tgaFile->imageData, sizeof(uint8_t), imageSize);
 	}
 
     // Change from BGR to RGB so OpenGL can read the image data.
-    /*for (int imageIdx = 0; imageIdx < imageSize; imageIdx += colorMode)
+    for (int imageIdx = 0; imageIdx < imageSize; imageIdx += colorMode)
     {
         colorSwap = tgaFile->imageData[imageIdx];
         tgaFile->imageData[imageIdx] = tgaFile->imageData[imageIdx + 2];
         tgaFile->imageData[imageIdx + 2] = colorSwap;
-    }*/
+    }
 
 	SDL_RWclose(file);
 
@@ -99,9 +101,9 @@ Texture::Texture(const char* filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	if (colorMode == 3) // BGR
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaFile->imageWidth, tgaFile->imageHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, tgaFile->imageData);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaFile->imageWidth, tgaFile->imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaFile->imageData);
 	if (colorMode == 4) // BGRA
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaFile->imageWidth, tgaFile->imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, tgaFile->imageData);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaFile->imageWidth, tgaFile->imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaFile->imageData);
 
 
 	loaded = true;
@@ -116,12 +118,15 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 	
 	// render text
 	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(fnt, txt.c_str(), c, 1024);
+	//SDL_Surface *surface = TTF_RenderUTF8_Solid(fnt, txt.c_str(), c);
 	
 	if (surface == NULL) {log(LOG_ERROR, "Could not render a TTF text!"); exit(-1);}
 	
 	// Convert to OpenGl texture
 	glGenTextures(1, &mTextureID);
 	glBindTexture(GL_TEXTURE_2D, mTextureID); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
@@ -131,30 +136,34 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 		if (surface->format->Rmask == 0x000000ff)
 			in_format = GL_RGBA;
 		else
-			in_format = GL_BGRA;
+			in_format = GL_RGBA; //TODO: fix!
+			//in_format = GL_BGRA;
 			
-		glTexImage2D(GL_TEXTURE_2D, 0, 4, surface->w, surface->h, 0,
+		glTexImage2D(GL_TEXTURE_2D, 0, in_format, surface->w, surface->h, 0,
 						in_format, GL_UNSIGNED_BYTE, surface->pixels);
+						
 	}
 	if (colors == 3) {           // no alpha
 		if (surface->format->Rmask == 0x000000ff)
 			in_format = GL_RGB;
 		else
-			in_format = GL_BGR;
+			in_format = GL_RGB; //TODO: fix!
+			//in_format = GL_BGR;
 			
 			
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, surface->w, surface->h, 0,
+		glTexImage2D(GL_TEXTURE_2D, 0, in_format, surface->w, surface->h, 0,
 						in_format, GL_UNSIGNED_BYTE, surface->pixels);
 	}
 	if (colors == 1)
 	{
 		// no alpha, palettized
 		SDL_Surface *intermediary = SDL_CreateRGBSurface(0, surface->w, surface->h, 32, 
-			0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+			//0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000); original!
+			0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000); //little endian
 
 		SDL_BlitSurface(surface, 0, intermediary, 0);
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, 4, intermediary->w, intermediary->h, 0,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, intermediary->w, intermediary->h, 0,
 						GL_RGBA, GL_UNSIGNED_BYTE, intermediary->pixels);
 						
 		SDL_FreeSurface(intermediary);
@@ -166,6 +175,11 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 	SDL_FreeSurface(surface);
 						
 	loaded = true;
+	
+	int err = glGetError();
+	if (err != 0) {
+		log(LOG_ERROR, "OGL error code after creating text texture");
+	}
 }
 
 

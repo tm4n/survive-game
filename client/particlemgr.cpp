@@ -5,6 +5,10 @@
 
 const char *particlemgr::mVertexShaderCode = 
 	"#version 110 \n"
+	"#ifdef GL_ES \n"
+	"precision mediump float; \n"
+	"#endif \n"
+			
     "uniform mat4 uMVPMatrix; \n"
 	"uniform float Size; \n"
     "attribute vec4 vPosition; \n"
@@ -18,6 +22,10 @@ const char *particlemgr::mVertexShaderCode =
 
 const char *particlemgr::mFragmentShaderCode =
 	"#version 110 \n"
+	"#ifdef GL_ES \n"
+	"precision mediump float; \n"
+	"#endif \n"
+			
     "varying vec2 TexCoordOut; \n" 
     "uniform sampler2D Texture; \n"
 	"uniform float Alpha; \n"

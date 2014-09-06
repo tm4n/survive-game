@@ -34,7 +34,8 @@ public:
 
 	ResourceLoader();
 
-	void load();
+	void loadMenu();
+	void loadIngame();
 
 	Mesh* getMesh(meshType m);
 	Texture* getTex(texType t);
@@ -46,6 +47,8 @@ private:
 	TTF_Font *fonts[MAX_FONTS];
 
 	void openFont(fontType f, const char *filename, int size);
+	
+	bool menu_done, ingame_done;
 
 };
 

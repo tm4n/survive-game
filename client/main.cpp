@@ -12,6 +12,8 @@
 #include <thread>
 
 bool quit = false;
+bool play = false;
+bool multiplayer = false;
 
 gameClient *cl = NULL;
 std::thread svthread;
@@ -43,16 +45,9 @@ class playCallback : public GUICallback {
 void playCallback::callback(int obj_id)
 {
 	menu->hide();
+	menu->gui->draw();
 	
-	l2.clear();
-	l1.clear();
-
-	// start server thread
-	svthread = std::thread(thread_sv);
-	
-	// start client in this thread
-	cl = new gameClient(renderer);
-	cl->connect(&l2, &m2, &l1, &m1);
+	play = true;
 }
 
 // Callback classes
@@ -68,19 +63,22 @@ void quitCallback::callback(int obj_id)
 	quit = true;
 }
 
-
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+#ifdef ANDROID
+#include <android/log.h>
+
+int SDL_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
-	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) exit(1);
+	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 ) exit(1);
 	if( TTF_Init()==-1 )
 	{
 		printf("TTF_Init: %s\n", TTF_GetError());
 		exit(2);
 	}
 
-
-	
 
 	renderer = new gameRenderer();
 
@@ -92,12 +90,22 @@ int main(int argc, char **argv)
 	// Timer used to calculate time_delta (frame time)
     Timer frametime;
 	double time_delta = 0.;
+	
+	// Initialize Joystick
+	SDL_Joystick *joystick = NULL;
+    SDL_JoystickEventState(SDL_ENABLE);
+
 
 	int fct = 0;
 	while (!quit)
 	{
 		frametime.start();
 
+		if (joystick == NULL)
+		{
+			joystick = SDL_JoystickOpen(0);
+		}
+		
 		//Uint32 t = SDL_GetTicks();
 		SDL_Event evt;
 		while( SDL_PollEvent(&evt) )
@@ -118,6 +126,9 @@ int main(int argc, char **argv)
 				
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+			case SDL_JOYAXISMOTION:
 				if (!menu->visible && cl != NULL)
 				{
 					cl->event_mouse(&evt);
@@ -160,6 +171,27 @@ int main(int argc, char **argv)
 				svthread.join();
 				delete sv;
 				menu->show();
+			}
+		}
+		else
+		{
+			if (play == true)
+			{
+				// play pressed!
+				play = false;
+				
+				// load other resources
+				menu->resources->loadIngame();
+				
+				l2.clear();
+				l1.clear();
+
+				// start server thread
+				svthread = std::thread(thread_sv);
+				
+				// start client in this thread
+				cl = new gameClient(renderer);
+				cl->connect(&l2, &m2, &l1, &m1);
 			}
 		}
 	}

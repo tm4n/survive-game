@@ -7,16 +7,25 @@
 
 gameRenderer::gameRenderer()
 {
+	CameraJoyInputY = 0.f;
+	CameraJoyInputX = 0.f;
+	
+	#ifdef ANDROID
+	int ss_x = 1920, ss_y = 1080;
+	#else
 	int ss_x = 1366, ss_y = 768;
+	#endif
 
 	// not sure if this is needed!
+	#ifndef ANDROID
 	// request OGL 2.1 context (default to SDL core profile)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
     // turn on double buffering with a 24 bit Z buffer
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	#endif
 
 	window = SDL_CreateWindow("Survive!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ss_x, ss_y, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (window == NULL)
@@ -61,15 +70,17 @@ gameRenderer::gameRenderer()
 	float ratio = 16.f/9.f;
 	mProjMatrix = glm::perspective(70.f, ratio, 2.f, 6000.f);
 
-	// load all resources
-	resources.load();
-
+	// load menu resources
+	resources.loadMenu();
+	
 	// initialize gzu
 	gui = new GUI();
 	gui->setScreensize(ss_x, ss_y);
 
 	// initialize particle manager
 	partmgr = new particlemgr(&resources);
+	
+	log(LOG_DEBUG, "init done!");
 }
 
 gameRenderer::~gameRenderer()
@@ -84,6 +95,10 @@ gameRenderer::~gameRenderer()
 void gameRenderer::drawFrame(double time_delta)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// move camera by input (joy only, mouse done in event)
+	CameraAngle.y += CameraJoyInputY*(float)time_delta;
+	CameraAngle.x += CameraJoyInputX*(float)time_delta;
 
 	// calculate matrices
 	float camx = (float) (cos(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));

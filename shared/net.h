@@ -58,8 +58,8 @@
 // syncronization data
 
 // align at 4
-#pragma pack(push)
-#pragma pack(4)
+//#pragma pack(push)
+//#pragma pack(4)
 
 struct s_net_version
 {
@@ -217,7 +217,7 @@ struct s_net_update_score
     uint32_t score;
 };
 
-#pragma pack(pop)
+//#pragma pack(pop)
 
 extern bool enet_initialized;
 
@@ -246,9 +246,9 @@ public:
 	int send_update_ang(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int send_update_pos(uint actor_id, vec *pos, ENetPeer *receiver);
 
-	int send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *);
-	int broadcast_event(uint16_t evtype, const char *data, uint32_t size);
-	int broadcast_event_except(uint16_t evtype, const char *data, uint32_t size, ENetPeer *expeer);
+	int send_event(uint32_t evtype, const char *data, uint32_t size, ENetPeer *);
+	int broadcast_event(uint32_t evtype, const char *data, uint32_t size);
+	int broadcast_event_except(uint32_t evtype, const char *data, uint32_t size, ENetPeer *expeer);
 	
 protected:
 	bool net_local_only;

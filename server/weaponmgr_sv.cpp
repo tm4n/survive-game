@@ -68,6 +68,8 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 
 	int32_t seed = rand();
 	random_seed(seed);
+	
+	log (LOG_DEBUG, "Starting shoot!");
 
 	while (shoot_nums > 0)
 	{

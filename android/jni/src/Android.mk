@@ -23,6 +23,14 @@ FILE_LIST += $(wildcard $(LOCAL_PATH)/$(PRJ_PATH)/shared/backends/*.cpp)
 FILE_LIST += $(wildcard $(LOCAL_PATH)/$(PRJ_PATH)/client/*.cpp)
 FILE_LIST += $(wildcard $(LOCAL_PATH)/$(PRJ_PATH)/server/*.cpp)
 LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%)
+LOCAL_SRC_FILES += $(PRJ_PATH)/libs/enet/callbacks.c\
+$(PRJ_PATH)/libs/enet/compress.c\
+$(PRJ_PATH)/libs/enet/host.c\
+$(PRJ_PATH)/libs/enet/list.c\
+$(PRJ_PATH)/libs/enet/packet.c\
+$(PRJ_PATH)/libs/enet/peer.c\
+$(PRJ_PATH)/libs/enet/protocol.c\
+$(PRJ_PATH)/libs/enet/unix.c
 
 # add sdl main
 LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c

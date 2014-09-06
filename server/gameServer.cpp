@@ -392,8 +392,12 @@ void gameServer::handle_netevent(ENetEvent *event)
             {
 
                 // extract packet data
-                short net_type = *((short*) event->packet->data);
-                char *data = (char*)(event->packet -> data) +2;
+                int net_type = *((short*) event->packet->data);
+                char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
+                
+                /*std::ostringstream ss;
+				ss << "Server received packet " << net_type << std::endl;
+				log(LOG_DEBUG, ss.str().c_str());*/
 
                 ////////////////////////////
                 // differentiate net type
@@ -707,6 +711,10 @@ void gameServer::handle_netevent(ENetEvent *event)
 
             /* Clean up the packet now that we're done using it. */
             enet_packet_destroy (event->packet);
+            
+            /*std::ostringstream ss;
+			ss << "Server done receiving packets";
+			log(LOG_DEBUG, ss.str().c_str());*/
 
 
             break;
@@ -763,7 +771,7 @@ void gameServer::start_match()
 	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
 	
 	// create starting crates
-	v.set(180, 180, lvl->border_ground);
+	/*v.set(180, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(130, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
@@ -798,7 +806,7 @@ void gameServer::start_match()
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
 
 	v.set(400, 300, lvl->border_ground);
-	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
+	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);*/
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);
@@ -828,6 +836,7 @@ void gameServer::reset()
 
 void gameServer::spawner(double time_frame)
 {
+	return;
 	int spawn_type = 0;
 	int dice;
 	

@@ -143,10 +143,10 @@ int net::host_service (ENetEvent *event, enet_uint32 timeout)
 
 
 
-int net::send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *peer)
+int net::send_event(uint32_t evtype, const char *data, uint32_t size, ENetPeer *peer)
 {
 	// create packet to send
-	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint16_t), ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint32_t), ENET_PACKET_FLAG_RELIABLE);
 
 	if (packet == NULL)
 	{
@@ -154,8 +154,8 @@ int net::send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *
 	}
 
 
-	memcpy(packet->data, &evtype, sizeof(uint16_t));
-	if (size > 0) memcpy(packet->data + sizeof(uint16_t), data, size);
+	memcpy(packet->data, &evtype, sizeof(uint32_t));
+	if (size > 0) memcpy(packet->data + sizeof(uint32_t), data, size);
 
 	if (local_only)
 	{
@@ -177,11 +177,11 @@ int net::send_event(uint16_t evtype, const char *data, uint32_t size, ENetPeer *
 	return 0;
 }
 
-int net::broadcast_event(uint16_t evtype, const char *data, uint32_t size)
+int net::broadcast_event(uint32_t evtype, const char *data, uint32_t size)
 {
 
 	// create packet to send
-	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint16_t), ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint32_t), ENET_PACKET_FLAG_RELIABLE);
 
 	if (packet == NULL)
 	{
@@ -189,8 +189,8 @@ int net::broadcast_event(uint16_t evtype, const char *data, uint32_t size)
 	}
 
 
-	memcpy(packet->data, &evtype, sizeof(uint16_t));
-	if (size > 0) memcpy(packet->data + sizeof(uint16_t), data, size);
+	memcpy(packet->data, &evtype, sizeof(uint32_t));
+	if (size > 0) memcpy(packet->data + sizeof(uint32_t), data, size);
 
 	if (local_only)
 	{
@@ -208,11 +208,11 @@ int net::broadcast_event(uint16_t evtype, const char *data, uint32_t size)
 	return 0;
 }
 
-int net::broadcast_event_except(uint16_t evtype, const char *data, uint32_t size, ENetPeer *expeer)
+int net::broadcast_event_except(uint32_t evtype, const char *data, uint32_t size, ENetPeer *expeer)
 {
 
 	// create packet to send
-	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint16_t), ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket *packet = enet_packet_create(NULL, size+sizeof(uint32_t), ENET_PACKET_FLAG_RELIABLE);
 
 	if (packet == NULL)
 	{
@@ -220,8 +220,8 @@ int net::broadcast_event_except(uint16_t evtype, const char *data, uint32_t size
 	}
 
 
-	memcpy(packet->data, &evtype, sizeof(uint16_t));
-	if (size > 0) memcpy(packet->data + sizeof(uint16_t), data, size);
+	memcpy(packet->data, &evtype, sizeof(uint32_t));
+	if (size > 0) memcpy(packet->data + sizeof(uint32_t), data, size);
 
 	if (local_only)
 	{

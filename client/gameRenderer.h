@@ -32,6 +32,9 @@ public:
 
 	glm::vec3 CameraPos;
 	glm::vec3 CameraAngle;
+	
+	float CameraJoyInputY;
+	float CameraJoyInputX;
 private:
 	SDL_Window *window;
 	SDL_GLContext glcontext;

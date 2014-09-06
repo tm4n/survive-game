@@ -3,17 +3,22 @@
 #include "MeshTerrain.h"
 #include "MeshGUI.h"
 #include "MeshBlend.h"
+#include "helper.h"
 
 ResourceLoader::ResourceLoader()
 {
 	for (int i = 0; i < MAX_MESHES; i++) meshes[i] = NULL;
 	for (int i = 0; i < MAX_TEXTURES; i++) textures[i] = NULL;
+	
+	menu_done = false;
+	ingame_done = false;
 }
 
-void ResourceLoader::load()
+void ResourceLoader::loadIngame()
 {
-	Mesh *m;
-
+	if (ingame_done == true) return;
+	
+		Mesh *m;
 	// crates
 
 	meshes[(int)meshType::Crate] = new Mesh("assets/models/c.mdl", NULL);
@@ -28,7 +33,7 @@ void ResourceLoader::load()
 	if (meshes[(int)meshType::Generator]->loaded == false) {std::cout << "ERROR loading model for Generator" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator]->initShader();
 
-	meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
+	/*meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
 	if (meshes[(int)meshType::Generator_glass]->loaded == false) {std::cout << "ERROR loading model for Generator_glass" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator_glass]->initShader();
 
@@ -61,7 +66,7 @@ void ResourceLoader::load()
 	m = new Mesh("assets/models/powerup_hp.mdl", NULL);
 	meshes[(int)meshType::Powerup_health] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
-	m->initShader();
+	m->initShader(); */
 	
 
 
@@ -89,7 +94,7 @@ void ResourceLoader::load()
 	m->initShader();
 
 	// npcs
-	m = new Mesh("assets/models/mummy.mdl", NULL);
+	/*m = new Mesh("assets/models/mummy.mdl", NULL);
 	meshes[(int)meshType::Mummy] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -128,6 +133,7 @@ void ResourceLoader::load()
 	meshes[(int)meshType::Harpy] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
+	*/
 
 	// weapons
 	m = new Mesh("assets/models/bullet.mdl", NULL);
@@ -145,7 +151,7 @@ void ResourceLoader::load()
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
+	/*m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
 	meshes[(int)meshType::Chainsaw] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -193,16 +199,38 @@ void ResourceLoader::load()
 	m = new MeshGUI("assets/models/weapons/usas12_hand.mdl", NULL);
 	meshes[(int)meshType::USAS12_hand] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
-	m->initShader();
+	m->initShader(); */
 	
 	m = new MeshBlend("assets/models/weapons/muzzle.mdl", NULL);
 	meshes[(int)meshType::Muzzleflash] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
+	
+	
+	// ingame textures
+	
+	textures[(int)texType::GuiAmmo] = new Texture("assets/gui/gui_ammo.tga");
+	textures[(int)texType::GuiHealth] = new Texture("assets/gui/gui_health.tga");
+	textures[(int)texType::GuiCrosshair] = new Texture("assets/gui/crosshair.tga");
+	textures[(int)texType::GuiScoreboard] = new Texture("assets/gui/score_bg.tga");
 
+	textures[(int)texType::IngameMenuBg] = new Texture("assets/gui/ingame_menu_bg.tga");
+	textures[(int)texType::FlashRed] = new Texture("assets/gui/flash_red.tga");
+	textures[(int)texType::FlashGreen] = new Texture("assets/gui/flash_green.tga");
 
+	// particles
+	textures[(int)texType::pBlood1] = new Texture("assets/textures/blood1.tga");
+	textures[(int)texType::pBlood2] = new Texture("assets/textures/blood2.tga");
+	textures[(int)texType::pSpark] = new Texture("assets/textures/spark.tga");
 
+	ingame_done = true;
+}
 
+void ResourceLoader::loadMenu()
+{
+	if (menu_done == true) return;
+
+	log(LOG_DEBUG_VERBOSE, "loading menu resources");
 
 
 
@@ -222,20 +250,6 @@ void ResourceLoader::load()
 	textures[(int)texType::MenuQuit] = new Texture("assets/gui/menu_quit.tga");
 	textures[(int)texType::MenuQuitSel] = new Texture("assets/gui/menu_quit_sel.tga");
 
-	textures[(int)texType::GuiAmmo] = new Texture("assets/gui/gui_ammo.tga");
-	textures[(int)texType::GuiHealth] = new Texture("assets/gui/gui_health.tga");
-	textures[(int)texType::GuiCrosshair] = new Texture("assets/gui/crosshair.tga");
-	textures[(int)texType::GuiScoreboard] = new Texture("assets/gui/score_bg.tga");
-
-	textures[(int)texType::IngameMenuBg] = new Texture("assets/gui/ingame_menu_bg.tga");
-	textures[(int)texType::FlashRed] = new Texture("assets/gui/flash_red.tga");
-	textures[(int)texType::FlashGreen] = new Texture("assets/gui/flash_green.tga");
-
-	// particles
-	textures[(int)texType::pBlood1] = new Texture("assets/textures/blood1.tga");
-	textures[(int)texType::pBlood2] = new Texture("assets/textures/blood2.tga");
-	textures[(int)texType::pSpark] = new Texture("assets/textures/spark.tga");
-
 
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
@@ -253,53 +267,19 @@ void ResourceLoader::load()
 	openFont(fontType::fnt_mids, "assets/OpenSans-Bold.ttf", 18);
 	openFont(fontType::fnt_menu, "assets/OpenSans-Bold.ttf", 20);
 
-	/*const char *filename_semibold = "assets/OpenSans-Semibold.ttf";
-	SDL_RWops *file_semibold = SDL_RWFromFile(filename_semibold, "rb");
-	if (file_semibold == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename_semibold << std::endl;  return;}
-
-	const char *filename_bold = "assets/OpenSans-Bold.ttf";
-	SDL_RWops *file_bold = SDL_RWFromFile(filename_bold, "rb");
-	if (file_bold == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename_bold << std::endl;  return;}
-
-	fonts[(int)fontType::fnt_small] = TTF_OpenFontRW(file_semibold, 0, 10);
-	if (fonts[(int)fontType::fnt_small] == NULL) {std::cout << "ERROR loading Font fnt_small!" << std::endl; exit (-1);}
-	SDL_RWseek(file_semibold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_norm]  = TTF_OpenFontRW(file_semibold, 0, 16);
-	if (fonts[(int)fontType::fnt_norm] == NULL) {std::cout << "ERROR loading Font fnt_norm!" << std::endl; exit (-1);}
-	SDL_RWseek(file_semibold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_normp]  = TTF_OpenFontRW(file_bold, 0, 18);
-	if (fonts[(int)fontType::fnt_normp] == NULL) {std::cout << "ERROR loading Font fnt_normp!" << std::endl; exit (-1);}
-	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_large]  = TTF_OpenFontRW(file_bold, 0, 36);
-	if (fonts[(int)fontType::fnt_large] == NULL) {std::cout << "ERROR loading Font fnt_large!" << std::endl; exit (-1);}
-	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_mid]  = TTF_OpenFontRW(file_bold, 0, 28);
-	if (fonts[(int)fontType::fnt_mid] == NULL) {std::cout << "ERROR loading Font fnt_mid!" << std::endl; exit (-1);}
-	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_mids]  = TTF_OpenFontRW(file_bold, 0, 24);
-	if (fonts[(int)fontType::fnt_mids] == NULL) {std::cout << "ERROR loading Font fnt_mids!" << std::endl; exit (-1);}
-	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
-
-	fonts[(int)fontType::fnt_menu]  = TTF_OpenFontRW(file_bold, 0, 20);
-	if (fonts[(int)fontType::fnt_menu] == NULL) {std::cout << "ERROR loading Font fnt_menu!" << std::endl; exit (-1);}
-	SDL_RWseek(file_bold, 0, RW_SEEK_SET);
-
-	SDL_RWclose(file_semibold);
-	SDL_RWclose(file_bold);*/
+	
+	menu_done = true;
 }
 
 void ResourceLoader::openFont(fontType f, const char *filename, int size)
 {
 	SDL_RWops *file = SDL_RWFromFile(filename, "rb");
-	if (filename == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename << std::endl;  return;}
+	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening font file: " << filename << std::endl;  exit( (-2));}
 
 	fonts[(int)f] = TTF_OpenFontRW(file, 1, size);
 	if (fonts[(int)f] == NULL) {std::cout << "ERROR loading Font " << filename << " size:" << size << std::endl; exit (-1);}
+	
+	TTF_SetFontHinting(fonts[(int)f], TTF_HINTING_LIGHT); 
 }
 
 Mesh* ResourceLoader::getMesh(meshType m)

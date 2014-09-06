@@ -22,6 +22,10 @@ float GUI::squareTexCoords[] = { // in counterclockwise order:
 
 const char *GUI::mVertexShaderCode = 
 	"#version 110 \n"
+	"#ifdef GL_ES \n"
+	"precision mediump float; \n"
+	"#endif \n"
+	
 	"attribute vec4 vPosition; \n"
 	"uniform vec4 vChange; \n"
 	"attribute vec2 TexCoordIn; \n" 
@@ -33,6 +37,10 @@ const char *GUI::mVertexShaderCode =
 
 const char *GUI::mFragmentShaderCode =
 	"#version 110 \n"
+	"#ifdef GL_ES \n"
+	"precision mediump float; \n"
+	"#endif \n"
+			
 	"uniform float Alpha; \n" 
 	"varying vec2 TexCoordOut; \n"
 	"uniform sampler2D Texture; \n" 

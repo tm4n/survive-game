@@ -14,6 +14,10 @@ void MeshBlend::setShader() {
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shade
 			"#version 110 \n"
+			"#ifdef GL_ES \n"
+			"precision mediump float; \n"
+			"#endif \n"
+			
             "uniform mat4 uMVPMatrix; \n"
             "uniform float animProgress; \n"
 
@@ -29,6 +33,10 @@ void MeshBlend::setShader() {
 
     fragmentShaderCode =
 			"#version 110 \n"
+			"#ifdef GL_ES \n"
+			"precision mediump float; \n"
+			"#endif \n"
+			
             "varying vec2 TexCoordOut; \n" 
             "uniform sampler2D Texture; \n"
 			"uniform float alpha; \n"
