@@ -1060,7 +1060,7 @@ class SDLJoystickHandler_API12 extends SDLJoystickHandler {
                     break;
             }
         }
-        return true; 
+        return true;
     }            
 }
 

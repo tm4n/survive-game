@@ -97,8 +97,10 @@ void gameRenderer::drawFrame(double time_delta)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// move camera by input (joy only, mouse done in event)
-	CameraAngle.y += CameraJoyInputY*(float)time_delta;
-	CameraAngle.x += CameraJoyInputX*(float)time_delta;
+	if (CameraJoyInputY < 2600 && CameraJoyInputY > -2600) CameraJoyInputY = 0.f;
+	if (CameraJoyInputX < 2600 && CameraJoyInputX > -2600) CameraJoyInputX = 0.f;
+	CameraAngle.y -= CameraJoyInputY*0.0001f*(float)time_delta;
+	CameraAngle.x -= CameraJoyInputX*0.0002f*(float)time_delta;
 
 	// calculate matrices
 	float camx = (float) (cos(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));

@@ -147,6 +147,10 @@ int main(int argc, char **argv)
 					cl->event_mouse(&evt);
 				}
 				break;
+				
+			case SDL_JOYDEVICEREMOVED:
+				joystick = NULL; // reset joystick on every removal, so a new one can be selected
+				break;
 			}
 		}
 		

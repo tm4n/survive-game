@@ -749,21 +749,21 @@ void gameClient::event_mouse(SDL_Event *evt)
 		{
 			if (evt->jaxis.axis == 0)
 			{
-				if (evt->jaxis.value > 3200) input |= INPUT_RIGHT; else input &= ~INPUT_RIGHT;
-				if (evt->jaxis.value < -3200) input |= INPUT_LEFT; else input &= ~INPUT_LEFT;
+				if (evt->jaxis.value > 10000) input |= INPUT_RIGHT; else input &= ~INPUT_RIGHT;
+				if (evt->jaxis.value < -10000) input |= INPUT_LEFT; else input &= ~INPUT_LEFT;
 			}
 			if (evt->jaxis.axis == 1)
 			{
-				if (evt->jaxis.value > 3200) input |= INPUT_BACK; else input &= ~INPUT_BACK;
-				if (evt->jaxis.value < -3200) input |= INPUT_FORW; else input &= ~INPUT_FORW;
+				if (evt->jaxis.value > 10000) input |= INPUT_BACK; else input &= ~INPUT_BACK;
+				if (evt->jaxis.value < -10000) input |= INPUT_FORW; else input &= ~INPUT_FORW;
 			}
 			if (evt->jaxis.axis == 2)
 			{
-				renderer->CameraJoyInputX = evt->jaxis.value*0.00008f;
+				renderer->CameraJoyInputX = evt->jaxis.value;
 			}
 			if (evt->jaxis.axis == 3)
 			{
-				renderer->CameraJoyInputY = evt->jaxis.value*0.00008f;
+				renderer->CameraJoyInputY = evt->jaxis.value;
 			}
 			if (evt->jaxis.axis == 5) // shoot
 			{
@@ -853,8 +853,8 @@ void gameClient::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_MOUSEWHEEL)
 	{
-		if (evt->wheel.y > 0) pl->wpmgr->input_scroll_up();
-		if (evt->wheel.y < 0) pl->wpmgr->input_scroll_down();
+		if (evt->wheel.y > 0 && local_state == 2) pl->wpmgr->input_scroll_up();
+		if (evt->wheel.y < 0 && local_state == 2) pl->wpmgr->input_scroll_down();
 	}
 	if (evt->type == SDL_JOYBUTTONDOWN)
 	{
@@ -873,15 +873,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 				
 				}
 			}
-			/*if (evt->jbutton.button == 1)
-			{
-				if (local_state == 2)
-				{
-					// take
-					if (pl != NULL) pl->order_take_object();
-				
-				}
-			}*/
+			if (evt->jbutton.button == 1) hud->toggle_ingame_menu();
+			if (evt->jbutton.button == 2 && local_state == 2) pl->wpmgr->input_scroll_down();
+			if (evt->jbutton.button == 3 && local_state == 2) pl->wpmgr->input_scroll_up();
+			if (evt->jbutton.button == 9) input |= INPUT_JUMP;
 			if (evt->jbutton.button == 10)
 			{
 				if (local_state == 2 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
@@ -898,6 +893,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_JOYBUTTONUP)
 	{
+		if (evt->jbutton.button == 9) input &= ~INPUT_JUMP;
 		if (evt->jbutton.button == 11) input &= ~INPUT_FORW;
 		if (evt->jbutton.button == 12) input &= ~INPUT_BACK;
 		if (evt->jbutton.button == 13) input &= ~INPUT_LEFT;

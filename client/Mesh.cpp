@@ -144,13 +144,33 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			if (header.skinheight == 0) header.skinheight = skins[i].height;
 			if (header.skinwidth == 0) header.skinwidth = skins[i].width;
 
-			char *texture = new char[imgsize];
+			unsigned char *texture = new unsigned char[imgsize];
 			SDL_RWread(file, texture, imgsize, 1);
 
 			if (skins[i].skintype == 2) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture);
         	if (skins[i].skintype == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, texture);
-        	if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
-        	if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+        	
+        	if (skins[i].skintype == 4)
+			{
+				// from BGR to RGB
+				for (int imageIdx = 0; imageIdx < imgsize; imageIdx += 3)
+				{
+					unsigned char colorSwap = texture[imageIdx];
+					texture[imageIdx] = texture[imageIdx + 2];
+					texture[imageIdx + 2] = colorSwap;
+				}
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
+			}
+        	if (skins[i].skintype == 5)
+			{
+				for (int imageIdx = 0; imageIdx < imgsize; imageIdx += 4)
+				{
+					unsigned char colorSwap = texture[imageIdx];
+					texture[imageIdx] = texture[imageIdx + 2];
+					texture[imageIdx + 2] = colorSwap;
+				}
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+			}
         	
         	//if (skins[i].skintype == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, skins[i].width, skins[i].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture);
         	//if (skins[i].skintype == 5) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, skins[i].width, skins[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture);

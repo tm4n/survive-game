@@ -130,29 +130,39 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	int in_format;
 	int colors = surface->format->BytesPerPixel;
 	if (colors == 4) {   // alpha
-		if (surface->format->Rmask == 0x000000ff)
-			in_format = GL_RGBA;
-		else
-			in_format = GL_RGBA; //TODO: fix!
-			//in_format = GL_BGRA;
+		if (surface->format->Rmask != 0x000000ff)
+		{
+			unsigned char *d = (unsigned char*)(surface->pixels);
+			for (int imageIdx = 0; imageIdx < surface->w*surface->h*colors; imageIdx += colors)
+			{
+				unsigned char colorSwap = d[imageIdx];
+				d[imageIdx] = d[imageIdx + 2];
+				d[imageIdx + 2] = colorSwap;
+			}
 			
-		glTexImage2D(GL_TEXTURE_2D, 0, in_format, surface->w, surface->h, 0,
-						in_format, GL_UNSIGNED_BYTE, surface->pixels);
+			
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0,
+						GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 						
 	}
 	if (colors == 3) {           // no alpha
-		if (surface->format->Rmask == 0x000000ff)
-			in_format = GL_RGB;
-		else
-			in_format = GL_RGB; //TODO: fix!
-			//in_format = GL_BGR;
+		if (surface->format->Rmask != 0x000000ff)
+		{
+			unsigned char *d = (unsigned char*)(surface->pixels);
+			for (int imageIdx = 0; imageIdx < surface->w*surface->h*colors; imageIdx += colors)
+			{
+				unsigned char colorSwap = d[imageIdx];
+				d[imageIdx] = d[imageIdx + 2];
+				d[imageIdx + 2] = colorSwap;
+			}
 			
 			
-		glTexImage2D(GL_TEXTURE_2D, 0, in_format, surface->w, surface->h, 0,
-						in_format, GL_UNSIGNED_BYTE, surface->pixels);
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, surface->w, surface->h, 0,
+						GL_RGB, GL_UNSIGNED_BYTE, surface->pixels);
 	}
 	if (colors == 1)
 	{
