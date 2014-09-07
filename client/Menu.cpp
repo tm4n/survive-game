@@ -26,14 +26,14 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	gui->setButtonSwitchUp(button_ids[2], button_ids[1]);
 	gui->setButtonSwitchDown(button_ids[3], button_ids[4]);
 	gui->setButtonSwitchUp(button_ids[3], button_ids[2]);
-	gui->setButtonSwitchUp(button_ids[4], button_ids[3]);
-
-	gui->setButtonDefault(button_ids[0]);
+	gui->setButtonSwitchUp(button_ids[4], button_ids[3]); 
 
 	// Add version text
 	SDL_Color c = {255, 255, 255};
 	Texture *tex_version = new Texture(DEF_NAME_STR, resources->getFont(ResourceLoader::fontType::fnt_small), c);
 	gui->addText(tex_version, 3, GUIObject::Alignment::downleft, 40.f, -25.f);
+	
+	show();
 }
 
 

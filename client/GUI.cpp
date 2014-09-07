@@ -180,15 +180,15 @@ void GUI::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_JOYAXISMOTION)
 	{
-		if (evt->caxis.axis == 0 || evt->caxis.axis == 2)
-		{
-			if (evt->caxis.value > 10000) InputSwitchUp();
-			if (evt->caxis.value < -10000) InputSwitchDown();
-		}
 		if (evt->caxis.axis == 1 || evt->caxis.axis == 3)
 		{
-			if (evt->caxis.value > 10000) InputSwitchLeft();
-			if (evt->caxis.value < -10000) InputSwitchRight();
+			if (evt->caxis.value > 10000) InputSwitchDown();
+			if (evt->caxis.value < -10000) InputSwitchUp();
+		}
+		if (evt->caxis.axis == 0 || evt->caxis.axis == 2)
+		{
+			if (evt->caxis.value > 10000) InputSwitchRight();
+			if (evt->caxis.value < -10000) InputSwitchLeft();
 		}
 	}
 }
@@ -262,7 +262,7 @@ void GUI::draw()
 	bool moved = last_raw_x != raw_x || last_raw_y != raw_y;
 	last_raw_x = raw_x; last_raw_y = raw_y;
 
-	if (moved) selected_button = -1; // recheck selected button, but only if mouse moved
+	if (moved) selected_button = -1; // recheck selected button, but only if mouse moved	
 
 	for (uint i = 0; i < elements.size; i++)
 	{
@@ -509,6 +509,7 @@ void GUI::updateTexture(int id, Texture *newtex, int texnum)
 void GUI::setButtonDefault(int id)
 {
 	default_button = id;
+	selected_button = id;
 }
 
 void GUI::setButtonSwitchDown(int id_from, int id_to)

@@ -118,7 +118,6 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	gui->setButtonSwitchDown(ingame_but_options, ingame_but_close);
 	gui->setButtonSwitchUp(ingame_but_options, ingame_but_disconnect);
 	gui->setButtonSwitchUp(ingame_but_close, ingame_but_options);
-	gui->setButtonDefault(ingame_but_close);
 
 
 	// hide everything default

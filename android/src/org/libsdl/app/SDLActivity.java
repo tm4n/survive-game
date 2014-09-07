@@ -1061,7 +1061,7 @@ class SDLJoystickHandler_API12 extends SDLJoystickHandler {
             }
         }
         return true;
-    }            
+    }             
 }
 
 class SDLGenericMotionListener_API12 implements View.OnGenericMotionListener {

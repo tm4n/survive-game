@@ -83,8 +83,17 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	
 	// open file
 	//__android_log_print(ANDROID_LOG_VERBOSE, "libsdl", "opening file: %s", mesh_file);
-	SDL_RWops *file = SDL_RWFromFile(mesh_file, "rb");
-	if (file == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening file: " << mesh_file << std::endl;  return;}
+	SDL_RWops *file_full = SDL_RWFromFile(mesh_file, "rb");
+	if (file_full == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening file: " << mesh_file << std::endl;  return;}
+	
+	int size = file_full->size(file_full);
+	uint8_t *buf = new uint8_t[size];
+	SDL_RWread(file_full, buf, size, 1);
+	SDL_RWclose(file_full);
+	
+	// buffer everything
+	SDL_RWops *file = SDL_RWFromConstMem(buf, size);
+
 
 	// read header
 	SDL_RWread(file, &header, sizeof(mdl_header), 1);
@@ -297,6 +306,8 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	delete[] vertexBuffer;
 	delete[] vertexPosBuffer;
+	
+	delete[] buf;
 
 	loaded = true;
 

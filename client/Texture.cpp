@@ -63,22 +63,30 @@ Texture::Texture(const char* filename)
 
 	if( (imagedescriptor & 0x0020) == 0 )
 	{
-		log(LOG_DEBUG, "tga from back to front");
+		uint8_t *buf = new uint8_t[imageSize];
+		uint32_t prog = 0;
+		SDL_RWread(file, buf, sizeof(uint8_t), imageSize);
+		
 		// read image data from back to front
 		int index = (tgaFile->imageHeight-1) * tgaFile->imageWidth;
         for (int y = (tgaFile->imageHeight-1); y >= 0; y--)
 		{
 			for (int x = 0; x < tgaFile->imageWidth; x++)
 			{
-				SDL_RWread(file, &(tgaFile->imageData[colorMode*(index + x)]), colorMode, 1);
+				tgaFile->imageData[colorMode*(index + x)] = buf[prog];
+				tgaFile->imageData[colorMode*(index + x)+1] = buf[prog+1];
+				tgaFile->imageData[colorMode*(index + x)+2] = buf[prog+2];
+				if (colorMode >= 4) tgaFile->imageData[colorMode*(index + x)+3] = buf[prog+3];
+				prog += colorMode;
+				//SDL_RWread(file, &(tgaFile->imageData[colorMode*(index + x)]), colorMode, 1); too slow on android
 			}
 			index -= tgaFile->imageWidth;
         }
+        delete[] buf;
 	}
 	else
 	{
 		// Read the image data normally
-		log(LOG_DEBUG, "tga normal");
 		SDL_RWread(file, tgaFile->imageData, sizeof(uint8_t), imageSize);
 	}
 

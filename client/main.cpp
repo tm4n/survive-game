@@ -109,7 +109,12 @@ int main(int argc, char **argv)
 
 		if (joystick == NULL)
 		{
-			joystick = SDL_JoystickOpen(0);
+			for (int i = 0; i < SDL_NumJoysticks(); i++)
+			{
+				SDL_Joystick *tmp_joystick = SDL_JoystickOpen(i);
+				if (tmp_joystick && SDL_JoystickNumButtons(tmp_joystick) > 8) {joystick = tmp_joystick; i = 10000;}
+					else SDL_JoystickClose(tmp_joystick);
+			}
 		}
 		
 		//Uint32 t = SDL_GetTicks();
