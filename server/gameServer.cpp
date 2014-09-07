@@ -250,7 +250,6 @@ void gameServer::run()
 
         //////////////////////////////////////////////////
         // Then CALLBACK to entity actions
-
         for (uint i = 0; i < lvl->actorlist.size; i++)
         {
             if (lvl->actorlist.elem[i] != 0) lvl->actorlist.elem[i]->frame(time_delta);
@@ -280,6 +279,7 @@ void gameServer::run()
         }
 
         time_delta = ((double)frametime.get_ticks()) / (1000./16.);
+		
     }
 
     // destroy enet_server
@@ -392,7 +392,7 @@ void gameServer::handle_netevent(ENetEvent *event)
             {
 
                 // extract packet data
-                int net_type = *((short*) event->packet->data);
+                uint32_t net_type = *((uint32_t*) event->packet->data);
                 char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
                 
                 /*std::ostringstream ss;

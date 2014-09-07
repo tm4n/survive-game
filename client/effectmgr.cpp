@@ -115,6 +115,7 @@ void effectmgr::eff_wallhit(const vec *position, const vec *normal)
 
 void effectmgr::frame(double frame_delta)
 {
+
 	// bullets
 	std::list<bullet_entry*>::iterator i = bullets.begin();
 	while (i != bullets.end())

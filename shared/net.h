@@ -58,8 +58,8 @@
 // syncronization data
 
 // align at 4
-//#pragma pack(push)
-//#pragma pack(4)
+#pragma pack(push)
+#pragma pack(4)
 
 struct s_net_version
 {
@@ -217,7 +217,7 @@ struct s_net_update_score
     uint32_t score;
 };
 
-//#pragma pack(pop)
+#pragma pack(pop)
 
 extern bool enet_initialized;
 

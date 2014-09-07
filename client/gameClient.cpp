@@ -78,7 +78,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 			{
 
 				// extract packet data
-				int net_type = *((short*) event->packet->data);
+				uint32_t net_type = *((uint32_t*) event->packet->data);
 				char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
 				
 				/*std::ostringstream ss;

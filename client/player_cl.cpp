@@ -105,22 +105,22 @@ void player_cl::frame(double time_delta)
 		wpmgr->input_reload();
 	}
 	
-	// send regularly
-	send_angle_timer += (float)time_delta;
-	if (send_angle_timer >= CL_SEND_ANGLE_RATE) 
-	{
-		send_angle_timer -= CL_SEND_ANGLE_RATE;
-		//if (old_pan != player.skill[SK_TR_PAN] || player.skill[SK_TR_PAN_DIR] != 0) 
-		//{  Problem with pan_dir causing the server to have a different pan
-		net_client->send_update_ang(id, angle.x, 0.f, net_client->serverpeer);
-		//}
-	}
-	
 	movement((float)time_delta);
 
-	// only for local player: send my position to the server:
+	// only for local player: send my position +angle to the server:
 	if (local_player == true)
 	{
+		// send regularly
+		send_angle_timer += (float)time_delta;
+		if (send_angle_timer >= CL_SEND_ANGLE_RATE) 
+		{
+			send_angle_timer -= CL_SEND_ANGLE_RATE;
+			//if (old_pan != player.skill[SK_TR_PAN] || player.skill[SK_TR_PAN_DIR] != 0) 
+			//{  Problem with pan_dir causing the server to have a different pan
+			net_client->send_update_ang(id, angle.x, 0.f, net_client->serverpeer);
+			//}
+		}
+
 		send_pos_timer += (float)time_delta;
 			
 		if (send_pos_timer >= SV_SEND_PLAYER_RATE/2.f)

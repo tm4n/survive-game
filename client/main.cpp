@@ -10,6 +10,9 @@
 #include "net.h"
 #include "Timer.h"
 #include <thread>
+#include "helper.h"
+
+const int FRAMES_PER_SECOND = 60;
 
 bool quit = false;
 bool play = false;
@@ -90,6 +93,7 @@ int main(int argc, char **argv)
 	// Timer used to calculate time_delta (frame time)
     Timer frametime;
 	double time_delta = 0.;
+	Timer fps;
 	
 	// Initialize Joystick
 	SDL_Joystick *joystick = NULL;
@@ -100,6 +104,8 @@ int main(int argc, char **argv)
 	while (!quit)
 	{
 		frametime.start();
+		//Start the frame limit timer
+        fps.start();
 
 		if (joystick == NULL)
 		{
@@ -158,10 +164,6 @@ int main(int argc, char **argv)
 
 		renderer->drawFrame(time_delta);
 
-		//if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
-		fct++;
-
-		time_delta = ((double)frametime.get_ticks()) / (1000./16.);
 
 		// check if client has quit
 		if (cl) 
@@ -198,6 +200,18 @@ int main(int argc, char **argv)
 				cl->connect(&l2, &m2, &l1, &m1);
 			}
 		}
+
+		// cap the frame rate
+        if (fps.get_ticks() < 1000 / FRAMES_PER_SECOND)
+        {
+            //Sleep the remaining frame time
+            SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - fps.get_ticks() );
+        }
+
+		//if (fct % 100 == 0) printf("FPS: %f\n", 1000.f / (SDL_GetTicks() - t));
+		fct++;
+
+		time_delta = ((double)frametime.get_ticks()) / (1000./16.);
 	}
 
 	if (sv != NULL)
