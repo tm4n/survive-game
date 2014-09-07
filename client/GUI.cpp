@@ -52,6 +52,8 @@ const char *GUI::mFragmentShaderCode =
 
 GUI::GUI()
 {
+	selected_button = -1;
+	default_button = -1;
 	// ready up draw shaders
 	// initialize shaders
     int vertexShader = loadShader(GL_VERTEX_SHADER, mVertexShaderCode);
@@ -149,39 +151,97 @@ void GUI::event_mouse(SDL_Event *evt)
 {
 	if (evt->type == SDL_MOUSEBUTTONDOWN)
 	{
-		for (uint i = 0; i < elements.size; i++)
+		InputEnter();
+	}
+
+	if (evt->type == SDL_JOYBUTTONDOWN)
+	{
+		if (evt->jbutton.button == 0)
 		{
-			GUIObject *obj = elements.at(i);
-			if (obj != NULL)
-			{
-				if (obj->type == GUIObject::Types::button && obj->visible == true)
-				{
-					// TODO: more scale types
-					if (obj->alignment == GUIObject::Alignment::scaled)
-					{
-						// check if mouse is in object area
-						if (evt->button.x > obj->x*screensize_x && evt->button.x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-							evt->button.y > obj->y*screensize_y && evt->button.y < obj->y*screensize_y+obj->size_y*obj->scale_y)
-						{
-							if (obj->callback != NULL) obj->callback->callback(i);
-								else puts("No callback registered for clicked button");
-						}
-					}
-					if (obj->alignment == GUIObject::Alignment::center)
-					{
-						// check if mouse is in object area TODO: all kinds of scalings!
-						if (evt->button.x > (screensize_x/2)+obj->x && evt->button.x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
-							evt->button.y > (screensize_y/2)+obj->y && evt->button.y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
-						{
-							if (obj->callback != NULL) obj->callback->callback(i);
-								else puts("No callback registered for clicked button");
-						}
-					}
-				}
-			}
+			InputEnter();
+		}
+
+		if (evt->jbutton.button == 11) InputSwitchUp();
+		if (evt->jbutton.button == 12) InputSwitchDown();
+		if (evt->jbutton.button == 13) InputSwitchLeft();
+		if (evt->jbutton.button == 14) InputSwitchRight();
+	}
+	if (evt->type == SDL_KEYDOWN)
+	{
+		if (evt->key.keysym.sym == SDLK_RETURN || evt->key.keysym.sym == SDLK_SPACE)
+		{
+			InputEnter();
+		}
+
+		if (evt->key.keysym.sym == SDLK_UP) InputSwitchUp();
+		if (evt->key.keysym.sym == SDLK_DOWN) InputSwitchDown();
+		if (evt->key.keysym.sym == SDLK_LEFT) InputSwitchLeft();
+		if (evt->key.keysym.sym == SDLK_RIGHT) InputSwitchRight();
+	}
+	if (evt->type == SDL_JOYAXISMOTION)
+	{
+		if (evt->caxis.axis == 0 || evt->caxis.axis == 2)
+		{
+			if (evt->caxis.value > 10000) InputSwitchUp();
+			if (evt->caxis.value < -10000) InputSwitchDown();
+		}
+		if (evt->caxis.axis == 1 || evt->caxis.axis == 3)
+		{
+			if (evt->caxis.value > 10000) InputSwitchLeft();
+			if (evt->caxis.value < -10000) InputSwitchRight();
 		}
 	}
 }
+
+void GUI::InputEnter()
+{
+	if (selected_button >= 0)
+	{
+		GUIObject *obj = elements.at(selected_button);
+		if (obj)
+		{
+			if (obj->callback != NULL) obj->callback->callback(selected_button);
+				else puts("No callback registered for clicked button");
+		}
+	}
+}
+void GUI::InputSwitchUp()
+{
+	if (selected_button >= 0)
+	{
+		GUIObject *obj = elements.at(selected_button);
+		if (obj && obj->switch_up_id >= 0) selected_button = obj->switch_up_id;
+	}
+	else {selected_button = default_button;}
+}
+void GUI::InputSwitchDown()
+{
+	if (selected_button >= 0)
+	{
+		GUIObject *obj = elements.at(selected_button);
+		if (obj && obj->switch_down_id >= 0) selected_button = obj->switch_down_id;
+	}
+	else {selected_button = default_button;}
+}
+void GUI::InputSwitchLeft()
+{
+	if (selected_button >= 0)
+	{
+		GUIObject *obj = elements.at(selected_button);
+		if (obj && obj->switch_left_id >= 0) selected_button = obj->switch_left_id;
+	}
+	else {selected_button = default_button;}
+}
+void GUI::InputSwitchRight()
+{
+	if (selected_button >= 0)
+	{
+		GUIObject *obj = elements.at(selected_button);
+		if (obj && obj->switch_right_id >= 0) selected_button = obj->switch_right_id;
+	}
+	else {selected_button = default_button;}
+}
+
 
 float GUI::to_glscreen_x(float pos_x)
 {
@@ -193,11 +253,16 @@ float GUI::to_glscreen_y(float pos_y)
 	return (((pos_y/screensize_y)*2.f)-1.f);
 }
 
+int last_raw_x, last_raw_y;
 void GUI::draw()
 {
 	// animate buttons
 	int raw_x, raw_y;
 	SDL_GetMouseState(&raw_x, &raw_y);
+	bool moved = last_raw_x != raw_x || last_raw_y != raw_y;
+	last_raw_x = raw_x; last_raw_y = raw_y;
+
+	if (moved) selected_button = -1; // recheck selected button, but only if mouse moved
 
 	for (uint i = 0; i < elements.size; i++)
 	{
@@ -206,21 +271,26 @@ void GUI::draw()
 		{
 			if (obj->type == GUIObject::Types::button && obj->visible == true)
 			{
-				// TODO: more scale types
-				if (obj->alignment == GUIObject::Alignment::scaled)
+				if (moved) // only use mouse input when mouse moved
 				{
-					// check if mouse is in object area TODO: all kinds of scalings!
-					if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
-						raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
-					obj->current_tex = 1; else obj->current_tex = 0;
+					// TODO: more scale types
+					if (obj->alignment == GUIObject::Alignment::scaled)
+					{
+						// check if mouse is in object area TODO: all kinds of scalings!
+						if (raw_x > obj->x*screensize_x && raw_x < obj->x*screensize_x+obj->size_x*obj->scale_x &&
+							raw_y > obj->y*screensize_y && raw_y < obj->y*screensize_y+obj->size_y*obj->scale_y)
+								selected_button = i;
+					}
+					if (obj->alignment == GUIObject::Alignment::center)
+					{
+						// check if mouse is in object area TODO: all kinds of scalings!
+						if (raw_x > (screensize_x/2)+obj->x && raw_x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
+							raw_y > (screensize_y/2)+obj->y && raw_y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
+								selected_button = i;
+					}
 				}
-				if (obj->alignment == GUIObject::Alignment::center)
-				{
-					// check if mouse is in object area TODO: all kinds of scalings!
-					if (raw_x > (screensize_x/2)+obj->x && raw_x < (screensize_x/2)+obj->x+obj->size_x*obj->scale_x &&
-						raw_y > (screensize_y/2)+obj->y && raw_y < (screensize_y/2)+obj->y+obj->size_y*obj->scale_y)
-					obj->current_tex = 1; else obj->current_tex = 0;
-				}
+
+				if (i == selected_button) obj->current_tex = 1; else obj->current_tex = 0;
 			}
 		}
 	}
@@ -434,6 +504,28 @@ void GUI::updateTexture(int id, Texture *newtex, int texnum)
 	// update size
 	elements.at(id)->size_x = newtex->size_x;
 	elements.at(id)->size_y = newtex->size_y;
+}
+
+void GUI::setButtonDefault(int id)
+{
+	default_button = id;
+}
+
+void GUI::setButtonSwitchDown(int id_from, int id_to)
+{
+	elements.at(id_from)->switch_down_id = id_to;
+}
+void GUI::setButtonSwitchUp(int id_from, int id_to)
+{
+	elements.at(id_from)->switch_up_id = id_to;
+}
+void GUI::setButtonSwitchLeft(int id_from, int id_to)
+{
+	elements.at(id_from)->switch_left_id = id_to;
+}
+void GUI::setButtonSwitchRight(int id_from, int id_to)
+{
+	elements.at(id_from)->switch_right_id = id_to;
 }
 
 

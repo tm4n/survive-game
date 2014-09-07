@@ -38,6 +38,8 @@ public:
 
 	int current_tex;
 
+	int switch_up_id, switch_down_id, switch_left_id, switch_right_id;
+
 	bool visible;
 	bool centered;
 

@@ -114,6 +114,12 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	callbacks.push_back(cc);
 	textures.push_back(tex); textures.push_back(tex_sel);
 
+	gui->setButtonSwitchDown(ingame_but_disconnect, ingame_but_options);
+	gui->setButtonSwitchDown(ingame_but_options, ingame_but_close);
+	gui->setButtonSwitchUp(ingame_but_options, ingame_but_disconnect);
+	gui->setButtonSwitchUp(ingame_but_close, ingame_but_options);
+	gui->setButtonDefault(ingame_but_close);
+
 
 	// hide everything default
 	hide_scoreboard();
@@ -419,6 +425,8 @@ void gui_hud::show_ingame_menu()
 
 	// untrap mouse
 	SDL_SetRelativeMouseMode(SDL_FALSE);
+
+	gui->setButtonDefault(ingame_but_close);
 }
 
 void gui_hud::hide_ingame_menu()
@@ -431,4 +439,6 @@ void gui_hud::hide_ingame_menu()
 
 	// trap mouse
 	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	gui->setButtonDefault(-1);
 }

@@ -731,96 +731,46 @@ void gameClient::event_mouse(SDL_Event *evt)
 	if (input_enable == false) return;
 
 	player_cl *pl = get_own_player();
+
+	// special case: pipe to ingame menu
+	if (hud != NULL && hud->ingame_menu_visible)
+	{
+		if (evt->type == SDL_KEYDOWN && evt->key.keysym.sym == SDLK_ESCAPE) hud->toggle_ingame_menu();
+		if (evt->type == SDL_JOYBUTTONDOWN && evt->jbutton.button == 1) hud->toggle_ingame_menu();
+		renderer->gui->event_mouse(evt);
+		return;
+	}
 	
 	if (evt->type == SDL_MOUSEMOTION)
 	{
-		if (hud != NULL && !hud->ingame_menu_visible)
-		{
-			renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
-			renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
+		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
 
-			renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
-		}
+		renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
 	}
 	if (evt->type == SDL_JOYAXISMOTION)
 	{
-		//log(LOG_DEBUG, "AXIS EVENT!");
-		if (hud != NULL && !hud->ingame_menu_visible)
+		if (evt->jaxis.axis == 0)
 		{
-			if (evt->jaxis.axis == 0)
-			{
-				if (evt->jaxis.value > 10000) input |= INPUT_RIGHT; else input &= ~INPUT_RIGHT;
-				if (evt->jaxis.value < -10000) input |= INPUT_LEFT; else input &= ~INPUT_LEFT;
-			}
-			if (evt->jaxis.axis == 1)
-			{
-				if (evt->jaxis.value > 10000) input |= INPUT_BACK; else input &= ~INPUT_BACK;
-				if (evt->jaxis.value < -10000) input |= INPUT_FORW; else input &= ~INPUT_FORW;
-			}
-			if (evt->jaxis.axis == 2)
-			{
-				renderer->CameraJoyInputX = evt->jaxis.value;
-			}
-			if (evt->jaxis.axis == 3)
-			{
-				renderer->CameraJoyInputY = evt->jaxis.value;
-			}
-			if (evt->jaxis.axis == 5) // shoot
-			{
-				if (evt->jaxis.value > 3200)
-				{
-					if (local_state == 1)
-					{
-						// send request to join
-						net_client->send_request_join(net_client->serverpeer);
-					}
-					if (local_state == 2)
-					{
-						// shoot
-						pl->input_shoot = true;
-					}
-				}
-				else
-				{
-					if (local_state == 2)
-					{
-						// shoot
-						pl->input_shoot = false;
-					}
-				}
-			}
-			if (evt->jaxis.axis == 4) // sprint
-			{
-				if (evt->jaxis.value > 3200)
-				{
-					input |= INPUT_SPRINT;
-					if (local_state == 2)
-					{
-						// cancel reload
-						pl->wpmgr->cancel_reload();
-						pl->wpmgr->hide_wp();
-					}
-				}
-				else
-				{
-					input &= ~INPUT_SPRINT;
-					if (local_state == 2 && pl->object_taken == -1) pl->wpmgr->show_wp();
-				}
-			}
-
-			renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
+			if (evt->jaxis.value > 10000) input |= INPUT_RIGHT; else input &= ~INPUT_RIGHT;
+			if (evt->jaxis.value < -10000) input |= INPUT_LEFT; else input &= ~INPUT_LEFT;
 		}
-	}
-	
-	if (evt->type == SDL_MOUSEBUTTONDOWN || evt->type == SDL_JOYBUTTONDOWN)
-	{
-		if (hud != NULL && hud->ingame_menu_visible)
+		if (evt->jaxis.axis == 1)
 		{
-			renderer->gui->event_mouse(evt);
+			if (evt->jaxis.value > 10000) input |= INPUT_BACK; else input &= ~INPUT_BACK;
+			if (evt->jaxis.value < -10000) input |= INPUT_FORW; else input &= ~INPUT_FORW;
 		}
-		else
+		if (evt->jaxis.axis == 2)
 		{
-			if (evt->button.button == SDL_BUTTON_LEFT)
+			renderer->CameraJoyInputX = evt->jaxis.value;
+		}
+		if (evt->jaxis.axis == 3)
+		{
+			renderer->CameraJoyInputY = evt->jaxis.value;
+		}
+		if (evt->jaxis.axis == 5) // shoot
+		{
+			if (evt->jaxis.value > 3200)
 			{
 				if (local_state == 1)
 				{
@@ -833,14 +783,59 @@ void gameClient::event_mouse(SDL_Event *evt)
 					pl->input_shoot = true;
 				}
 			}
-			if (evt->button.button == SDL_BUTTON_RIGHT)
+			else
 			{
 				if (local_state == 2)
 				{
-					// take
-					if (pl != NULL) pl->order_take_object();
-				
+					// shoot
+					pl->input_shoot = false;
 				}
+			}
+		}
+		if (evt->jaxis.axis == 4) // sprint
+		{
+			if (evt->jaxis.value > 3200)
+			{
+				input |= INPUT_SPRINT;
+				if (local_state == 2)
+				{
+					// cancel reload
+					pl->wpmgr->cancel_reload();
+					pl->wpmgr->hide_wp();
+				}
+			}
+			else
+			{
+				input &= ~INPUT_SPRINT;
+				if (local_state == 2 && pl->object_taken == -1) pl->wpmgr->show_wp();
+			}
+		}
+
+		renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
+	}
+	
+	if (evt->type == SDL_MOUSEBUTTONDOWN)
+	{
+		if (evt->button.button == SDL_BUTTON_LEFT)
+		{
+			if (local_state == 1)
+			{
+				// send request to join
+				net_client->send_request_join(net_client->serverpeer);
+			}
+			if (local_state == 2)
+			{
+				// shoot
+				pl->input_shoot = true;
+			}
+		}
+		if (evt->button.button == SDL_BUTTON_RIGHT)
+		{
+			if (local_state == 2)
+			{
+				// take
+				if (pl != NULL) pl->order_take_object();
+				
 			}
 		}
 	}
@@ -858,38 +853,31 @@ void gameClient::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_JOYBUTTONDOWN)
 	{
-		if (hud != NULL && hud->ingame_menu_visible)
+		if (evt->jbutton.button == 0)
 		{
-			renderer->gui->event_mouse(evt);
-		}
-		else
-		{
-			if (evt->jbutton.button == 0)
+			if (local_state == 2)
 			{
-				if (local_state == 2)
-				{
-					// take
-					if (pl != NULL) pl->order_take_object();
+				// take
+				if (pl != NULL) pl->order_take_object();
 				
-				}
 			}
-			if (evt->jbutton.button == 1) hud->toggle_ingame_menu();
-			if (evt->jbutton.button == 2 && local_state == 2) pl->wpmgr->input_scroll_down();
-			if (evt->jbutton.button == 3 && local_state == 2) pl->wpmgr->input_scroll_up();
-			if (evt->jbutton.button == 9) input |= INPUT_JUMP;
-			if (evt->jbutton.button == 10)
-			{
-				if (local_state == 2 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
-			}
-			
-			if (evt->jbutton.button == 11) input |= INPUT_FORW;
-			if (evt->jbutton.button == 12) input |= INPUT_BACK;
-			if (evt->jbutton.button == 13) input |= INPUT_LEFT;
-			if (evt->jbutton.button == 14) input |= INPUT_RIGHT;
-			std::ostringstream ss;
-			ss << "button " << (int)evt->jbutton.button << " pressed";
-			log(LOG_DEBUG, ss.str().c_str());
 		}
+		if (evt->jbutton.button == 1) hud->toggle_ingame_menu();
+		if (evt->jbutton.button == 2 && local_state == 2) pl->wpmgr->input_scroll_down();
+		if (evt->jbutton.button == 3 && local_state == 2) pl->wpmgr->input_scroll_up();
+		if (evt->jbutton.button == 9) input |= INPUT_JUMP;
+		if (evt->jbutton.button == 10)
+		{
+			if (local_state == 2 && !(input & INPUT_SPRINT) && pl->object_taken == -1) pl->wpmgr->input_reload();
+		}
+			
+		if (evt->jbutton.button == 11) input |= INPUT_FORW;
+		if (evt->jbutton.button == 12) input |= INPUT_BACK;
+		if (evt->jbutton.button == 13) input |= INPUT_LEFT;
+		if (evt->jbutton.button == 14) input |= INPUT_RIGHT;
+		std::ostringstream ss;
+		ss << "button " << (int)evt->jbutton.button << " pressed";
+		log(LOG_DEBUG, ss.str().c_str());
 	}
 	if (evt->type == SDL_JOYBUTTONUP)
 	{

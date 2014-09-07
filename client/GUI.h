@@ -45,12 +45,21 @@ public:
 	void setScaleY(int id, float scale_y);
 	void setAlpha(int id, float alpha);
 
+	void setButtonSwitchDown(int id_from, int id_to);
+	void setButtonSwitchUp(int id_from, int id_to);
+	void setButtonSwitchLeft(int id_from, int id_to);
+	void setButtonSwitchRight(int id_from, int id_to);
+	void setButtonDefault(int id);
+
 	float getAlpha(int id);
 
 	void draw();
 	void event_mouse(SDL_Event *evt);
 
 	int screensize_x, screensize_y;
+
+	int selected_button;
+	int default_button;
 
 private:
 	float to_glscreen_x(float pos_x);
@@ -69,6 +78,12 @@ private:
 	static const char *mFragmentShaderCode;
 
 	int loadShader(int type, const char *shaderCode);
+
+	void InputEnter();
+	void InputSwitchUp();
+	void InputSwitchDown();
+	void InputSwitchLeft();
+	void InputSwitchRight();
 
 	static float squareCoords[18];
 	
