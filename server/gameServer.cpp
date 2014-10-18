@@ -771,7 +771,7 @@ void gameServer::start_match()
 	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
 	
 	// create starting crates
-	/*v.set(180, 180, lvl->border_ground);
+	v.set(180, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(130, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
@@ -802,7 +802,7 @@ void gameServer::start_match()
 	v.set(400, 0, lvl->level_ground);
 	new npc_sv(lvl_sv, NPC_MUMMY, &v, &t, &sv_num_npcs);
 
-	v.set(400, 300, 0.f);
+	/*v.set(400, 300, 0.f);
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
 
 	v.set(400, 300, lvl->border_ground);

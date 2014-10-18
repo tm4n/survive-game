@@ -376,7 +376,8 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 				actor *ac = lvl->actorlist.at(actor_hit);
 				if (ac->faction == 2) // hit a zombie
 				{
-					// TODO: blood
+					log (LOG_DEBUG, "hitting blood");
+					effmgr->eff_blood(&hitpos, &shoot_origin, &shoot_dir);
 				}
 				else
 				{

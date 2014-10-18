@@ -78,8 +78,7 @@ void effectmgr::eff_pl_flash(int color)
 void wallhit_cb(particle_data *pdata, float time_delta)
 {
 	pdata->alpha -= 0.08f*time_delta;
-	if (pdata->alpha <= 0.f)
-	{ pdata->lifespan = 0.f; }
+	if (pdata->alpha <= 0.f) pdata->lifespan = 0.f;
 }
 
 void wallhit_init(particle_data *pdata)
@@ -110,6 +109,75 @@ void effectmgr::eff_wallhit(const vec *position, const vec *normal)
 	renderer->partmgr->emit(10, ResourceLoader::texType::pSpark, &wallhit_cb, &wallhit_init, position, normal);
 }
 
+
+// blood particle effect
+void blood_cb(particle_data *pdata, float time_delta)
+{
+	pdata->alpha -= 0.03f*time_delta;
+	if (pdata->alpha <= 0.f) pdata->lifespan = 0.f;
+}
+
+void blood_init(particle_data *pdata)
+{
+	pdata->vel.x *= random_range(5.f) - 6.f;
+	pdata->vel.y *= random_range(5.f) - 6.f;
+	pdata->vel.z *= random_range(1.f) - 2.f;
+
+	pdata->gravity = 0.6f;
+
+	pdata->lifespan = 9999.f;
+
+	//p.green = 0; p.blue = 0; p.red = 140;
+
+	pdata->size = 1.f;
+	pdata->alpha = 0.75f + random_range(0.25f);
+	//set (p, TRANSLUCENT | MOVE | STREAK);
+}
+
+void blood2_cb(particle_data *pdata, float time_delta)
+{
+	pdata->alpha -= 0.05f*time_delta;
+	if (pdata->alpha <= 0.f) pdata->lifespan = 0.f;
+}
+
+void blood2_init(particle_data *pdata)
+{
+	pdata->vel.x = random_range(2.f) - 1.f;
+	pdata->vel.y = random_range(2.f) - 1.f;
+	pdata->vel.z = random_range(2.f) - 1.f;
+
+	pdata->gravity = 0.f;
+
+	pdata->lifespan = 9999.f;
+
+	//p.green = 0; p.blue = 0; p.red = 141;
+
+	pdata->size = 16.f;
+	pdata->alpha = 0.5f;
+	//set (p, TRANSLUCENT | MOVE);
+}
+
+void effectmgr::eff_blood(const vec *position, const vec *mypos, const vec *youpos)
+{
+	vec dir;
+
+	vec null(0, 0, 0);
+	renderer->partmgr->emit(15, ResourceLoader::texType::pBlood2, &blood2_cb, &blood2_init, position, &null);
+
+	/*vec_set(atemp,you.x); 
+	vec_sub(atemp,my.x);
+	vec_to_angle(dir,atemp); // now MY looks at YOU
+	dir[0] += random (30) -15;
+	dir[1] = 0;
+	vec_for_angle(atemp,dir);
+	
+
+	vec_inverse(atemp);
+	effect_local (eff_blood_act, 4, target, atemp);*/
+
+	null.x = 1.0f;
+	renderer->partmgr->emit(4, ResourceLoader::texType::pBlood1, &blood_cb, &blood_init, position, &null);
+}
 
 
 

@@ -86,7 +86,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	SDL_RWops *file_full = SDL_RWFromFile(mesh_file, "rb");
 	if (file_full == NULL) {std::cout << "ERROR on SDL_RWFromFile while opening file: " << mesh_file << std::endl;  return;}
 	
-	int size = file_full->size(file_full);
+	int size = (int)file_full->size(file_full);
 	uint8_t *buf = new uint8_t[size];
 	SDL_RWread(file_full, buf, size, 1);
 	SDL_RWclose(file_full);

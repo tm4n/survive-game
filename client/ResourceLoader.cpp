@@ -33,7 +33,7 @@ void ResourceLoader::loadIngame()
 	if (meshes[(int)meshType::Generator]->loaded == false) {std::cout << "ERROR loading model for Generator" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator]->initShader();
 
-	/*meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
+	meshes[(int)meshType::Generator_glass] = new Mesh("assets/models/genera_glass.mdl", NULL);
 	if (meshes[(int)meshType::Generator_glass]->loaded == false) {std::cout << "ERROR loading model for Generator_glass" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator_glass]->initShader();
 
@@ -66,7 +66,7 @@ void ResourceLoader::loadIngame()
 	m = new Mesh("assets/models/powerup_hp.mdl", NULL);
 	meshes[(int)meshType::Powerup_health] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
-	m->initShader(); */
+	m->initShader();
 	
 
 
@@ -94,7 +94,7 @@ void ResourceLoader::loadIngame()
 	m->initShader();
 
 	// npcs
-	/*m = new Mesh("assets/models/mummy.mdl", NULL);
+	m = new Mesh("assets/models/mummy.mdl", NULL);
 	meshes[(int)meshType::Mummy] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -133,7 +133,7 @@ void ResourceLoader::loadIngame()
 	meshes[(int)meshType::Harpy] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
-	*/
+	
 
 	// weapons
 	m = new Mesh("assets/models/bullet.mdl", NULL);
@@ -151,7 +151,7 @@ void ResourceLoader::loadIngame()
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	/*m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
+	m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
 	meshes[(int)meshType::Chainsaw] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -199,7 +199,7 @@ void ResourceLoader::loadIngame()
 	m = new MeshGUI("assets/models/weapons/usas12_hand.mdl", NULL);
 	meshes[(int)meshType::USAS12_hand] = m;
 	if (m == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
-	m->initShader(); */
+	m->initShader();
 	
 	m = new MeshBlend("assets/models/weapons/muzzle.mdl", NULL);
 	meshes[(int)meshType::Muzzleflash] = m;

@@ -21,6 +21,7 @@ public:
 	void eff_pl_flash(int color);
 
 	void eff_wallhit(const vec *position, const vec *normal);
+	void eff_blood(const vec *position, const vec *mypos, const vec *youpos);
 
 	void frame(double frame_delta);
 
