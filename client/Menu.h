@@ -26,7 +26,7 @@ public:
 
 private:
 
-	int bg_id;
+	int bg_id, black_bg_id;
 
 	int button_ids[SELECTION_MAX];
 	int button_sel_ids[SELECTION_MAX];

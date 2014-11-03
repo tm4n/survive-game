@@ -165,6 +165,7 @@ int main(int argc, char **argv)
 			}
 		}
 		
+		if (menu) menu->frame();
 		if (cl) cl->frame(time_delta);
 
 		renderer->drawFrame(time_delta);

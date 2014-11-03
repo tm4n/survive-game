@@ -128,10 +128,12 @@ uint flist<T>::add_at(T *e, uint pos)
         // increase size
         T **newelem = new T*[size*2];
 
-        for (uint i = 0; i < size; i++)
+		uint i = 0;
+        for (; i < size; i++)
         {
             newelem[i] = elem[i];
         }
+		for (; i < size*2; i++) newelem[i] = NULL;
 
         size *= 2;
 

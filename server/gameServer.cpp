@@ -836,7 +836,6 @@ void gameServer::reset()
 
 void gameServer::spawner(double time_frame)
 {
-	return;
 	int spawn_type = 0;
 	int dice;
 	
@@ -1009,8 +1008,8 @@ void gameServer::spawner(double time_frame)
 		}
 	}
 	
-	sv_spawn_timer += (float)time_frame / 16.f;
-	sv_barrier_timer += (float)time_frame / 16.f;
+	sv_spawn_timer += (float)(time_frame * 0.16);
+	sv_barrier_timer += (float)(time_frame * 0.16);
 }
 
 

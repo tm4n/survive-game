@@ -14,7 +14,7 @@ effectmgr::effectmgr(gameRenderer *renderer)
 
 	renderer->gui->setVisible(flashgreen_id, false);
 	renderer->gui->setAlpha(flashgreen_id, 0.0f);
-	renderer->gui->setScaleX(flashgreen_id, 920.f/640.f);
+	renderer->gui->setScaleX(flashgreen_id, 1920.f/640.f);
 	renderer->gui->setScaleY(flashgreen_id, 1080.f/480.f);
 }
 

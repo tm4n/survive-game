@@ -223,6 +223,12 @@ void ResourceLoader::loadIngame()
 	textures[(int)texType::pBlood2] = new Texture("assets/textures/blood2.tga");
 	textures[(int)texType::pSpark] = new Texture("assets/textures/spark.tga");
 
+	// check if all textures have been successfully loaded
+	for (int i = 0; i < MAX_TEXTURES; i++)
+	{
+		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1);}
+	}
+
 	ingame_done = true;
 }
 
@@ -249,6 +255,8 @@ void ResourceLoader::loadMenu()
 	textures[(int)texType::MenuHelpSel] = new Texture("assets/gui/menu_help_sel.tga");
 	textures[(int)texType::MenuQuit] = new Texture("assets/gui/menu_quit.tga");
 	textures[(int)texType::MenuQuitSel] = new Texture("assets/gui/menu_quit_sel.tga");
+
+	textures[(int)texType::BlackBg] = new Texture("assets/gui/black.tga");
 
 
 	// check if all textures have been successfully loaded
