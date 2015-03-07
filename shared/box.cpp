@@ -1,6 +1,8 @@
 #include "box.h"
 #include "helper.h"
 
+#include <algorithm>
+
 box::box(level *lvl, char abox_type, vec *pos, float ahealth)
 	: actor(lvl, ACTOR_TYPE_BOX, pos, NULL)
 {

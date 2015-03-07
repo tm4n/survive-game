@@ -51,6 +51,8 @@ void playCallback::callback(int obj_id)
 	menu->gui->draw();
 	
 	play = true;
+
+	menu->snd_click();
 }
 
 // Callback classes
@@ -64,6 +66,8 @@ class quitCallback : public GUICallback {
 void quitCallback::callback(int obj_id)
 {
 	quit = true;
+
+	menu->snd_click();
 }
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)

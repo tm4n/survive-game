@@ -4,11 +4,19 @@
 #include <iostream>
 #include <stdlib.h> 
 #include "glm/gtc/matrix_transform.hpp"
+#include "SDL2/SDL_mixer.h"
 
 gameRenderer::gameRenderer()
 {
 	CameraJoyInputY = 0.f;
 	CameraJoyInputX = 0.f;
+
+	// Initialize sound
+	if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1 )
+	{
+		std::cout << "SDL Error on open SDL Mixer Audio: " << Mix_GetError() << std::endl;
+		exit(-3);
+	}
 	
 	#ifdef ANDROID
 	int ss_x = 1920, ss_y = 1080;
@@ -90,6 +98,8 @@ gameRenderer::~gameRenderer()
 	//SDL_GL_DeleteContext(glcontext); TODO: find out if needed
 
 	SDL_DestroyWindow(window);
+
+	Mix_CloseAudio();
 }
 
 void gameRenderer::drawFrame(double time_delta)

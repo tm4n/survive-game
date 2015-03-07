@@ -3,6 +3,7 @@
 #include "actor.h"
 #include "helper.h"
 #include "net_cl.h"
+#include <algorithm>
 
 weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, effectmgr *effmgr, int player_id)
 	: weaponmgr(lvl, curr_weapon)

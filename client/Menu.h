@@ -17,6 +17,8 @@ public:
 	void show();
 	void hide();
 
+	void snd_click();
+
 	void frame();
 
 	bool visible;

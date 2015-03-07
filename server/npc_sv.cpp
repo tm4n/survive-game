@@ -2,6 +2,7 @@
 #include "net_sv.h"
 #include "helper.h"
 #include <sstream>
+#include <algorithm>
 
 npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan, int* counter) : npc(lvl_sv, npc_type, pos, pan)
 {

@@ -8,13 +8,22 @@ bool clicked_options = false;
 class optionsCallback : public GUICallback {
 
 	public:
+		optionsCallback(Menu *am);
 		virtual void callback(int obj_id);
+		Menu *m;
 
 };
+
+optionsCallback::optionsCallback(Menu *am) : GUICallback()
+{
+	m = am;
+}
 
 void optionsCallback::callback(int obj_id)
 {
 	clicked_options = true;
+
+	m->snd_click();
 }
 
 
@@ -23,7 +32,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	gui = agui;
 	resources = aresources;
 
-	optionsCallback *optCb = new optionsCallback();
+	optionsCallback *optCb = new optionsCallback(this);
 
 	// add menu background
 	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
@@ -104,4 +113,9 @@ void Menu::frame()
 
 		gui->setVisible(black_bg_id, true);
 	}
+}
+
+void Menu::snd_click()
+{
+	resources->getSnd(ResourceLoader::sndType::Click)->play();
 }

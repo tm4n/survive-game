@@ -1,5 +1,7 @@
 #include "npc_cl.h"
 
+#include <algorithm>
+
 npc_cl::npc_cl(level *lvl, uint actor_id, int npc_type, vec *pos, vec*ang, float health, int target, gameRenderer *arenderer)
 	: npc(lvl, actor_id, npc_type, pos, ang, health, target)
 {

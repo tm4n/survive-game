@@ -3,10 +3,12 @@
 
 #include "Mesh.h"
 #include "Texture.h"
+#include "Sound.h"
 #include <vector>
 
 #define MAX_MESHES 100
 #define MAX_TEXTURES 100
+#define MAX_SOUNDS 100
 #define MAX_FONTS 20
 
 class ResourceLoader
@@ -30,6 +32,9 @@ public:
 		 pBlood1 = 50, pBlood2 = 51, pSpark = 52
 	};
 
+	enum class sndType : int { Click = 1,
+	Colt_shot = 10, Colt_reload = 11, }; // TODO: finish
+
 	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};
 
 	ResourceLoader();
@@ -40,11 +45,13 @@ public:
 	Mesh* getMesh(meshType m);
 	Texture* getTex(texType t);
 	TTF_Font *getFont(fontType f);
+	Sound* getSnd(sndType s);
 
 private:
 	Mesh *meshes[MAX_MESHES];
 	Texture *textures[MAX_MESHES];
 	TTF_Font *fonts[MAX_FONTS];
+	Sound *sounds[MAX_SOUNDS];
 
 	void openFont(fontType f, const char *filename, int size);
 	

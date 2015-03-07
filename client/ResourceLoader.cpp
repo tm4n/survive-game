@@ -9,6 +9,7 @@ ResourceLoader::ResourceLoader()
 {
 	for (int i = 0; i < MAX_MESHES; i++) meshes[i] = NULL;
 	for (int i = 0; i < MAX_TEXTURES; i++) textures[i] = NULL;
+	for (int i = 0; i < MAX_SOUNDS; i++) sounds[i] = NULL;
 	
 	menu_done = false;
 	ingame_done = false;
@@ -229,6 +230,11 @@ void ResourceLoader::loadIngame()
 		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1);}
 	}
 
+
+	// Sounds
+
+
+
 	ingame_done = true;
 }
 
@@ -264,7 +270,12 @@ void ResourceLoader::loadMenu()
 	{
 		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1);}
 	}
+
+	// Sounds
+	sounds[(int)sndType::Click] = new Sound("assets/sounds/click.wav");
+	if (sounds[(int)sndType::Click]->loaded == false) { std::cout << "ERROR loading Sound: " << sounds[(int)sndType::Click]->file << std::endl; exit(-1); }
 	
+
 	// Fonts
 
 	openFont(fontType::fnt_small, "assets/OpenSans-Semibold.ttf", 10);
@@ -302,6 +313,13 @@ Texture* ResourceLoader::getTex(texType m)
 	int id = (int)m;
 	if (id < 1 || id > MAX_TEXTURES) return NULL;
 	return textures[id];
+}
+
+Sound* ResourceLoader::getSnd(sndType s)
+{
+	int id = (int)s;
+	if (id < 1 || id > MAX_SOUNDS) return NULL;
+	return sounds[id];
 }
 
 TTF_Font *ResourceLoader::getFont(fontType f)
