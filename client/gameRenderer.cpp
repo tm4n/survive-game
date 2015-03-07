@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdlib.h> 
 #include "glm/gtc/matrix_transform.hpp"
-#include "SDL2/SDL_mixer.h"
+#include "SDL/SDL_mixer.h"
 
 gameRenderer::gameRenderer()
 {

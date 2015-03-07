@@ -40,6 +40,7 @@
 			<Add library="SDL2" />
 			<Add library="libs/enet/.libs/libenet.a" />
 			<Add library="SDL2_ttf" />
+			<Add library="SDL_mixer" />
 		</Linker>
 		<Unit filename="client/GUI.cpp" />
 		<Unit filename="client/GUI.h" />
@@ -59,6 +60,8 @@
 		<Unit filename="client/RenderObject.h" />
 		<Unit filename="client/ResourceLoader.cpp" />
 		<Unit filename="client/ResourceLoader.h" />
+		<Unit filename="client/Sound.cpp" />
+		<Unit filename="client/Sound.h" />
 		<Unit filename="client/Texture.cpp" />
 		<Unit filename="client/Texture.h" />
 		<Unit filename="client/box_cl.cpp" />

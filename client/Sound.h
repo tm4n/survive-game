@@ -1,7 +1,7 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
-#include "SDL2/SDL_mixer.h"
+#include "SDL/SDL_mixer.h"
 #include <string>
 
 class Sound {
@@ -20,4 +20,4 @@ private:
 	Mix_Chunk *chunk;
 };
 
-#endif __SOUND_H__
+#endif //__SOUND_H__

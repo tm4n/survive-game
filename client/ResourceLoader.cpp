@@ -232,7 +232,7 @@ void ResourceLoader::loadIngame()
 
 
 	// Sounds
-	sounds[(int)]
+	//sounds[(int)]
 
 
 	ingame_done = true;
