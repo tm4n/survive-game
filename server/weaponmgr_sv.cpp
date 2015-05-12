@@ -71,6 +71,9 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 	
 	log (LOG_DEBUG, "Starting shoot!");
 
+	// send including random seed
+	net_server->broadcast_shoot(player_id, &shoot_dir, seed);
+
 	while (shoot_nums > 0)
 	{
 		shoot_nums--;
@@ -112,9 +115,6 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 
 	// TODO: a way to use cooldown on server
 	//wp_cooldown = 10.f;
-	
-	// send including random seed
-	net_server->broadcast_shoot(player_id, &shoot_dir, seed);
 }
 
 void weaponmgr_sv::wp_switch_impl(int num)

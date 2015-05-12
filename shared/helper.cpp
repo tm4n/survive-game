@@ -271,6 +271,14 @@ float random_range(float mx)
 	return (float)d(*gen);
 }
 
+int random_int_range(int mx)
+{
+	if (gen == NULL) gen = new std::minstd_rand();
+
+	std::uniform_int_distribution<int> d(0, mx);
+
+	return (int)d(*gen);
+}
 
 void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float byy, float byz)
 {

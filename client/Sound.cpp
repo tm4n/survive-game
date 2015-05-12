@@ -19,10 +19,18 @@ Sound::Sound(const char* filename)
 	loaded = true;
 }
 
-void Sound::play()
+void Sound::play(int num, float volume)
 {
-	if (Mix_PlayChannel(-1, chunk, 0) == -1)
+	if (Mix_PlayChannel(-1, chunk, num-1) == -1)
 	{
-		{ std::cout << "ERROR in Mix_PlayChannel: " << Mix_GetError() << std::endl;  return; }
+		{ std::cout << "ERROR in Mix_PlayChannel in play: " << Mix_GetError() << std::endl;  return; }
+	}
+}
+
+void Sound::play3D(int num, actor *ac, float volume)
+{
+	if (Mix_PlayChannel(-1, chunk, num-1) == -1)
+	{
+		{ std::cout << "ERROR in Mix_PlayChannel in play3D: " << Mix_GetError() << std::endl;  return; }
 	}
 }

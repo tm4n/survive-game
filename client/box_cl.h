@@ -16,13 +16,13 @@ public:
 	Mesh *getMesh();
 	Mesh *getDmgMesh();
 
+	RenderObject *ro, *ro_dmg, *ro_parachute;
+
 protected:
 	gameRenderer *renderer;
 	gui_hud *hud;
 	float old_health;
 
-
-	RenderObject *ro, *ro_dmg, *ro_parachute;
 };
 
 

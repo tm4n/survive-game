@@ -46,6 +46,7 @@ void check_heap(char *file, int line);
 float toRadians(float d);
 
 float random_range(float mx);
+int random_int_range(int mx);
 void random_seed(int seed);
 
 void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float byy, float byz);

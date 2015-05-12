@@ -3,6 +3,7 @@
 
 #include "SDL/SDL_mixer.h"
 #include <string>
+#include "actor.h"
 
 class Sound {
 
@@ -14,7 +15,8 @@ public:
 	Sound(const char* filename);
 	~Sound();
 
-	void play();
+	void play(int num, float volume);
+	void play3D(int num, actor *ac, float volume);
 
 private:
 	Mix_Chunk *chunk;

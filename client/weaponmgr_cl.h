@@ -53,6 +53,7 @@ protected:
 	void set_anim_state(int new_state);
 	MeshGUI *getMesh(int weapon_id);
 	void show_muzzleflash(int weapon_id);
+	void weaponmgr_cl::snd_hit(actor *ac);
 
 };
 

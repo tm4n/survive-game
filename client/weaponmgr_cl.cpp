@@ -4,6 +4,7 @@
 #include "helper.h"
 #include "net_cl.h"
 #include <algorithm>
+#include "box_cl.h"
 
 weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, effectmgr *effmgr, int player_id)
 	: weaponmgr(lvl, curr_weapon)
@@ -375,6 +376,7 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			if (actor_hit >= 0) // hit someone
 			{
 				actor *ac = lvl->actorlist.at(actor_hit);
+				snd_hit(ac);
 				if (ac->faction == 2) // hit a zombie
 				{
 					log (LOG_DEBUG, "hitting blood");
@@ -399,6 +401,9 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			orig.x = ro_mf->translation[0]; orig.y = ro_mf->translation[1]; orig.z = ro_mf->translation[2];
 
 			effmgr->eff_bullettrail(&orig, &shoot_target);
+
+			Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
+			if (snd) snd->play(1, 100.f);
 		}
 		else
 		{
@@ -406,6 +411,9 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			orig.set(&shoot_origin);
 			orig.z -= 7.f;
 			effmgr->eff_bullettrail(&orig, &shoot_target);
+
+			// TODO: finish other player impl
+			//renderer->resources.getSnd(ResourceLoader::sndType::Flesh_hit)->play3D(1, 100.f);
 		}
 	
 	}
@@ -416,6 +424,17 @@ void weaponmgr_cl::reload()
 	wp_ready = false;
 	wp_reloading = 1;
 	set_anim_state(3);
+
+	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
+	if (wdata->snd_reload_delay <= 0.f)
+	{
+		Sound *snd = renderer->resources.getSnd(wdata->snd_reload);
+		if (snd) snd->play(1, 100.f);
+	}
+	else
+	{
+		// TODO: timer
+	}
 }
 
 void weaponmgr_cl::cancel_reload()
@@ -442,4 +461,44 @@ void weaponmgr_cl::show_muzzleflash(int weapon_id)
 	ro_mf->alpha = 0.8f;
 	ro_mf->rotation[2] = random_range(360.f);
 	ro_mf->visible = true;
+}
+
+void weaponmgr_cl::snd_hit(actor *ac)
+{
+	switch (ac->type)
+	{
+	case ACTOR_TYPE_NPC:
+		renderer->resources.getSnd(ResourceLoader::sndType::Flesh_hit)->play3D(1, ac, 200.f);
+		break;
+
+	case ACTOR_TYPE_BOX:
+		box_cl *b = (box_cl*)ac;
+
+		if (b->box_type == BOX_TYPE_WOOD)
+		{
+			// Wooden box hit
+			int rnd = random_int_range(2);
+			switch (rnd)
+			{
+			case 0:
+				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit1)->play3D(1, ac, 350.f);
+				break;
+
+			case 1:
+				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit2)->play3D(1, ac, 350.f);
+				break;
+
+			case 2:
+				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit3)->play3D(1, ac, 350.f);
+				break;
+			}
+		}
+		else
+		{
+			// Box is metal
+			renderer->resources.getSnd(ResourceLoader::sndType::Metal_hit1)->play3D(1, ac, 400.f);
+		}
+		
+		break;
+	}
 }

@@ -117,5 +117,5 @@ void Menu::frame()
 
 void Menu::snd_click()
 {
-	resources->getSnd(ResourceLoader::sndType::Click)->play();
+	resources->getSnd(ResourceLoader::sndType::Click)->play(1, 100.f);
 }

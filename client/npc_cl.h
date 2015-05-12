@@ -15,13 +15,14 @@ public:
 
 	Mesh* getMesh() {return renderer->resources.getMesh(b_npcs::instance()->at(npc_type)->res_mesh);}
 
+	RenderObject *ro;
+
 protected:
 	int old_anim;
 	float anim_prog;
 
 	gameRenderer *renderer;
 
-	RenderObject *ro;
 };
 
 

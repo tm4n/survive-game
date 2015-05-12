@@ -41,10 +41,10 @@ struct s_weapons{
 	float recoil;
 	
 	// effect 
-	//SOUND* snd_shoot;
-	//SOUND* snd_reload;
+	ResourceLoader::sndType snd_shoot;
+	ResourceLoader::sndType snd_reload;
 	float snd_reload_delay;
-	//SOUND* snd_bg_loop;
+	ResourceLoader::sndType snd_bg_loop;
 	
 	vec muzzle_pos;
 	float muzzle_size;
