@@ -426,7 +426,7 @@ void weaponmgr_cl::reload()
 	set_anim_state(3);
 
 	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
-	if (wdata->snd_reload_delay <= 0.f)
+	if (wdata->snd_reload_delay >= 0.f)
 	{
 		Sound *snd = renderer->resources.getSnd(wdata->snd_reload);
 		if (snd) snd->play(1, 100.f);
