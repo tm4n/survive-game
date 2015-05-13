@@ -76,9 +76,9 @@ void MeshGUI::draw(glm::mat4 mVPMatrix)
 		mTransformationMatrix = glm::translate(mTransformationMatrix, obj->translation);
 	        
 	    //turn
-		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[0], glm::vec3(0.f, 0.f, 1.f));
-		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[1], glm::vec3(0.f, 1.f, 0.f));
-		mTransformationMatrix = glm::rotate(mTransformationMatrix, obj->rotation[2], glm::vec3(1.f, 0.f, 0.f));
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(obj->rotation[0]), glm::vec3(0.f, 0.f, 1.f));
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(obj->rotation[1]), glm::vec3(0.f, 1.f, 0.f));
+		mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(obj->rotation[2]), glm::vec3(1.f, 0.f, 0.f));
 	        
 	    //scale
 	    mTransformationMatrix = glm::scale(mTransformationMatrix, obj->scale);

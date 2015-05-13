@@ -207,9 +207,9 @@ void particlemgr::draw(double time_frame, glm::mat4 mVPMatrix, glm::vec3 campos)
 					angle.y = 90.f -vec::angle(asin(v.z / v.length())*(float)(180.0/M_PI));
 					angle.z = 0.f;
 
-					mTransformationMatrix = glm::rotate(mTransformationMatrix, angle.x, glm::vec3(0.f, 0.f, 1.f));
-					mTransformationMatrix = glm::rotate(mTransformationMatrix, angle.y, glm::vec3(0.f, 1.f, 0.f));
-					mTransformationMatrix = glm::rotate(mTransformationMatrix, angle.z, glm::vec3(1.f, 0.f, 0.f));
+					mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(angle.x), glm::vec3(0.f, 0.f, 1.f));
+					mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(angle.y), glm::vec3(0.f, 1.f, 0.f));
+					mTransformationMatrix = glm::rotate(mTransformationMatrix, glm::radians(angle.z), glm::vec3(1.f, 0.f, 0.f));
 	        
 					//scale
 					glm::vec3 s;
