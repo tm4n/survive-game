@@ -40,7 +40,7 @@
 			<Add library="SDL2" />
 			<Add library="libs/enet/.libs/libenet.a" />
 			<Add library="SDL2_ttf" />
-			<Add library="SDL_mixer" />
+			<Add library="SDL2_mixer" />
 		</Linker>
 		<Unit filename="client/GUI.cpp" />
 		<Unit filename="client/GUI.h" />
