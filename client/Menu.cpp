@@ -60,6 +60,8 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	gui->setScaleY(black_bg_id, 1080.f/480.f);
 	gui->setVisible(black_bg_id, false);
 
+	options_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f);
+	gui->setVisible(options_bg_id, false);
 
 	// Add version text
 	SDL_Color c = {255, 255, 255};
@@ -112,6 +114,7 @@ void Menu::frame()
 		clicked_options = false;
 
 		gui->setVisible(black_bg_id, true);
+		gui->setVisible(options_bg_id, true);
 	}
 }
 

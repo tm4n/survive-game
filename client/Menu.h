@@ -30,6 +30,8 @@ private:
 
 	int bg_id, black_bg_id;
 
+	int options_bg_id, options_cancel_bt, options_cancel_txt, options_ok_bt, options_ok_txt;
+
 	int button_ids[SELECTION_MAX];
 	int button_sel_ids[SELECTION_MAX];
 };

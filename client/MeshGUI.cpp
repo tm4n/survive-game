@@ -9,7 +9,7 @@ MeshGUI::MeshGUI(const char *mesh_file, const char *tex_file) : Mesh(mesh_file, 
 }
 
 
-void MeshGUI::draw(glm::mat4 mVPMatrix)
+void MeshGUI::draw(const glm::mat4 &mVPMatrix)
 {
 	if (objectList.empty()) return;
 

@@ -47,7 +47,7 @@ void MeshTerrain::setShader()
 }
 
 
-void MeshTerrain::draw(glm::mat4 mVPMatrix)
+void MeshTerrain::draw(const glm::mat4 &mVPMatrix)
 {
 	if (objectList.empty()) return;
 

@@ -49,7 +49,7 @@ void MeshBlend::setShader() {
 }
 
 
-void MeshBlend::draw(glm::mat4 mVPMatrix)
+void MeshBlend::draw(const glm::mat4 &mVPMatrix)
 {
 	if (objectList.empty()) return;
 

@@ -128,7 +128,7 @@ void particlemgr::emit(int num, ResourceLoader::texType tex, partcb fnc, partini
 
 bool runot(particle_data p) {return p.lifespan <= 0.f;}
 
-void particlemgr::draw(double time_frame, glm::mat4 mVPMatrix, glm::vec3 campos)
+void particlemgr::draw(double time_frame, const glm::mat4 &mVPMatrix, const glm::vec3 &campos)
 {
 	float time_frame_float = (float)time_frame;
 

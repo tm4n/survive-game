@@ -1,6 +1,8 @@
 #ifndef __DEFS_H__
 #define __DEFS_H__
 
+#define GLM_FORCE_PURE
+
 #include "vec.h"
 #include "stdio.h"
 

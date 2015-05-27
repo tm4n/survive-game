@@ -28,6 +28,7 @@ public:
 		 MenuPlaySel = 8, MenuMultiplayerSel = 9, MenuHelpSel = 10, MenuOptionsSel = 11, MenuQuitSel = 12,
 		 GuiAmmo = 20, GuiHealth = 21, GuiCrosshair = 22, GuiScoreboard = 23,
 		 IngameMenuBg = 25, BlackBg = 26,
+		 OptionsBg = 27,
 		 FlashRed = 30, FlashGreen = 40,
 		 pBlood1 = 50, pBlood2 = 51, pSpark = 52
 	};

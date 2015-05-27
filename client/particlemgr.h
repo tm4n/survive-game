@@ -1,6 +1,7 @@
 #ifndef __PARTICLEMGR_H__
 #define __PARTICLEMGR_H__
 
+
 #include "Texture.h"
 #include "vec.h"
 #include <list>
@@ -8,6 +9,7 @@
 #include "defs.h"
 #include "flist.h"
 #include "ResourceLoader.h"
+
 
 // forward declaration
 typedef struct particle_data particle_data;
@@ -36,7 +38,7 @@ public:
 	particlemgr(ResourceLoader *resources);
 	virtual ~particlemgr();
 
-	void draw(double time_frame, glm::mat4 mVPMatrix, glm::vec3 CamPos);
+	void draw(double time_frame, const glm::mat4 &mVPMatrix, const glm::vec3 &CamPos);
 
 	void emit(int num, ResourceLoader::texType tex, partcb fnc, partinit initfnc, const vec *pos, const vec *vel);
 
