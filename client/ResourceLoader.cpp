@@ -322,6 +322,13 @@ void ResourceLoader::loadMenu()
 	textures[(int)texType::MenuQuit] = new Texture("assets/gui/menu_quit.tga");
 	textures[(int)texType::MenuQuitSel] = new Texture("assets/gui/menu_quit_sel.tga");
 
+	textures[(int)texType::Button] = new Texture("assets/gui/kl_button1.tga");
+	textures[(int)texType::ButtonSel] = new Texture("assets/gui/kl_button2.tga");
+	textures[(int)texType::CheckboxOn] = new Texture("assets/gui/checkbox_on.tga");
+	textures[(int)texType::CheckboxOff] = new Texture("assets/gui/checkbox_off.tga");
+	textures[(int)texType::Inputbox] = new Texture("assets/gui/inputbox.tga");
+	textures[(int)texType::InputBoxSel] = new Texture("assets/gui/inputbox_sel.tga");
+
 	textures[(int)texType::BlackBg] = new Texture("assets/gui/black.tga");
 
 	textures[(int)texType::OptionsBg] = new Texture("assets/gui/options_bg.tga");
@@ -329,7 +336,7 @@ void ResourceLoader::loadMenu()
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
 	{
-		if (textures[i] != NULL) if (textures[i]->loaded == false) {std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1);}
+		if (textures[i] != NULL) if (textures[i]->loaded == false) 	{ std::cout << "ERROR loading Texture: " << textures[i]->file << std::endl; exit(-1); }
 	}
 
 	// Sounds

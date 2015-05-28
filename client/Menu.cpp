@@ -63,6 +63,16 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	options_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f);
 	gui->setVisible(options_bg_id, false);
 
+	options_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, NULL);
+	gui->setVisible(options_cancel_bt, false);
+	options_cancel_txt = gui->addText("Discard", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 186.0f + 28.0f, -275.0f + 450.f + 2.0f);
+	gui->setVisible(options_cancel_txt, false);
+
+	options_ok_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f+436.0f, -275.0f+450.f, NULL);
+	gui->setVisible(options_ok_bt, false);
+	options_ok_txt = gui->addText("Apply", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 436.0f + 37.0f, -275.0f + 450.f + 2.0f);
+	gui->setVisible(options_ok_txt, false);
+
 	// Add version text
 	SDL_Color c = {255, 255, 255};
 	Texture *tex_version = new Texture(DEF_NAME_STR, resources->getFont(ResourceLoader::fontType::fnt_small), c);
@@ -115,6 +125,10 @@ void Menu::frame()
 
 		gui->setVisible(black_bg_id, true);
 		gui->setVisible(options_bg_id, true);
+		gui->setVisible(options_cancel_bt, true);
+		gui->setVisible(options_cancel_txt, true);
+		gui->setVisible(options_ok_bt, true);
+		gui->setVisible(options_ok_txt, true);
 	}
 }
 
