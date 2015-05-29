@@ -92,5 +92,4 @@ private:
 	flist<GUIObject> elements;
 };
 
-
 #endif

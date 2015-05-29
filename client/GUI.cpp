@@ -290,7 +290,7 @@ void GUI::draw()
 					}
 				}
 
-				if (i == selected_button) obj->current_tex = 1; else obj->current_tex = 0;
+				if ((int)i == selected_button) obj->current_tex = 1; else obj->current_tex = 0;
 			}
 		}
 	}
@@ -455,6 +455,7 @@ int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Al
 		
 	return (int)elements.add(elem);
 }
+
 
 bool GUI::removeObject(int id)
 {

@@ -16,6 +16,9 @@ public:
 
 	void show();
 	void hide();
+	
+	void options_show();
+	void options_hide();
 
 	void snd_click();
 

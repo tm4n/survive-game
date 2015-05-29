@@ -17,7 +17,7 @@ class GUICallback {
 class GUIObject
 {
 public:
-	enum Types {button, panel, text};
+	enum Types {button, panel, text, input, selectionbox, checkbox};
 	enum Alignment {center, upleft, upcenter, upright, downleft, downcenter, downright, scaled}; // scaled starts from upleft
 
 	Types type;

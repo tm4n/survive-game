@@ -14,15 +14,51 @@ class optionsCallback : public GUICallback {
 
 };
 
-optionsCallback::optionsCallback(Menu *am) : GUICallback()
-{
-	m = am;
-}
+optionsCallback::optionsCallback(Menu *am) : GUICallback(), m(am) {}
 
 void optionsCallback::callback(int obj_id)
 {
 	clicked_options = true;
 
+	m->snd_click();
+}
+
+// Callback classes
+class optionsOkCallback : public GUICallback {
+
+	public:
+		optionsOkCallback(Menu *am);
+		virtual void callback(int obj_id);
+		Menu *m;
+
+};
+
+optionsOkCallback::optionsOkCallback(Menu *am) : GUICallback(), m(am) {}
+
+void optionsOkCallback::callback(int obj_id)
+{
+	m->options_hide();
+	
+	// safe options
+	
+	m->snd_click();
+}
+
+class optionsCancelCallback : public GUICallback {
+
+	public:
+		optionsCancelCallback(Menu *am);
+		virtual void callback(int obj_id);
+		Menu *m;
+
+};
+
+optionsCancelCallback::optionsCancelCallback(Menu *am) : GUICallback(), m(am) {}
+
+void optionsCancelCallback::callback(int obj_id)
+{
+	m->options_hide();
+	
 	m->snd_click();
 }
 
@@ -33,6 +69,8 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	resources = aresources;
 
 	optionsCallback *optCb = new optionsCallback(this);
+	optionsOkCallback *optOkCb = new optionsOkCallback(this);
+	optionsCancelCallback *optCancelCb = new optionsCancelCallback(this);
 
 	// add menu background
 	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
@@ -63,12 +101,12 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	options_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f);
 	gui->setVisible(options_bg_id, false);
 
-	options_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, NULL);
+	options_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, optCancelCb);
 	gui->setVisible(options_cancel_bt, false);
 	options_cancel_txt = gui->addText("Discard", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 186.0f + 28.0f, -275.0f + 450.f + 2.0f);
 	gui->setVisible(options_cancel_txt, false);
 
-	options_ok_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f+436.0f, -275.0f+450.f, NULL);
+	options_ok_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f+436.0f, -275.0f+450.f, optOkCb);
 	gui->setVisible(options_ok_bt, false);
 	options_ok_txt = gui->addText("Apply", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 436.0f + 37.0f, -275.0f + 450.f + 2.0f);
 	gui->setVisible(options_ok_txt, false);
@@ -123,16 +161,33 @@ void Menu::frame()
 	{
 		clicked_options = false;
 
-		gui->setVisible(black_bg_id, true);
-		gui->setVisible(options_bg_id, true);
-		gui->setVisible(options_cancel_bt, true);
-		gui->setVisible(options_cancel_txt, true);
-		gui->setVisible(options_ok_bt, true);
-		gui->setVisible(options_ok_txt, true);
+		options_show();
 	}
 }
 
 void Menu::snd_click()
 {
 	resources->getSnd(ResourceLoader::sndType::Click)->play(1, 100.f);
+}
+
+void Menu::options_show()
+{
+	// show options menu (TODO: move into different function)
+	gui->setVisible(black_bg_id, true);
+	gui->setVisible(options_bg_id, true);
+	gui->setVisible(options_cancel_bt, true);
+	gui->setVisible(options_cancel_txt, true);
+	gui->setVisible(options_ok_bt, true);
+	gui->setVisible(options_ok_txt, true);
+}
+
+void Menu::options_hide()
+{
+	// show options menu (TODO: move into different function)
+	gui->setVisible(black_bg_id, false);
+	gui->setVisible(options_bg_id, false);
+	gui->setVisible(options_cancel_bt, false);
+	gui->setVisible(options_cancel_txt, false);
+	gui->setVisible(options_ok_bt, false);
+	gui->setVisible(options_ok_txt, false);
 }
