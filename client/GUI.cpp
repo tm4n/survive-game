@@ -417,38 +417,38 @@ void GUI::draw()
 }
 
 
-int GUI::addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, float y)
+int GUI::addPanel(Texture *tex, int layer, GUIObject::Alignment align, float x, float y, int group_id)
 {
-	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, align, x, y, NULL);
+	GUIObject *elem = new GUIObject(GUIObject::Types::panel, tex, layer, align, x, y, NULL, group_id);
 		
 	return (int)elements.add(elem);
 }
 
-int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback)
+int GUI::addButton(Texture *tex, Texture *tex_sel, int layer, GUIObject::Alignment align, float x, float y, GUICallback *callback, int group_id)
 {
 	std::vector<Texture*> v;
 
 	v.push_back(tex);
 	v.push_back(tex_sel);
 
-	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, align, x, y, callback);
+	GUIObject *elem = new GUIObject(GUIObject::Types::button, v, layer, align, x, y, callback, group_id);
 
 	return (int)elements.add(elem);
 }
 
-int GUI::addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y)
+int GUI::addText(Texture *tex, int layer, GUIObject::Alignment align, float x, float y, int group_id)
 {
-	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, align, x, y, NULL);
+	GUIObject *elem = new GUIObject(GUIObject::Types::text, tex, layer, align, x, y, NULL, group_id);
 		
 	return (int)elements.add(elem);
 }
 
-int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, Uint8 cred, Uint8 cgreen, Uint8 cblue)
+int GUI::addText(const std::string &txt, TTF_Font *fnt, int layer, GUIObject::Alignment align, float x, float y, int group_id, Uint8 cred, Uint8 cgreen, Uint8 cblue)
 {
 	SDL_Color c = {cred, cgreen, cblue};
 	Texture *t = new Texture(txt, fnt, c);
 	
-	GUIObject *elem = new GUIObject(GUIObject::Types::text, t, layer, align, x, y, NULL);
+	GUIObject *elem = new GUIObject(GUIObject::Types::text, t, layer, align, x, y, NULL, group_id);
 	
 	elem->txt.assign(txt);
 	elem->fnt = fnt;
@@ -534,6 +534,18 @@ void GUI::setButtonSwitchRight(int id_from, int id_to)
 void GUI::setVisible(int id, bool vis)
 {
 	elements.at(id)->visible = vis;
+}
+
+void GUI::setGroupVisible(int group_id, bool vis)
+{
+	for (uint i = 0; i < elements.size; i++)
+	{
+		GUIObject *o = elements.elem[i];
+		if (o != NULL)
+		{
+			if (o->group_id == group_id) o->visible = vis;
+		}
+	}
 }
 	
 void GUI::setCentered(int id, bool cen)

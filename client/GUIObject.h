@@ -8,6 +8,8 @@
 class GUICallback {
 
 	public:
+		//enum Type {mousedown, mouseup}; delayed
+
 		virtual void callback(int obj_id) = 0;
 		virtual ~GUICallback();
 
@@ -40,11 +42,13 @@ public:
 
 	int switch_up_id, switch_down_id, switch_left_id, switch_right_id;
 
+	int group_id;
+
 	bool visible;
 	bool centered;
 
-	GUIObject(GUIObject::Types, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *);
-	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, Alignment align, float x, float y, GUICallback *);
+	GUIObject(GUIObject::Types, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *, int group_id);
+	GUIObject(GUIObject::Types, std::vector<Texture*>, int layer, Alignment align, float x, float y, GUICallback *, int group_id);
 	~GUIObject();
 };
 

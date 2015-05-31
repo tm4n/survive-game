@@ -326,8 +326,15 @@ void ResourceLoader::loadMenu()
 	textures[(int)texType::ButtonSel] = new Texture("assets/gui/kl_button2.tga");
 	textures[(int)texType::CheckboxOn] = new Texture("assets/gui/checkbox_on.tga");
 	textures[(int)texType::CheckboxOff] = new Texture("assets/gui/checkbox_off.tga");
+	textures[(int)texType::CheckboxOnSel] = new Texture("assets/gui/checkbox_on_sel.tga");
+	textures[(int)texType::CheckboxOffSel] = new Texture("assets/gui/checkbox_off_sel.tga");
 	textures[(int)texType::Inputbox] = new Texture("assets/gui/inputbox.tga");
 	textures[(int)texType::InputBoxSel] = new Texture("assets/gui/inputbox_sel.tga");
+
+	textures[(int)texType::ButtonLeft] = new Texture("assets/gui/button_left.tga");
+	textures[(int)texType::ButtonLeftSel] = new Texture("assets/gui/button_left_sel.tga");
+	textures[(int)texType::ButtonRight] = new Texture("assets/gui/button_right.tga");
+	textures[(int)texType::ButtonRightSel] = new Texture("assets/gui/button_right_sel.tga");
 
 	textures[(int)texType::BlackBg] = new Texture("assets/gui/black.tga");
 

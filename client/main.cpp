@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include <thread>
 #include "helper.h"
+#include "backends/b_settings.h"
 
 const int FRAMES_PER_SECOND = 60;
 
@@ -86,8 +87,16 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-
-	renderer = new gameRenderer();
+#ifdef ANDROID
+	int ss_x = 1920, ss_y = 1080;
+	float ratio = 16.f / 9.f;
+#else
+	b_settings *set = b_settings::instance();
+	int ss_x = set->screenres_x;
+	int ss_y = set->screenres_y;
+	float ratio = set->screenaspect;
+#endif
+	renderer = new gameRenderer(ss_x, ss_y, ratio);
 
 	// create menu
 	playCallback *pcb = new playCallback();

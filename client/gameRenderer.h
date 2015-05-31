@@ -24,7 +24,7 @@ public:
 	GUI *gui;
 	particlemgr *partmgr;
 
-	gameRenderer();
+	gameRenderer(int ss_x, int ss_y, float ratio);
 	~gameRenderer();
 
 	void drawFrame(double time_delta);

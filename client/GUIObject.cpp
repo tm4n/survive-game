@@ -1,6 +1,6 @@
 #include "GUIObject.h"
 
-GUIObject::GUIObject(Types t, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *ptr)
+GUIObject::GUIObject(Types t, Texture *tex, int layer, Alignment align, float x, float y, GUICallback *ptr, int group_id)
 {
 	this->type = t;
 
@@ -10,6 +10,7 @@ GUIObject::GUIObject(Types t, Texture *tex, int layer, Alignment align, float x,
 	this->y = y;
 	textures.push_back(tex);
 	this->callback = ptr;
+	this->group_id = group_id;
 
 	// defaults
 	scale_x = 1.0f;
@@ -24,7 +25,7 @@ GUIObject::GUIObject(Types t, Texture *tex, int layer, Alignment align, float x,
 	size_y = tex->size_y;
 }
 
-GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, Alignment align, float x, float y, GUICallback *ptr)
+GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, Alignment align, float x, float y, GUICallback *ptr, int group_id)
 {
 	this->type = t;
 
@@ -34,6 +35,7 @@ GUIObject::GUIObject(Types t, std::vector<Texture*> atexs, int layer, Alignment 
 	this->y = y;
 	textures.assign(atexs.begin(), atexs.end());
 	this->callback = ptr;
+	this->group_id = group_id;
 
 	// defaults
 	scale_x = 1.0f;

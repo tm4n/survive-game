@@ -33,7 +33,16 @@ private:
 
 	int bg_id, black_bg_id;
 
-	int options_bg_id, options_cancel_bt, options_cancel_txt, options_ok_bt, options_ok_txt;
+	int st_bg_id, st_cancel_bt, st_cancel_txt, st_ok_bt, st_ok_txt;
+	int st_playername_head, st_playername_bt, st_playername_txt;
+	int st_mousesens_head, st_mousesens_bt, st_mousesens_txt;
+	int st_mouseinv_bt, st_mouseinv_txt;
+	int st_volume_head, st_volume_bt, st_volume_txt;
+	int st_res_head, st_res_bt_left, st_res_bt_right, st_res_txt;
+	int st_fullscreen_bt, st_fullscreen_txt;
+	//int st_shadows_bt, st_shadows_txt; //TODO: implement shadows
+	int st_shader_bt, st_shader_txt;
+	int st_antialias_bt, st_antialias_txt;
 
 	int button_ids[SELECTION_MAX];
 	int button_sel_ids[SELECTION_MAX];

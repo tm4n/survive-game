@@ -6,7 +6,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "SDL/SDL_mixer.h"
 
-gameRenderer::gameRenderer()
+gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio)
 {
 	CameraJoyInputY = 0.f;
 	CameraJoyInputX = 0.f;
@@ -17,12 +17,6 @@ gameRenderer::gameRenderer()
 		std::cout << "SDL Error on open SDL Mixer Audio: " << Mix_GetError() << std::endl;
 		exit(-3);
 	}
-	
-	#ifdef ANDROID
-	int ss_x = 1920, ss_y = 1080;
-	#else
-	int ss_x = 1366, ss_y = 768;
-	#endif
 
 	// not sure if this is needed!
 	#ifndef ANDROID
@@ -75,7 +69,6 @@ gameRenderer::gameRenderer()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	float ratio = 16.f/9.f;
 	mProjMatrix = glm::perspective(70.f, ratio, 2.f, 6000.f);
 
 	// load menu resources

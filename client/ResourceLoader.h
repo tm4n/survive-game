@@ -26,12 +26,14 @@ public:
 
 	enum class texType : int { Pointer = 1, MenuBackground = 2, MenuPlay = 3, MenuMultiplayer = 4, MenuHelp = 5, MenuOptions = 6, MenuQuit = 7,
 		 MenuPlaySel = 8, MenuMultiplayerSel = 9, MenuHelpSel = 10, MenuOptionsSel = 11, MenuQuitSel = 12,
-		 Button = 15, ButtonSel = 16, CheckboxOn = 17, CheckboxOff = 18, Inputbox = 19, InputBoxSel = 20,
-		 GuiAmmo = 21, GuiHealth = 22, GuiCrosshair = 23, GuiScoreboard = 24,
-		 IngameMenuBg = 25, BlackBg = 26,
-		 OptionsBg = 27,
-		 FlashRed = 30, FlashGreen = 40,
-		 pBlood1 = 50, pBlood2 = 51, pSpark = 52
+		 Button = 15, ButtonSel = 16, CheckboxOn = 17, CheckboxOff = 18, CheckboxOnSel = 19, CheckboxOffSel = 20,
+		 Inputbox = 21, InputBoxSel = 22,
+		 ButtonLeft = 23, ButtonLeftSel = 24, ButtonRight = 25, ButtonRightSel = 26,
+		 GuiAmmo = 31, GuiHealth = 32, GuiCrosshair = 33, GuiScoreboard = 34,
+		 IngameMenuBg = 35, BlackBg = 36,
+		 OptionsBg = 37,
+		 FlashRed = 40, FlashGreen = 50,
+		 pBlood1 = 60, pBlood2 = 61, pSpark = 62
 	};
 
 	enum class sndType : int {
