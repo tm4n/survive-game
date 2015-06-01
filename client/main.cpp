@@ -106,6 +106,8 @@ int main(int argc, char **argv)
     SDL_JoystickEventState(SDL_ENABLE);
 
 
+	std::cout << "Enter main loop" << std::endl;
+
 	int fct = 0;
 	while (!quit)
 	{

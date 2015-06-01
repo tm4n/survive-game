@@ -7,7 +7,7 @@
 #include "box_cl.h"
 #include "collectible_cl.h"
 #include "npc_cl.h"
-#include "backends\b_settings.h"
+#include "backends/b_settings.h"
 #include <sstream>
 
 gameClient::gameClient(gameRenderer *arenderer)

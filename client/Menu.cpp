@@ -1,5 +1,5 @@
 #include "Menu.h"
-#include "backends\b_settings.h"
+#include "backends/b_settings.h"
 #include "ResourceLoader.h"
 
 #include <iostream>
@@ -377,6 +377,7 @@ void Menu::enable_inputbox(int id)
 
 void Menu::disable_inputbox()
 {
+	if (current_inputbox < 0) return;
 	// remove blinking cursor
 	if (caret_visible) current_inputstring->pop_back();
 	caret_visible = false;

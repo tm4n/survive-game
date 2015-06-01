@@ -3,16 +3,20 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <direct.h>
 #include <sys/stat.h>
 #include <string>
 #include <exception>
 
 #ifdef _WIN32
+#include <direct.h>
 #include <tchar.h>
 #include <shlwapi.h>
 #pragma comment(lib,"shlwapi.lib")
 #include "shlobj.h"
+#else
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 #endif
 
 b_settings::b_settings()
@@ -24,7 +28,13 @@ b_settings::b_settings()
 	std::string path = get_settings_file_path();
 	if (path.size() > 0)
 	{
+		#ifdef _WIN32
 		path.append("\\settings.cfg");
+		#else
+		path.append("/settings.cfg");
+		#endif
+		
+		std::cout << "opening file " << path << std::endl;
 
 		std::ifstream sfile;
 		sfile.open(path);
@@ -104,11 +114,11 @@ default_settings:
 
 	screenres_x = 1366;
 	screenres_y = 768;
-	fullscreen = true;
+	fullscreen = false;
 	screenaspect = 16.f/9.f;
 	shader = true;
 	shadow = SETTINGS_SHADOW_MID;
-	antialias = SETTINGS_ANTIALIAS_DEFAULT;
+	antialias = SETTINGS_ANTIALIAS_OFF;
 	anisotropy = SETTINGS_ANISOTROPY_OFF;
 	sound_volume = 70.f;
 }
@@ -126,15 +136,23 @@ void b_settings::save_settings()
 		struct stat st;
 		if (stat(path.c_str(), &st) != 0)
 		{
+			#ifdef _WIN32
 			int mkdirResult = _mkdir(path.c_str());
+			#else
+			int mkdirResult = mkdir(path.c_str(), 0777);
+			#endif
 			if (mkdirResult != 0)
 			{
 				err("Directory creation failed");
 				return;
 			}
 		}
-
+		
+		#ifdef _WIN32
 		path.append("\\settings.cfg");
+		#else
+		path.append("/settings.cfg");
+		#endif
 
 		std::ofstream sfile;
 		sfile.open(path, std::fstream::out | std::fstream::trunc);
@@ -182,9 +200,13 @@ std::string b_settings::get_settings_file_path()
 	{
 		err("Cold not get Appdata Path from Windows");
 	}
-#endif
-#ifdef LINUX
-	//TODO
+#else
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+	
+	std::string res(homedir);
+	res.append("/.Survive");
+	return res;
 #endif
 	return "";
 }

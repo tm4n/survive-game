@@ -17,7 +17,7 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 		std::cout << "SDL Error on open SDL Mixer Audio: " << Mix_GetError() << std::endl;
 		exit(-3);
 	}
-	Mix_AllocateChannels(16);
+	//Mix_AllocateChannels(16);
 
 	// not sure if this is needed!
 	#ifndef ANDROID

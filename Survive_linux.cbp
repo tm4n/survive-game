@@ -41,6 +41,7 @@
 			<Add library="libs/enet/.libs/libenet.a" />
 			<Add library="SDL2_ttf" />
 			<Add library="SDL2_mixer" />
+			<Add library="pthread" />
 		</Linker>
 		<Unit filename="client/GUI.cpp" />
 		<Unit filename="client/GUI.h" />
@@ -64,6 +65,8 @@
 		<Unit filename="client/Sound.h" />
 		<Unit filename="client/Texture.cpp" />
 		<Unit filename="client/Texture.h" />
+		<Unit filename="client/backends/b_settings.cpp" />
+		<Unit filename="client/backends/b_settings.h" />
 		<Unit filename="client/box_cl.cpp" />
 		<Unit filename="client/box_cl.h" />
 		<Unit filename="client/collectible_cl.cpp" />
