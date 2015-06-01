@@ -201,14 +201,15 @@ std::string b_settings::get_settings_file_path()
 		err("Cold not get Appdata Path from Windows");
 	}
 #else
-	struct passwd *pw = getpwuid(getuid());
-	const char *homedir = pw->pw_dir;
+	const char *homedir;
+	if ((homedir = getenv("HOME")) == NULL) {
+		homedir = getpwuid(getuid())->pw_dir;
+	}
 	
 	std::string res(homedir);
 	res.append("/.Survive");
 	return res;
 #endif
-	return "";
 }
 
 void b_settings::err(const char *msg)
