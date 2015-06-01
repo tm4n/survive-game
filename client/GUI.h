@@ -33,6 +33,7 @@ public:
 
 	void updateTexture(int id, Texture *newtex, int texnum = 0);
 	bool updateText(int id, const std::string &txt, Uint8 cred = 255, Uint8 cgreen = 255, Uint8 cblue = 255);
+	void setButtonTextures(int id, Texture *newtex, Texture *newtexsel);
 	void setVisible(int id, bool vis);
 	void setGroupVisible(int group_id, bool vis);
 	void setCentered(int id, bool cen);

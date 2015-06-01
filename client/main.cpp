@@ -87,16 +87,9 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-#ifdef ANDROID
-	int ss_x = 1920, ss_y = 1080;
-	float ratio = 16.f / 9.f;
-#else
+	// open renderer with correct settings
 	b_settings *set = b_settings::instance();
-	int ss_x = set->screenres_x;
-	int ss_y = set->screenres_y;
-	float ratio = set->screenaspect;
-#endif
-	renderer = new gameRenderer(ss_x, ss_y, ratio);
+	renderer = new gameRenderer(set->screenres_x, set->screenres_y, set->screenaspect, set->fullscreen, (set->antialias == 1));
 
 	// create menu
 	playCallback *pcb = new playCallback();
@@ -160,6 +153,8 @@ int main(int argc, char **argv)
 				else
 				{
 					renderer->gui->event_mouse(&evt);
+					// for special text editing keys
+					menu->event_input_keys(&evt);
 				}
 				break;
 
@@ -175,10 +170,18 @@ int main(int argc, char **argv)
 			case SDL_JOYDEVICEREMOVED:
 				joystick = NULL; // reset joystick on every removal, so a new one can be selected
 				break;
+
+			case SDL_TEXTINPUT:
+			case SDL_TEXTEDITING:
+				if (menu->visible)
+				{
+					menu->event_input_keys(&evt);
+				}
+				break;
 			}
 		}
 		
-		if (menu) menu->frame();
+		if (menu) menu->frame(time_delta);
 		if (cl) cl->frame(time_delta);
 
 		renderer->drawFrame(time_delta);
@@ -240,12 +243,12 @@ int main(int argc, char **argv)
 		delete sv;
 	}
 
-	delete renderer;
-
 	TTF_Quit();
 	SDL_Quit();
 	
 	if (cl) delete cl;
+
+	delete renderer;
 
 	return 0;
 }

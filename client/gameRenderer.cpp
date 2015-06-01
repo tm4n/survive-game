@@ -6,7 +6,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "SDL/SDL_mixer.h"
 
-gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio)
+gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, bool antialias)
 {
 	CameraJoyInputY = 0.f;
 	CameraJoyInputX = 0.f;
@@ -17,6 +17,7 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio)
 		std::cout << "SDL Error on open SDL Mixer Audio: " << Mix_GetError() << std::endl;
 		exit(-3);
 	}
+	Mix_AllocateChannels(16);
 
 	// not sure if this is needed!
 	#ifndef ANDROID
@@ -29,7 +30,15 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	#endif
 
-	window = SDL_CreateWindow("Survive!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ss_x, ss_y, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (antialias)
+	{
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	}
+
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+	if (fullscreen) flags |= SDL_WINDOW_FULLSCREEN;
+	window = SDL_CreateWindow("Survive!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ss_x, ss_y, flags);
 	if (window == NULL)
 	{
 		std::cout << "SDL Error on window opening: " << SDL_GetError() << std::endl;
@@ -52,6 +61,8 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio)
 		exit(-3);
 	}
 	#endif // ANDROID
+
+	if (antialias) glEnable(GL_MULTISAMPLE);
 
 	// Initialize OpenGL features
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

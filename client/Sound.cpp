@@ -1,4 +1,5 @@
 #include "Sound.h"
+#include "backends\b_settings.h"
 
 #include <iostream>
 #include <string>
@@ -21,16 +22,24 @@ Sound::Sound(const char* filename)
 
 void Sound::play(int num, float volume)
 {
-	if (Mix_PlayChannel(-1, chunk, num-1) == -1)
+	b_settings *set = b_settings::instance();
+	int ch;
+	if (ch = Mix_PlayChannel(-1, chunk, num-1) == -1)
 	{
-		{ std::cout << "ERROR in Mix_PlayChannel in play: " << Mix_GetError() << std::endl;  return; }
+		std::cout << "ERROR in Mix_PlayChannel in play: " << Mix_GetError() << std::endl;  return;
 	}
+	Mix_Volume(ch, (int)(volume*(set->sound_volume/100.f)));
+	std::cout << "Playing on Channel: " << ch << std::endl;
 }
 
 void Sound::play3D(int num, actor *ac, float volume)
 {
-	if (Mix_PlayChannel(-1, chunk, num-1) == -1)
+	b_settings *set = b_settings::instance();
+	int ch;
+	if (ch = Mix_PlayChannel(-1, chunk, num-1) == -1)
 	{
-		{ std::cout << "ERROR in Mix_PlayChannel in play3D: " << Mix_GetError() << std::endl;  return; }
+		std::cout << "ERROR in Mix_PlayChannel in play3D: " << Mix_GetError() << std::endl;  return;
 	}
+	Mix_Volume(ch, (int)(volume*(set->sound_volume/100.f)));
+	std::cout << "Playing on Channel: " << ch << std::endl;
 }

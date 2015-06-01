@@ -496,6 +496,16 @@ bool GUI::updateText(int id, const std::string &txt, Uint8 cred, Uint8 cgreen, U
 	return true;
 }
 
+void GUI::setButtonTextures(int id, Texture *newtex, Texture *newtexsel)
+{
+	elements.at(id)->textures[0] = newtex;
+	elements.at(id)->textures[1] = newtexsel;
+
+	// update size
+	elements.at(id)->size_x = newtex->size_x;
+	elements.at(id)->size_y = newtex->size_y;
+}
+
 
 void GUI::updateTexture(int id, Texture *newtex, int texnum)
 {

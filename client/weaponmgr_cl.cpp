@@ -403,7 +403,7 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			effmgr->eff_bullettrail(&orig, &shoot_target);
 
 			Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
-			if (snd) snd->play(1, 100.f);
+			if (snd) snd->play(1, 128.f);
 		}
 		else
 		{

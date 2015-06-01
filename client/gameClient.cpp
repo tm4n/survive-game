@@ -7,6 +7,7 @@
 #include "box_cl.h"
 #include "collectible_cl.h"
 #include "npc_cl.h"
+#include "backends\b_settings.h"
 #include <sstream>
 
 gameClient::gameClient(gameRenderer *arenderer)
@@ -730,6 +731,7 @@ void gameClient::event_mouse(SDL_Event *evt)
 {
 	if (input_enable == false) return;
 
+	b_settings *set = b_settings::instance();
 	player_cl *pl = get_own_player();
 
 	// special case: pipe to ingame menu
@@ -743,8 +745,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 	
 	if (evt->type == SDL_MOUSEMOTION)
 	{
-		renderer->CameraAngle.x -= evt->motion.xrel*0.05f;
-		renderer->CameraAngle.y -= evt->motion.yrel*0.05f;
+		float mouse_fac = 0.025f*set->mouse_sensitivity;
+		renderer->CameraAngle.x -= (float)evt->motion.xrel*mouse_fac;
+		if (set->mouse_invert) mouse_fac *= -1.f;
+		renderer->CameraAngle.y -= (float)evt->motion.yrel*mouse_fac;
 
 		renderer->CameraAngle.y = clamp(renderer->CameraAngle.y, -89.f, 89.f);
 	}

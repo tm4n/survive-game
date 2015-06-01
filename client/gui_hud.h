@@ -58,7 +58,7 @@ protected:
 
 	int score_bg_id, score_names_txt_id, score_points_txt_id, score_pings_txt_id, highscore_txt_id;
 
-	int ingame_menu_bg, ingame_but_disconnect, ingame_but_options, ingame_but_close;
+	int ingame_menu_bg, ingame_but_disconnect, ingame_but_close; // ingame_but_options,
 
 	std::list<GUICallback*> callbacks;
 	std::list<Texture*> textures;

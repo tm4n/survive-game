@@ -19,15 +19,34 @@ public:
 	
 	void options_show();
 	void options_hide();
+	void options_update();
+
+	void options_safe_to_settings();
+	void options_load_from_settings();
 
 	void snd_click();
 
-	void frame();
+	void enable_inputbox(int id);
+	void disable_inputbox();
+
+	void event_input_keys(SDL_Event *evt);
+	void frame(double);
 
 	bool visible;
 	
 	ResourceLoader *resources;
 	GUI *gui;
+
+#define OPT_NUM_SCREENRESOLUTIONS 18
+	static const int screenresolutions_x[OPT_NUM_SCREENRESOLUTIONS];
+	static const int screenresolutions_y[OPT_NUM_SCREENRESOLUTIONS];
+
+	bool mouseinv, fullscreen, shader, antialias;
+	std::string str_playername, str_mousesens, str_volume;
+	int screenres_index;
+
+	int current_inputbox;
+	std::string *current_inputstring;
 
 private:
 
@@ -46,6 +65,9 @@ private:
 
 	int button_ids[SELECTION_MAX];
 	int button_sel_ids[SELECTION_MAX];
+
+	double caret_animation;
+	bool caret_visible;
 };
 
 

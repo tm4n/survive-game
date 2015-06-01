@@ -17,6 +17,9 @@
 
 b_settings::b_settings()
 {
+#ifdef ANDROID
+	goto default_settings;
+#endif
 	// load values
 	std::string path = get_settings_file_path();
 	if (path.size() > 0)
@@ -74,7 +77,25 @@ b_settings::b_settings()
 
 	// Default settings
 default_settings:
+#ifdef ANDROID
+	playername.assign("Android Player");;
+	server.assign("Survive! Server");
 
+	mouse_sensitivity = 2.0f;
+	mouse_invert = false;
+
+	screenres_x = 1920;
+	screenres_y = 1080;
+	fullscreen = true;
+	screenaspect = 16.f / 9.f;
+	shader = true;
+	shadow = SETTINGS_SHADOW_MID;
+	antialias = SETTINGS_ANTIALIAS_OFF;
+	anisotropy = SETTINGS_ANISOTROPY_OFF;
+	sound_volume = 70.f;
+	return;
+#endif
+	// Other systems default settings
 	playername.assign("Player");;
 	server.assign("Survive! Server");
 
@@ -94,6 +115,9 @@ default_settings:
 
 void b_settings::save_settings()
 {
+#ifdef ANDROID 
+	return;
+#endif
 	// load values
 	std::string path = get_settings_file_path();
 	if (path.length() > 0)

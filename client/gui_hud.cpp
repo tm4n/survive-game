@@ -101,11 +101,11 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	callbacks.push_back(dc);
 	textures.push_back(tex); textures.push_back(tex_sel);
 
-	tex = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
+	/*tex = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	tex_sel = new Texture("Options", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
 	ingame_but_options = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -100.f, NULL);
 	//callbacks.push_back(dc);
-	textures.push_back(tex); textures.push_back(tex_sel);
+	textures.push_back(tex); textures.push_back(tex_sel);*/
 
 	closeCallback *cc = new closeCallback(this);
 	tex = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
@@ -114,10 +114,13 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	callbacks.push_back(cc);
 	textures.push_back(tex); textures.push_back(tex_sel);
 
-	gui->setButtonSwitchDown(ingame_but_disconnect, ingame_but_options);
+	/*gui->setButtonSwitchDown(ingame_but_disconnect, ingame_but_options);
 	gui->setButtonSwitchDown(ingame_but_options, ingame_but_close);
 	gui->setButtonSwitchUp(ingame_but_options, ingame_but_disconnect);
-	gui->setButtonSwitchUp(ingame_but_close, ingame_but_options);
+	gui->setButtonSwitchUp(ingame_but_close, ingame_but_options);*/
+
+	gui->setButtonSwitchDown(ingame_but_disconnect, ingame_but_close);
+	gui->setButtonSwitchUp(ingame_but_close, ingame_but_disconnect);
 
 
 	// hide everything default
@@ -165,7 +168,7 @@ gui_hud::~gui_hud()
 	// delete ingame menu
 	gui->removeObject(ingame_menu_bg);
 	gui->removeObject(ingame_but_disconnect);
-	gui->removeObject(ingame_but_options);
+	//gui->removeObject(ingame_but_options);
 	gui->removeObject(ingame_but_close);
 
 	for (GUICallback *c : callbacks) delete c;
@@ -419,7 +422,7 @@ void gui_hud::show_ingame_menu()
 	ingame_menu_visible = true;
 	gui->setVisible(ingame_menu_bg, true);
 	gui->setVisible(ingame_but_disconnect, true);
-	gui->setVisible(ingame_but_options, true);
+	//gui->setVisible(ingame_but_options, true);
 	gui->setVisible(ingame_but_close, true);
 
 	// untrap mouse
@@ -433,7 +436,7 @@ void gui_hud::hide_ingame_menu()
 	ingame_menu_visible = false;
 	gui->setVisible(ingame_menu_bg, false);
 	gui->setVisible(ingame_but_disconnect, false);
-	gui->setVisible(ingame_but_options, false);
+	//gui->setVisible(ingame_but_options, false);
 	gui->setVisible(ingame_but_close, false);
 
 	// trap mouse

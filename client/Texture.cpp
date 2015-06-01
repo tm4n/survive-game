@@ -122,6 +122,9 @@ Texture::Texture(std::string txt, TTF_Font *fnt, SDL_Color c)
 	loaded = false;
 	tgaFile = NULL;
 	
+	// Fixes empty surface errors
+	if (txt.length() == 0) txt.assign(" ");
+
 	file.assign(txt);
 	
 	// render text
