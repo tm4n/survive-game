@@ -123,6 +123,20 @@ default_settings:
 	sound_volume = 70.f;
 }
 
+void b_settings::set_secure_graphic_settings()
+{
+	screenres_x = 800;
+	screenres_y = 600;
+	fullscreen = false;
+	screenaspect = 4.f / 3.f;
+	shader = false;
+	shadow = SETTINGS_SHADOW_OFF;
+	antialias = SETTINGS_ANTIALIAS_OFF;
+	anisotropy = SETTINGS_ANISOTROPY_OFF;
+
+	save_settings();
+}
+
 void b_settings::save_settings()
 {
 #ifdef ANDROID 

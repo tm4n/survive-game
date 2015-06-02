@@ -31,6 +31,8 @@ public:
 	void hide_wp();
 	void show_wp();
 
+	static void snd_hit(ResourceLoader *res, actor *ac, float vol_modifier = 1.0f);
+
 	// TODO: move to protected again after debugging
 	int anim_state;
 
@@ -53,7 +55,6 @@ protected:
 	void set_anim_state(int new_state);
 	MeshGUI *getMesh(int weapon_id);
 	void show_muzzleflash(int weapon_id);
-	void snd_hit(actor *ac);
 
 };
 

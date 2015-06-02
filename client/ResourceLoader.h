@@ -37,14 +37,16 @@ public:
 	};
 
 	enum class sndType : int {
-		None = 0, Click = 1,
+	None = 0, Click = 1, Chat = 2, NextWave = 3, Step = 4,
 	Colt_shot = 10, Colt_reload = 11, 
 	Chainsaw_shot = 12, Chainsaw_loop = 13,
 	Wesson_shoot = 14,
 	HKSL8_shoot = 16,
 	Shotgun_shoot = 18, Shotgun_reload = 19,
 	USAS_shoot = 20,
-	Flesh_hit = 30, Metal_hit1 = 31, Wood_hit1 = 32, Wood_hit2 = 33, Wood_hit3 = 34}; // TODO: finish
+	Turret = 25,
+	Flesh_hit = 30, Metal_hit1 = 31, Wood_hit1 = 32, Wood_hit2 = 33, Wood_hit3 = 34, Fireball = 35, Fireball_hit = 36,
+	Generator = 40, Zombie1= 41, Zombie2 = 42, Monster = 43, Harpy1 = 44, Harpy2 = 45}; // TODO: finish
 
 	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};
 

@@ -23,6 +23,7 @@ protected:
 
 	gameRenderer *renderer;
 
+	void snd_taunt();
 };
 
 

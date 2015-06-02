@@ -1,6 +1,8 @@
 #include "npc_cl.h"
 
 #include <algorithm>
+#include "weaponmgr_cl.h"
+#include "helper.h"
 
 npc_cl::npc_cl(level *lvl, uint actor_id, int npc_type, vec *pos, vec*ang, float health, int target, gameRenderer *arenderer)
 	: npc(lvl, actor_id, npc_type, pos, ang, health, target)
@@ -33,7 +35,7 @@ npc_cl::~npc_cl()
 
 void npc_cl::frame(double time_delta)
 {
-	//if (state == ST_WALKING && rnd(4000) == 0) snd_taunt();
+	if (state == ST_WALKING && random_int_range(4000) == 0) snd_taunt();
 	movement(time_delta);
 
 	animate(time_delta);
@@ -70,13 +72,18 @@ void npc_cl::animate(double time_delta)
 
 	if (state == ST_ATTACK)
 	{
+		if (anim_prog == 0)
+		{
+			actor *ac = lvl->actorlist.at(target);
+			if (ac != NULL) weaponmgr_cl::snd_hit(&renderer->resources, ac, 0.65f);
+		}
 		getMesh()->animate(ro, "attack", anim_prog, 0);
 		anim_prog += get_move_speed()*2.f*(float)time_delta*anim_speed;
 	}
 		
 	if (state == ST_FL_DESC)
 	{
-		//if (anim_prog == 0) snd_taunt();
+		if (anim_prog == 0) snd_taunt();
 		getMesh()->animate(ro, "run", anim_prog, 1);
 		anim_prog += get_move_speed()*2.f*(float)time_delta*anim_speed;
 	}
@@ -95,4 +102,17 @@ void npc_cl::animate(double time_delta)
 	}
 
 	if (anim_prog > 100.f && (state == ST_WALKING || state == ST_IDLE)) {anim_prog -= 100.f;}
+}
+
+void npc_cl::snd_taunt()
+{
+	if (b_npcs::instance()->at(npc_type)->res_snd_taunt1 == ResourceLoader::sndType::None) return;
+
+	if (b_npcs::instance()->at(npc_type)->res_snd_taunt2 == ResourceLoader::sndType::None) renderer->resources.getSnd(b_npcs::instance()->at(npc_type)->res_snd_taunt1)->play3D(1, ro, 60.f);
+
+	else
+	{
+		if (random_int_range(2) == 0) renderer->resources.getSnd(b_npcs::instance()->at(npc_type)->res_snd_taunt2)->play3D(1, ro, 60.f); 
+		else renderer->resources.getSnd(b_npcs::instance()->at(npc_type)->res_snd_taunt1)->play3D(1, ro, 60.f);
+	}
 }

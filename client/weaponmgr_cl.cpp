@@ -376,7 +376,7 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			if (actor_hit >= 0) // hit someone
 			{
 				actor *ac = lvl->actorlist.at(actor_hit);
-				snd_hit(ac);
+				snd_hit(&renderer->resources, ac);
 				if (ac->faction == 2) // hit a zombie
 				{
 					log (LOG_DEBUG, "hitting blood");
@@ -463,12 +463,12 @@ void weaponmgr_cl::show_muzzleflash(int weapon_id)
 	ro_mf->visible = true;
 }
 
-void weaponmgr_cl::snd_hit(actor *ac)
+void weaponmgr_cl::snd_hit(ResourceLoader *res, actor *ac, float vol_modifier)
 {
 	switch (ac->type)
 	{
 	case ACTOR_TYPE_NPC:
-		renderer->resources.getSnd(ResourceLoader::sndType::Flesh_hit)->play3D(1, ac, 200.f);
+		res->getSnd(ResourceLoader::sndType::Flesh_hit)->play3D(1, ac, 100.f*vol_modifier);
 		break;
 
 	case ACTOR_TYPE_BOX:
@@ -481,22 +481,22 @@ void weaponmgr_cl::snd_hit(actor *ac)
 			switch (rnd)
 			{
 			case 0:
-				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit1)->play3D(1, ac, 350.f);
+				res->getSnd(ResourceLoader::sndType::Wood_hit1)->play3D(1, ac, 50.f*vol_modifier);
 				break;
 
 			case 1:
-				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit2)->play3D(1, ac, 350.f);
+				res->getSnd(ResourceLoader::sndType::Wood_hit2)->play3D(1, ac, 50.f*vol_modifier);
 				break;
 
 			case 2:
-				renderer->resources.getSnd(ResourceLoader::sndType::Wood_hit3)->play3D(1, ac, 350.f);
+				res->getSnd(ResourceLoader::sndType::Wood_hit3)->play3D(1, ac, 50.f*vol_modifier);
 				break;
 			}
 		}
 		else
 		{
 			// Box is metal
-			renderer->resources.getSnd(ResourceLoader::sndType::Metal_hit1)->play3D(1, ac, 400.f);
+			res->getSnd(ResourceLoader::sndType::Metal_hit1)->play3D(1, ac, 70.f*vol_modifier);
 		}
 		
 		break;

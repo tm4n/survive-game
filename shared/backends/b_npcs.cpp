@@ -20,8 +20,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_MUMMY].anim_speed = 1;
 	npc_data[NPC_MUMMY].bb_max.x = 17.588631f; npc_data[NPC_MUMMY].bb_max.y = 13.339565f; npc_data[NPC_MUMMY].bb_max.z = 36.198421f;
 	npc_data[NPC_MUMMY].bb_min.x = -11.324703f; npc_data[NPC_MUMMY].bb_min.y = -15.327499f; npc_data[NPC_MUMMY].bb_min.z = -32.460072f;
-	//npc_data[NPC_MUMMY].snd_taunt1 = snd_create("zombie1.wav");
-	//npc_data[NPC_MUMMY].snd_taunt2 = snd_create("zombie2.wav");
+	npc_data[NPC_MUMMY].res_snd_taunt1 = ResourceLoader::sndType::Zombie1;
+	npc_data[NPC_MUMMY].res_snd_taunt2 = ResourceLoader::sndType::Zombie2;
 	
 	
 	// NPC_WEREWOLF
@@ -39,7 +39,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_WEREWOLF].anim_speed = 0.6f;
 	npc_data[NPC_WEREWOLF].bb_max.x = 24.940651f; npc_data[NPC_WEREWOLF].bb_max.y = 24.530399f; npc_data[NPC_WEREWOLF].bb_max.z = 34.555672f;
 	npc_data[NPC_WEREWOLF].bb_min.x = -29.585518f; npc_data[NPC_WEREWOLF].bb_min.y = -27.091246f; npc_data[NPC_WEREWOLF].bb_min.z = -29.055637f;
-	
+	npc_data[NPC_WEREWOLF].res_snd_taunt1 = ResourceLoader::sndType::None;
+	npc_data[NPC_WEREWOLF].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_SMASHER
 	npc_data[NPC_SMASHER].name = "Smasher";
 	npc_data[NPC_SMASHER].res_mesh = ResourceLoader::meshType::Smasher;
@@ -55,7 +57,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_SMASHER].anim_speed = 1.f;
 	npc_data[NPC_SMASHER].bb_max.x = 30.127815f; npc_data[NPC_SMASHER].bb_max.y = 34.833366f; npc_data[NPC_SMASHER].bb_max.z = 30.635017f;
 	npc_data[NPC_SMASHER].bb_min.x = -19.849461f; npc_data[NPC_SMASHER].bb_min.y = -38.439285f; npc_data[NPC_SMASHER].bb_min.z = -48.583107f;
-	
+	npc_data[NPC_SMASHER].res_snd_taunt1 = ResourceLoader::sndType::None;
+	npc_data[NPC_SMASHER].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_WITCH
 	npc_data[NPC_WITCH].name = "Witch";
 	npc_data[NPC_WITCH].res_mesh = ResourceLoader::meshType::Witch;
@@ -72,7 +76,9 @@ b_npcs::b_npcs()
 	//npc_data[NPC_WITCH].npc_attach = str_create("witch_stick.mdl");
 	npc_data[NPC_WITCH].bb_max.x = 28.478836f; npc_data[NPC_WITCH].bb_max.y = 12.757271f; npc_data[NPC_WITCH].bb_max.z = 13.369316f;
 	npc_data[NPC_WITCH].bb_min.x = -14.856464f; npc_data[NPC_WITCH].bb_min.y = -16.691643f; npc_data[NPC_WITCH].bb_min.z = -32.391720f;
-	
+	npc_data[NPC_WITCH].res_snd_taunt1 = ResourceLoader::sndType::None;
+	npc_data[NPC_WITCH].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_HOGMAN
 	npc_data[NPC_HOGMAN].name = "Hogman";
 	npc_data[NPC_HOGMAN].res_mesh = ResourceLoader::meshType::Hogman;
@@ -88,8 +94,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_HOGMAN].anim_speed = 1.f;
 	npc_data[NPC_HOGMAN].bb_max.x = 44.935059f; npc_data[NPC_HOGMAN].bb_max.y = 45.910545f; npc_data[NPC_HOGMAN].bb_max.z = 34.989952f;
 	npc_data[NPC_HOGMAN].bb_min.x = -27.529774f; npc_data[NPC_HOGMAN].bb_min.y = -49.378990f; npc_data[NPC_HOGMAN].bb_min.z = -58.357849f;
-	//npc_data[NPC_HOGMAN].snd_taunt1 = snd_create("monster.wav");
-	
+	npc_data[NPC_HOGMAN].res_snd_taunt1 = ResourceLoader::sndType::Monster;
+	npc_data[NPC_HOGMAN].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_KNIGHT
 	npc_data[NPC_KNIGHT].name = "Dark Knight";
 	npc_data[NPC_KNIGHT].res_mesh = ResourceLoader::meshType::Knight;
@@ -105,7 +112,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_KNIGHT].anim_speed = 1.f;
 	npc_data[NPC_KNIGHT].bb_max.x = 19.013863f; npc_data[NPC_KNIGHT].bb_max.y = 19.674980f; npc_data[NPC_KNIGHT].bb_max.z = 46.140266f;
 	npc_data[NPC_KNIGHT].bb_min.x = -15.636204f; npc_data[NPC_KNIGHT].bb_min.y = -21.021851f; npc_data[NPC_KNIGHT].bb_min.z = -38.661064f;
-	
+	npc_data[NPC_KNIGHT].res_snd_taunt1 = ResourceLoader::sndType::None;
+	npc_data[NPC_KNIGHT].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_BAUUL
 	npc_data[NPC_BAUUL].name = "Bauul";
 	npc_data[NPC_BAUUL].res_mesh = ResourceLoader::meshType::Bauul;
@@ -121,7 +130,9 @@ b_npcs::b_npcs()
 	npc_data[NPC_BAUUL].anim_speed = 0.5f;
 	npc_data[NPC_BAUUL].bb_max.x = 33.458138f; npc_data[NPC_BAUUL].bb_max.y = 35.736652f; npc_data[NPC_BAUUL].bb_max.z = 48.873466f;
 	npc_data[NPC_BAUUL].bb_min.x = -29.541290f; npc_data[NPC_BAUUL].bb_min.y = -41.254204f; npc_data[NPC_BAUUL].bb_min.z = -43.599411f;
-	
+	npc_data[NPC_BAUUL].res_snd_taunt1 = ResourceLoader::sndType::None;
+	npc_data[NPC_BAUUL].res_snd_taunt2 = ResourceLoader::sndType::None;
+
 	// NPC_HARPY
 	npc_data[NPC_HARPY].name = "Harpy";
 	npc_data[NPC_HARPY].res_mesh = ResourceLoader::meshType::Harpy;
@@ -137,8 +148,8 @@ b_npcs::b_npcs()
 	npc_data[NPC_HARPY].anim_speed = 0.5f;
 	npc_data[NPC_HARPY].bb_max.x = 8.488274f; npc_data[NPC_HARPY].bb_max.y = 70.f; npc_data[NPC_HARPY].bb_max.z = 72.389915f;
 	npc_data[NPC_HARPY].bb_min.x = -49.019192f; npc_data[NPC_HARPY].bb_min.y = -70.f; npc_data[NPC_HARPY].bb_min.z = 2.457153f;
-	//npc_data[NPC_HARPY].snd_taunt1 = snd_create("harpy1.wav");
-	//npc_data[NPC_HARPY].snd_taunt2 = snd_create("harpy2.wav");
+	npc_data[NPC_HARPY].res_snd_taunt1 = ResourceLoader::sndType::Harpy1;
+	npc_data[NPC_HARPY].res_snd_taunt2 = ResourceLoader::sndType::Harpy2;
 }
 
 s_npcs *b_npcs::at(uint id)

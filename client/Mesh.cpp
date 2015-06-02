@@ -8,6 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "SDL2/SDL.h"
 #include "helper.h"
+#include "Sound.h"
 
 // base header
 typedef struct {
@@ -544,6 +545,16 @@ void Mesh::addRenderObject(RenderObject *obj) {
 }
     
 void Mesh::removeRenderObject(RenderObject *obj) {
+
+	// remove attached sounds
+	for (int& i : obj->attachedSndChannels)
+	{
+		Mix_HaltChannel(i);
+		Sound::channels3D_free[i] = true;
+	}
+	obj->attachedSndChannels.clear();
+	
+
     return objectList.remove(obj);
 }
 

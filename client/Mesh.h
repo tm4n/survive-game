@@ -29,6 +29,8 @@ public:
 	vec bb_min;
 	vec bb_max;
 
+	std::list<RenderObject*> objectList;
+
 	Mesh(const char *mesh_file, const char *tex_file);
 
 	virtual void draw(const glm::mat4 &mVPMatrix);
@@ -45,8 +47,6 @@ public:
 protected:
 	const char *vertexShaderCode;
 	const char *fragmentShaderCode;
-
-	std::list<RenderObject*> objectList;
 
 	std::vector<std::string> frameNames;
 

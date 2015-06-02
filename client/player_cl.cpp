@@ -23,6 +23,8 @@ player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health
 
 	send_pos_timer = 0.f;
 	send_angle_timer = 0.f;
+	step_count = 0.;
+	step_first = false;
 }
 
 
@@ -133,5 +135,27 @@ void player_cl::frame(double time_delta)
 	
 	ro->translation[0] = position.x; ro->translation[1] = position.y; ro->translation[2] = position.z; 
 	ro->rotation[0] = angle.x; ro->rotation[1] = angle.y; ro->rotation[2] = angle.z;
+
+	// walk sound
+	if (state == ST_WALKING || state == ST_WALKING_LEFT || state == ST_WALKING_RIGHT)
+	{
+		if (step_count > 0. && step_first == false) { snd_ent_step(false); step_first = true; }
+		if (step_count > 100.) { snd_ent_step(true); step_count = -100.; step_first = false; }
+
+		if (input & INPUT_SPRINT) step_count += move_speed*2.5*time_delta; else step_count += move_speed*2*time_delta;
+
+	}
+	else { step_count = 0.; step_first = false; }
 }
 
+
+void player_cl::snd_ent_step(bool dir)
+{
+	Sound *snd_step = renderer->resources.getSnd(ResourceLoader::sndType::Step);
+	if (local_player == true)
+	{
+		if (dir == false) { snd_step->play(1, 50.f, 40.f); }
+		else { snd_step->play(1, 50.f, -40.f); }
+	}
+	else { snd_step->play3D(1, ro, 20.f); }
+}

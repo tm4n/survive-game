@@ -20,7 +20,6 @@ void ResourceLoader::loadIngame()
 	if (ingame_done == true) return;
 	
 	Mesh *m;
-	Sound * s;
 	// crates
 
 	meshes[(int)meshType::Crate] = new Mesh("assets/models/c.mdl", NULL);
@@ -235,65 +234,45 @@ void ResourceLoader::loadIngame()
 	// Sounds
 	sounds[(int)sndType::None] = NULL;
 
+	sounds[(int)sndType::Chat] = new Sound("assets/sounds/chat.wav");
+	sounds[(int)sndType::NextWave] = new Sound("assets/sounds/next_wave.wav");
+	sounds[(int)sndType::Step] = new Sound("assets/sounds/step.wav");
+
 	// Weapon sounds
-	s = new Sound("assets/sounds/colt_shot.wav");
-	sounds[(int)sndType::Colt_shot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
+	sounds[(int)sndType::Colt_shot] = new Sound("assets/sounds/colt_shot.wav");
+	sounds[(int)sndType::Colt_reload] = new Sound("assets/sounds/colt_reload.wav");
+	sounds[(int)sndType::Chainsaw_shot] = new Sound("assets/sounds/chainsaw_shot.wav");
+	sounds[(int)sndType::Chainsaw_loop] = new Sound("assets/sounds/chainsaw_loop.wav");
+	sounds[(int)sndType::Wesson_shoot] = new Sound("assets/sounds/wesson_shot.wav");
+	sounds[(int)sndType::HKSL8_shoot] = new Sound("assets/sounds/hksl8_shot.wav");
+	sounds[(int)sndType::Shotgun_shoot] = new Sound("assets/sounds/shotgun_shot.wav");
+	sounds[(int)sndType::Shotgun_reload] = new Sound("assets/sounds/shotgun_reload.wav");
+	sounds[(int)sndType::USAS_shoot] = new Sound("assets/sounds/usas12_shot.wav");
 
-	s = new Sound("assets/sounds/colt_reload.wav");
-	sounds[(int)sndType::Colt_reload] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/chainsaw_shot.wav");
-	sounds[(int)sndType::Chainsaw_shot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/chainsaw_loop.wav");
-	sounds[(int)sndType::Chainsaw_loop] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/wesson_shot.wav");
-	sounds[(int)sndType::Wesson_shoot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/hksl8_shot.wav");
-	sounds[(int)sndType::HKSL8_shoot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/shotgun_shot.wav");
-	sounds[(int)sndType::Shotgun_shoot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/shotgun_reload.wav");
-	sounds[(int)sndType::Shotgun_reload] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/usas12_shot.wav");
-	sounds[(int)sndType::USAS_shoot] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
+	sounds[(int)sndType::Turret] = new Sound("assets/sounds/turret.wav");
 
 	// Ambient sounds
-	s = new Sound("assets/sounds/flesh_hit.wav");
-	sounds[(int)sndType::Flesh_hit] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
+	sounds[(int)sndType::Flesh_hit] = new Sound("assets/sounds/flesh_hit.wav");
+	sounds[(int)sndType::Metal_hit1] = new Sound("assets/sounds/metal_hit1.wav");
+	sounds[(int)sndType::Wood_hit1] = new Sound("assets/sounds/crate_hit1.wav");
+	sounds[(int)sndType::Wood_hit2] = new Sound("assets/sounds/crate_hit2.wav");
+	sounds[(int)sndType::Wood_hit3] = new Sound("assets/sounds/crate_hit3.wav");
 
-	s = new Sound("assets/sounds/metal_hit1.wav");
-	sounds[(int)sndType::Metal_hit1] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
+	sounds[(int)sndType::Generator] = new Sound("assets/sounds/generator.wav");
+	sounds[(int)sndType::Zombie1] = new Sound("assets/sounds/zombie1.wav");
+	sounds[(int)sndType::Zombie2] = new Sound("assets/sounds/zombie2.wav");
+	sounds[(int)sndType::Monster] = new Sound("assets/sounds/monster.wav");
+	sounds[(int)sndType::Harpy1] = new Sound("assets/sounds/harpy1.wav");
+	sounds[(int)sndType::Harpy2] = new Sound("assets/sounds/harpy2.wav");
 
-	s = new Sound("assets/sounds/crate_hit1.wav");
-	sounds[(int)sndType::Wood_hit1] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
+	sounds[(int)sndType::Fireball] = new Sound("assets/sounds/fireball.wav");
+	sounds[(int)sndType::Fireball_hit] = new Sound("assets/sounds/fireball_hit.wav");
 
-	s = new Sound("assets/sounds/crate_hit2.wav");
-	sounds[(int)sndType::Wood_hit2] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-
-	s = new Sound("assets/sounds/crate_hit3.wav");
-	sounds[(int)sndType::Wood_hit3] = s;
-	if (s->loaded == false) { std::cout << "ERROR loading Sound: " << s->file << std::endl; exit(-1); }
-	
-
+	// check if all sounds have been successfully loaded
+	for (int i = 0; i < MAX_SOUNDS; i++)
+	{
+		if (sounds[i] != NULL) if (sounds[i]->loaded == false) { std::cout << "ERROR loading Sound: " << sounds[i]->file << std::endl; exit(-1); }
+	}
 
 	ingame_done = true;
 }
@@ -347,6 +326,8 @@ void ResourceLoader::loadMenu()
 	}
 
 	// Sounds
+	sounds[(int)sndType::None] = NULL;
+
 	sounds[(int)sndType::Click] = new Sound("assets/sounds/click.wav");
 	if (sounds[(int)sndType::Click]->loaded == false) { std::cout << "ERROR loading Sound: " << sounds[(int)sndType::Click]->file << std::endl; exit(-1); }
 	

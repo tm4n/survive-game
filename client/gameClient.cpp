@@ -112,6 +112,12 @@ void gameClient::handle_netevent(ENetEvent *event)
 						break;
 					}
 
+					case NET_CHAT:
+					{
+						// TODO: implement chat
+						break;
+					}
+
 					case NET_SYNC_SERVER:
 					{
 						s_net_sync_server *d = (s_net_sync_server*)data;
@@ -265,6 +271,8 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_game_wave *d = (s_net_game_wave*)data;
 						
+						if (d->game_wave > wave) renderer->resources.getSnd(ResourceLoader::sndType::NextWave)->play(1, 110.f);
+
 						wave = d->game_wave;
 						
 						break;

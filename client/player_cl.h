@@ -29,6 +29,11 @@ protected:
 	gameRenderer *renderer;
 
 	float send_angle_timer, send_pos_timer;
+
+	double step_count;
+	bool step_first;
+
+	void snd_ent_step(bool dir);
 };
 
 

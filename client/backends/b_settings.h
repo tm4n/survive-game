@@ -30,6 +30,8 @@ public:
 
 	void save_settings();
 
+	void set_secure_graphic_settings();
+
 	std::string playername;
 	std::string server;
 

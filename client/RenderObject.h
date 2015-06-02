@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <vec.h>
+#include <list>
 
 class RenderObject
 {
@@ -19,7 +20,10 @@ public:
 	float alpha;
 	glm::vec3 coloring;
 
+	std::list<int> attachedSndChannels; // is disabled when detached from Mesh
+
 	bool visible;
+
 
 	RenderObject();
 	RenderObject(float *translation, float *rotation);

@@ -16,10 +16,9 @@ class collectible_cl : public collectible
 		
 		virtual void frame(double time_delta);
 		
+		RenderObject *ro, *ro_wp, *ro_parachute;
 	protected:
 		gameRenderer *renderer;
-		
-		RenderObject *ro, *ro_wp, *ro_parachute;
 	
 	private:
 };

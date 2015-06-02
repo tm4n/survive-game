@@ -21,12 +21,18 @@ box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health,
 	}
 	else ro_dmg = NULL;
 
+	if (box_type == BOX_TYPE_GENERATOR)
+	{
+		renderer->resources.getSnd(ResourceLoader::sndType::Generator)->play3D(0, ro, 30);
+	}
+
 	if (state == BOX_STATE_PARACHUTING)
 	{
 		ro_parachute = new RenderObject(&position, &angle);
 		renderer->resources.getMesh(ResourceLoader::meshType::Parachute)->addRenderObject(ro_parachute);
 	}
 	else ro_parachute = NULL;
+
 }
 
 

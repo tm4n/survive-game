@@ -47,8 +47,8 @@ struct s_npcs{
 	float anim_speed;
 	vec bb_min;
 	vec bb_max;
-	int res_snd_taunt1;
-	int res_snd_taunt2;
+	ResourceLoader::sndType res_snd_taunt1;
+	ResourceLoader::sndType res_snd_taunt2;
 };
 
 class b_npcs

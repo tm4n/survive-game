@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include "glm/gtc/matrix_transform.hpp"
 #include "SDL/SDL_mixer.h"
+#include "backends/b_settings.h"
 
 gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, bool antialias)
 {
@@ -17,7 +18,8 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 		std::cout << "SDL Error on open SDL Mixer Audio: " << Mix_GetError() << std::endl;
 		exit(-3);
 	}
-	//Mix_AllocateChannels(16);
+	Mix_AllocateChannels(SND_CHANNELS_ALLOC*2);
+	Mix_GroupChannels(SND_CHANNELS_ALLOC, (SND_CHANNELS_ALLOC*2) - 1, SND_GROUP_2D);
 
 	// not sure if this is needed!
 	#ifndef ANDROID
@@ -42,6 +44,11 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 	if (window == NULL)
 	{
 		std::cout << "SDL Error on window opening: " << SDL_GetError() << std::endl;
+		std::cout << "Reverting to safe graphics settings, press a key to close this window, then restart the game." << std::endl;
+
+		b_settings::instance()->set_secure_graphic_settings();
+
+		std::cin.ignore();
 		exit(-3);
 	}
 
@@ -146,4 +153,51 @@ void gameRenderer::drawFrame(double time_delta)
 
 
 	SDL_GL_SwapWindow(window);
+
+	// emulate 3D sound
+	for (int i = 0; i < MAX_MESHES; i++) {
+		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
+		if (m != NULL)
+		{
+			for (RenderObject *ro : m->objectList)
+			{
+				std::list<int>::iterator i = ro->attachedSndChannels.begin();
+				while (i != ro->attachedSndChannels.end())
+				{
+					if (Mix_Playing(*i) == 0)
+					{
+						Sound::channels3D_free[*i] = true;
+						ro->attachedSndChannels.erase(i++);  // alternatively, i = items.erase(i);
+					}
+					else
+					{
+						// update sound positions
+						vec ro(ro->translation.x, ro->translation.y, ro->translation.z);
+						vec cam(CameraPos.x, CameraPos.y, CameraPos.z);
+
+						float dist = ro.dist(&cam) / 4;
+						if (dist > 255.f) dist = 255.f;
+						Uint8 idist = (Uint8)dist;
+
+						if (ro.dist2d(&cam) < 20.f)
+						{
+							// simplified effect without directional audio (still not perfect effect)
+							Mix_SetPosition(*i, (Uint16)0, idist);
+						}
+						else
+						{
+							// full effect
+							vec v(ro.x - cam.x, ro.y - cam.y, ro.z - cam.z);
+							float ang_to_obj = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0 / M_PI));
+
+							float ang = vec::angle(ang_to_obj - CameraAngle.x) + 180.f;
+
+							Mix_SetPosition(*i, (Uint16)ang, idist);
+						}
+						++i;
+					}
+				}
+			}
+		}
+	}
 }
