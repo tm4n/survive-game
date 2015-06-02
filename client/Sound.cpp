@@ -1,14 +1,15 @@
 #include "Sound.h"
-#include "backends/b_settings.h"
 
 #include <iostream>
 #include <string>
 #include <algorithm>
 
-#include "box_cl.h"
 #include "npc_cl.h"
 #include "player_cl.h"
 #include "collectible_cl.h"
+#include "box_cl.h"
+
+#include "backends/b_settings.h"
 
 bool Sound::channels3D_free[SND_CHANNELS_ALLOC] = { true, true, true, true, true, true, true, true,
 													true, true, true, true, true, true, true, true };

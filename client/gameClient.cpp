@@ -707,7 +707,7 @@ void gameClient::frame(double time_delta)
 
 			//s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
 
-			s << "DEBUG wp_ready: " << pl->wpmgr->wp_ready << ", wp_reloading: " << pl->wpmgr->wp_reloading << "wp->anim_state=" << pl->wpmgr->anim_state;
+			s << "DEBUG here if needed";
 
 			hud->set_debug(s.str());
 		

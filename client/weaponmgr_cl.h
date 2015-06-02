@@ -33,9 +33,6 @@ public:
 
 	static void snd_hit(ResourceLoader *res, actor *ac, float vol_modifier = 1.0f);
 
-	// TODO: move to protected again after debugging
-	int anim_state;
-
 protected:
 	bool *local_player;
 	ushort *plstate;
@@ -43,7 +40,7 @@ protected:
 	effectmgr *effmgr;
 	int player_id;
 
-
+	int anim_state;
 	float anim_count;
 	vec recoil;
 

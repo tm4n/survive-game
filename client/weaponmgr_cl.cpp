@@ -16,6 +16,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	this->player_id = player_id;
 	this->anim_state = 0;
 	this->anim_count = 0.f;
+	this->hidden = false;
 
 	// displayed weapon
 

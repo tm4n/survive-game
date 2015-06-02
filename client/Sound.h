@@ -1,7 +1,7 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
-#include "SDL/SDL_mixer.h"
+#include "SDL2/SDL_mixer.h"
 #include <string>
 #include "actor.h"
 #include "RenderObject.h"

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdlib.h> 
 #include "glm/gtc/matrix_transform.hpp"
-#include "SDL/SDL_mixer.h"
+#include "SDL2/SDL_mixer.h"
 #include "backends/b_settings.h"
 
 gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, bool antialias)
@@ -172,14 +172,14 @@ void gameRenderer::drawFrame(double time_delta)
 					else
 					{
 						// update sound positions
-						vec ro(ro->translation.x, ro->translation.y, ro->translation.z);
-						vec cam(CameraPos.x, CameraPos.y, CameraPos.z);
+						vec vro(ro->translation.x, ro->translation.y, ro->translation.z);
+						vec vcam(CameraPos.x, CameraPos.y, CameraPos.z);
 
-						float dist = ro.dist(&cam) / 4;
+						float dist = vro.dist(&vcam) / 4;
 						if (dist > 255.f) dist = 255.f;
 						Uint8 idist = (Uint8)dist;
 
-						if (ro.dist2d(&cam) < 20.f)
+						if (vro.dist2d(&vcam) < 20.f)
 						{
 							// simplified effect without directional audio (still not perfect effect)
 							Mix_SetPosition(*i, (Uint16)0, idist);
@@ -187,7 +187,7 @@ void gameRenderer::drawFrame(double time_delta)
 						else
 						{
 							// full effect
-							vec v(ro.x - cam.x, ro.y - cam.y, ro.z - cam.z);
+							vec v(vro.x - vcam.x, vro.y - vcam.y, vro.z - vcam.z);
 							float ang_to_obj = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0 / M_PI));
 
 							float ang = vec::angle(ang_to_obj - CameraAngle.x) + 180.f;
