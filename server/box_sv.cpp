@@ -111,14 +111,18 @@ void box_sv::frame(double time_delta)
 		// attack target
 		if (target >= 0)
 		{
-			actor *ac = lvl->actorlist.at(target);
-			if (ac != NULL)
+			actor *t = lvl->actorlist.at(target);
+			if (t != NULL)
 			{
 				if (attack_count > 100.)
 				{
 				
-					ac->health -= 0.6f; // damage target
-					ac->health = std::max(0.f, ac->health);
+					//t->health -= 0.6f; // damage target
+					if (t->health <= 0.f)
+					{
+						t->health = 0.f; t->target = 0;
+					}
+					net_server->broadcast_update_health(t->id, t->health);
 
 					attack_count = 0.;
 				}

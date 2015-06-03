@@ -1,11 +1,14 @@
 #include "box_cl.h"
+#include "helper.h"
 
-box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, int target, gameRenderer *arenderer, gui_hud *ahud)
+box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, int target, gameRenderer *arenderer, gui_hud *ahud, effectmgr *aeffmgr)
 	: box(lvl, actor_id, box_type, pos, health, target)
 {
 	this->renderer = arenderer;
 	this->hud = ahud;
+	this->effmgr = aeffmgr;
 	this->old_health = health;
+	this->old_target = target;
 
 	ro = new RenderObject();	
     ro->translation[0] = pos->x;
@@ -25,6 +28,17 @@ box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health,
 	{
 		renderer->resources.getSnd(ResourceLoader::sndType::Generator)->play3D(0, ro, 30);
 	}
+	if (box_type == BOX_TYPE_TURRET)
+	{
+		ro_wp = new RenderObject(&position, &angle);
+		getWpMesh()->addRenderObject(ro_wp);
+
+		ro_wpmf = new RenderObject(&position, &angle);
+		renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->addRenderObject(ro_wpmf);
+		// TODO: scale?
+		ro_wpmf->visible = false;
+	}
+	else {ro_wp = NULL; ro_wpmf = NULL;}
 
 	if (state == BOX_STATE_PARACHUTING)
 	{
@@ -51,6 +65,18 @@ box_cl::~box_cl()
 	{
 		renderer->resources.getMesh(ResourceLoader::meshType::Parachute)->removeRenderObject(ro_parachute);
 		delete ro_parachute;
+	}
+
+	if (ro_wp != NULL)
+	{
+		getWpMesh()->removeRenderObject(ro_wp);
+		delete ro_wp;
+	}
+
+	if (ro_wpmf != NULL)
+	{
+		renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->removeRenderObject(ro_wpmf);
+		delete ro_wpmf;
 	}
 }
 
@@ -89,6 +115,11 @@ Mesh *box_cl::getDmgMesh()
 	}
 	
 	return NULL;
+}
+
+Mesh *box_cl::getWpMesh()
+{
+	return renderer->resources.getMesh(ResourceLoader::meshType::Turred_MG);
 }
 
 void box_cl::frame(double time_delta)
@@ -143,6 +174,25 @@ void box_cl::frame(double time_delta)
 		}
 	}
 
+	if (ro_wp != NULL)
+	{
+		ro_wp->translation[0] = position.x; ro_wp->translation[1] = position.y; ro_wp->translation[2] = position.z+22;
+	}
+
+	if (ro_wpmf != NULL)
+	{
+		ro_wpmf->translation[0] = ro_wp->translation[0]; ro_wpmf->translation[1] = ro_wp->translation[1]; ro_wpmf->translation[2] = ro_wp->translation[2];
+		// Move forward
+		ro_wpmf->translation[0] += cos(toRadians(ro_wp->rotation[0]))*cos(toRadians(-ro_wp->rotation[1]))*22.f;
+		ro_wpmf->translation[1] += sin(toRadians(ro_wp->rotation[0]))*cos(toRadians(-ro_wp->rotation[1]))*22.f;
+		ro_wpmf->translation[2] += sin(toRadians(-ro_wp->rotation[1]))*22.f;
+		
+		ro_wpmf->rotation[0] = ro_wp->rotation[0]; ro_wpmf->rotation[1] = ro_wp->rotation[1]; ro_wpmf->rotation[2] = ro_wp->rotation[2];
+
+		if (ro_wpmf->alpha > 0.f) ro_wpmf->alpha -= (float)time_delta;
+		else ro_wpmf->visible = false;
+	}
+
 
 	///////////////////////////////////////////////
 	// turret
@@ -152,44 +202,52 @@ void box_cl::frame(double time_delta)
 		attack_count += (double)attack_speed*time_delta;
 
 		// attack target
-		/*if (target >= 0)
+		if (target >= 0)
 		{
-			ptr_temp = enet_ent_locpointer(my.target_ent - 1);
-			if (ptr_temp != NULL)
+			actor *t = lvl->actorlist.at(target);
+			if (t != NULL)
 			{
-				vec_set(vtemp, ptr_temp.x);
-				vec_sub(vtemp, ent_gun.x);
-				vec_to_angle(ent_gun.pan, vtemp);
+				vec v(t->position.x - ro_wp->translation[0], t->position.y - ro_wp->translation[1], t->position.z - ro_wp->translation[2]);
+				ro_wp->rotation[0] = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0 / M_PI));
+				ro_wp->rotation[1] = -vec::angle(asin(v.z / v.length())*(float)(180.0 / M_PI));
 
-				if (my.target_ent != old_target_ent)
+
+				if (target != old_target)
 				{
-					old_target_ent = my.target_ent;
-					if (my.target_ent != NULL) snd_turret(1);
+					old_target = target;
+					if (target >= 0) renderer->resources.getSnd(ResourceLoader::sndType::Turret)->play3D(1, ro_wp, 50);
 				}
 
-				if (my.attack_count > 100)
+				if (attack_count > 100.)
 				{
 					// show muzzle flash, make sound effect
-					snd_ent_shoot(1);
-					eff_muzzleflash(ent_gun);
+					renderer->resources.getSnd(ResourceLoader::sndType::Colt_shot)->play3D(1, ro_wp, 50);
+					
+					ro_wpmf->rotation[2] = random_range(360.f);
+					ro_wpmf->alpha = 0.8f;
+					ro_wpmf->visible = true;
 
 					// get random target vector
-					vec_set(target, ptr_temp.x);
-					vec_add(target, vector(random(10) - 5, random(10) - 5, random(10) - 5));
-					eff_bullettrail(ent_gun.x, target);
+					vec shoot_origin(ro_wpmf->translation[0], ro_wpmf->translation[1], ro_wpmf->translation[2]);
+					// move forward a bit more
+					shoot_origin.x += cos(toRadians(ro_wp->rotation[0]))*cos(toRadians(-ro_wp->rotation[1]))*40.f;
+					shoot_origin.y += sin(toRadians(ro_wp->rotation[0]))*cos(toRadians(-ro_wp->rotation[1]))*40.f;
+					shoot_origin.y += sin(toRadians(-ro_wp->rotation[1]))*40.f;
 
-					you = ptr_temp;
-					eff_blood();
-						you = NULL;
+					vec shoot_target(t->position.x + random_range(10.f) - 5.f, t->position.y + random_range(10.f) - 5.f, t->position.z + random_range(10.f) - 5.f);
+					vec shoot_dir(ro_wp->rotation[0], ro_wp->rotation[1], ro_wp->rotation[2]);
+					effmgr->eff_bullettrail(&shoot_origin, &shoot_target);
 
-					my.attack_count = 0;
+					effmgr->eff_blood(&shoot_target, &shoot_origin, &shoot_dir);
+
+					attack_count = 0.;
 				}
 			}
 		}
 		else
 		{
-			ent_gun.tilt = -40;
-		}*/
+			ro_wp->rotation[1] = 40.;
+		}
 	}
 
 }

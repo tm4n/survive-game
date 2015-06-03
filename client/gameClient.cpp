@@ -150,7 +150,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (lvl != NULL)
 						{
 							// create a box at given position
-							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, d->target, renderer, hud);
+							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, d->target, renderer, hud, effmgr);
 						}
 						else log(LOG_ERROR, "Received NET_SYNC_BOX without level");
 

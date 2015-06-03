@@ -804,8 +804,8 @@ void gameServer::start_match()
 	new npc_sv(lvl_sv, NPC_MUMMY, &v, &t, &sv_num_npcs);
 
 	//DEBUG
-	v.set(400, 300, 0.f);
-	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
+	/*v.set(400, 300, 0.f);
+	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);*/
 
 	v.set(400, 300, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);

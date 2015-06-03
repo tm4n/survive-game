@@ -175,7 +175,7 @@ void gameRenderer::drawFrame(double time_delta)
 						vec vro(ro->translation.x, ro->translation.y, ro->translation.z);
 						vec vcam(CameraPos.x, CameraPos.y, CameraPos.z);
 
-						float dist = vro.dist(&vcam) / 4;
+						float dist = vro.dist(&vcam) / 8;
 						if (dist > 255.f) dist = 255.f;
 						Uint8 idist = (Uint8)dist;
 

@@ -1,5 +1,6 @@
 #include "effectmgr.h"
 #include "helper.h"
+#include <algorithm>
 
 effectmgr::effectmgr(gameRenderer *renderer)
 	: renderer(renderer)

@@ -413,8 +413,8 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			orig.z -= 7.f;
 			effmgr->eff_bullettrail(&orig, &shoot_target);
 
-			// TODO: finish other player impl
-			//renderer->resources.getSnd(ResourceLoader::sndType::Flesh_hit)->play3D(1, 100.f);
+			Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
+			if (snd) snd->play3D(1, ro, 128.f);
 		}
 	
 	}
