@@ -72,7 +72,7 @@ void level::get_actors_within(std::list<uint> *res, vec *pos, double range)
     }
 }
 
-bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor_hit)
+bool level::trace(vec &from, vec &to, vec *hitpos, int *actor_hit, int actor_ignore1, int actor_ignore2)
 {
 	vec col_move_world, col_move_border_min, col_move_border_max;
 	
@@ -101,8 +101,8 @@ bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor
 		{
 			//log(LOG_DEBUG_VERBOSE, "trace is out of world");
 			// out of world
-			hitpos->set(&curr_pos);
-			*actor_hit =  -1;
+			if (hitpos) hitpos->set(&curr_pos);
+			if (actor_hit) *actor_hit =  -1;
 
 			return true;
 		}
@@ -113,15 +113,15 @@ bool level::trace(uint actor_ignore, vec &from, vec &to, vec *hitpos, int *actor
 			actor *ac = actorlist.at(i);
 			if (ac != NULL)
 			{
-				if (ac->health > 0.f && !ac->passable && ac->id != actor_ignore)
+				if (ac->health > 0.f && !ac->passable && (int)ac->id != actor_ignore1 && (int)ac->id != actor_ignore2)
 				{	
 					if ((curr_pos.x < ac->position.x + ac->bb_max.x && curr_pos.x > ac->position.x + ac->bb_min.x) // collision in x plane
 						&& (curr_pos.y < ac->position.y + ac->bb_max.y && curr_pos.y > ac->position.y + ac->bb_min.y) // collision in y plane
 						&& (curr_pos.z < ac->position.z + ac->bb_max.z && curr_pos.z > ac->position.z + ac->bb_min.z)) // collision in z plane
 					{
 						// hit an entity
-						hitpos->set(&curr_pos);
-						*actor_hit =  i;
+						if (hitpos) hitpos->set(&curr_pos);
+						if (actor_hit) *actor_hit =  i;
 
 						return true;
 					}

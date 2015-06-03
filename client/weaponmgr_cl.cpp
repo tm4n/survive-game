@@ -372,7 +372,7 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 
 		vec hitpos;
 		int actor_hit = 0;
-		if (lvl->trace(player_id, shoot_origin, shoot_target, &hitpos, &actor_hit))
+		if (lvl->trace(shoot_origin, shoot_target, &hitpos, &actor_hit, player_id))
 		{
 			if (actor_hit >= 0) // hit someone
 			{

@@ -27,7 +27,7 @@ typedef unsigned char uchar;
 #define TICK_UPDATE_LIMIT 16  // update interval for regular chances, in ticks
 #define CL_SEND_ANGLE_RATE 2.f
 #define SV_SEND_PLAYER_RATE 8.f
-#define SV_SEND_NPC_RATE 32.f
+#define SV_SEND_NPC_RATE 8.f // 32.f for internet server recommended
 
 #define CAMERA_VIEW_HEIGHT 1.f
 #define CAMERA_BOB_STOP_RATE 1.5f

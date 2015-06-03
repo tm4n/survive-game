@@ -158,7 +158,7 @@ int net_sv::broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float healt
     return broadcast_event(NET_SYNC_PLAYER, (const char *)&s, sizeof(s_net_sync_player));
 }
 
-int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, ENetPeer *receiver)
+int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, int target, ENetPeer *receiver)
 {
     s_net_sync_box s;
 
@@ -166,6 +166,7 @@ int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, 
 	s.box_type = box_type;
     s.pos.set(pos);
     s.health = health;
+	s.target = target;
 
     printf("net_sync_box mit actor_id=%u\n", actor_id);
 
@@ -173,7 +174,7 @@ int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, 
 
 }
 
-int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health)
+int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health, int target)
 {
     // TODO: broadcast only to synchronized players?
     s_net_sync_box s;
@@ -182,6 +183,7 @@ int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float hea
     s.box_type = box_type;
     s.pos.set(pos);
     s.health = health;
+	s.target = target;
 
     printf("net_sync_box broadcast mit actor_id=%u\n", actor_id);
 
@@ -352,7 +354,7 @@ int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_inte
     return broadcast_event_except(NET_UPDATE_ANG, (const char*) &s, sizeof(s_net_update_ang), except);
 }
 
-int net_sv::broadcast_update_target(uint actor_id, uint target)
+int net_sv::broadcast_update_target(uint actor_id, int target)
 {
 	s_net_update_target s;
 
@@ -372,7 +374,7 @@ int net_sv::broadcast_update_npc_orders(uint actor_id, int npc_orders)
 	return broadcast_event(NET_UPDATE_NPC_ORDERS, (const char *)&s, sizeof(s_net_update_npc_orders));
 }
 
-int net_sv::send_update_target(uint actor_id, uint target, ENetPeer *receiver)
+int net_sv::send_update_target(uint actor_id, int target, ENetPeer *receiver)
 {
     s_net_update_target s;
 

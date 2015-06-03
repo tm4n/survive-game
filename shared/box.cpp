@@ -3,16 +3,20 @@
 
 #include <algorithm>
 
-box::box(level *lvl, char abox_type, vec *pos, float ahealth)
+float box::attack_range = 1200.f;
+float box::attack_speed = 40.f;
+
+box::box(level *lvl, char abox_type, vec *pos)
 	: actor(lvl, ACTOR_TYPE_BOX, pos, NULL)
 {
-	health = ahealth;
 	box_type = abox_type;
 	state = BOX_STATE_PARACHUTING;
 	gravity = 0.f;
 	taker_id = -1;
 	take_animation = -1.f;
 	faction = 0;
+	attack_count = 0.;
+	target = -1;
 	
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;
@@ -23,16 +27,18 @@ box::box(level *lvl, char abox_type, vec *pos, float ahealth)
 }
 
 
-box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth)
+box::box(level *lvl, uint actor_id, char abox_type, vec *pos, float ahealth, int atarget)
 	: actor(lvl, actor_id, ACTOR_TYPE_BOX, pos, NULL)
 {
 	health = ahealth;
 	box_type = abox_type;
+	target = atarget;
 	if (position.z > lvl->level_ground) state = BOX_STATE_PARACHUTING; else state = BOX_STATE_DEFAULT;
 	gravity = 0.f;
 	taker_id = -1;
 	take_animation = -1.f;
 	faction = 0;
+	attack_count = 0.;
 
 	bb_max.x = 21.6f;
 	bb_max.y = 21.6f;

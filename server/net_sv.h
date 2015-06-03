@@ -39,8 +39,8 @@ public:
 	int send_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken, ENetPeer *receiver);
 	int broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float health, const char *name, int weapon, int input, int object_taken);
 
-	int send_sync_box(uint actor_id, char box_type, vec *pos, float health, ENetPeer *receiver);
-	int broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health);
+	int send_sync_box(uint actor_id, char box_type, vec *pos, float health, int target, ENetPeer *receiver);
+	int broadcast_sync_box(uint actor_id, char box_type, vec *pos, float health, int target);
 
 	int send_sync_collectible(uint actor_id, char collectible_type, vec *pos, ENetPeer *receiver);
 	int broadcast_sync_collectible(uint actor_id, char collectible_type, vec *pos);
@@ -63,8 +63,8 @@ public:
 	int broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int broadcast_update_pos(uint actor_id, vec *v);
 	int broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *);
-	int send_update_target(uint actor_id, uint target, ENetPeer *receiver);
-	int broadcast_update_target(uint actor_id, uint target);
+	int send_update_target(uint actor_id, int target, ENetPeer *receiver);
+	int broadcast_update_target(uint actor_id, int target);
 	int broadcast_update_npc_orders(uint actor_id, int npc_orders);
 	int send_update_health(uint actor_id, float health, ENetPeer *receiver);
 	int broadcast_update_health(uint actor_id, float health);

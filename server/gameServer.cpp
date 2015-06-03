@@ -333,7 +333,7 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
             if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_BOX)
             {
                 box_sv *bo = (box_sv*)lvl->actorlist.elem[i];
-				net_server->send_sync_box(i, bo->box_type, &bo->position, bo->health, receiver);
+				net_server->send_sync_box(i, bo->box_type, &bo->position, bo->health, bo->target, receiver);
             }
 			if (lvl->actorlist.elem[i]->type == ACTOR_TYPE_COLLECTIBLE)
             {
@@ -1027,9 +1027,9 @@ void gameServer::next_wave()
 	log(LOG_DEBUG, "Waiting for next wave.");
 	
 	// set waiting timer
-	//game_wait_timer = 45 + game_wave*10;
-	//game_wait_timer = minv(game_wait_timer, 200);
-	wave_wait_timer = 5; 	//DEBUG: waves immediately
+	wave_wait_timer = 45 + wave * 10;
+	wave_wait_timer = std::min(wave_wait_timer, 200);
+	//wave_wait_timer = 5; 	//DEBUG: waves immediately
 	
 	net_server->broadcast_wave_wait_timer(wave_wait_timer);
 }

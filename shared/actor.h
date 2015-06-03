@@ -56,7 +56,7 @@ class actor
 
         float move_speed;
 
-        uint target; // either next node to walk to or entity to attack now
+        int target; // either next node to walk to or entity to attack now
 
         ushort state;
 

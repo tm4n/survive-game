@@ -150,7 +150,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						if (lvl != NULL)
 						{
 							// create a box at given position
-							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, renderer, hud);
+							new box_cl(lvl, d->actor_id, d->box_type, &d->pos, d->health, d->target, renderer, hud);
 						}
 						else log(LOG_ERROR, "Received NET_SYNC_BOX without level");
 
@@ -394,13 +394,15 @@ void gameClient::handle_netevent(ENetEvent *event)
 						// get send data
 						s_net_update_target *d = (s_net_update_target *)data;
 						
-						npc_cl *np= lvl_cl->get_npc(d->actor_id);
-						if (np != NULL)
+						actor *ac = lvl_cl->actorlist.at(d->actor_id);
+						if (ac != NULL)
 						{
-							//printf("setting target for %i \n", d->actor_id);
-							np->target = d->target;
+							std::cout << "Received target" << d->target << " for actor " << d->actor_id << std::endl;
+							if (ac->type == ACTOR_TYPE_NPC || ac->type == ACTOR_TYPE_BOX) ac->target = d->target;
+							else log(LOG_ERROR, "Received NET_UPDATE_TARGET for wrong actor type");
+							std::cout << "Target now: " << ac->target << " for actor " << ac->id << std::endl;
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_TARGET for non-npc or invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_TARGET for invalid actor");
 						
 						break;
 					}

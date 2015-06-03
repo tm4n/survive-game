@@ -1,7 +1,7 @@
 #include "box_cl.h"
 
-box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, gameRenderer *arenderer, gui_hud *ahud)
-	: box(lvl, actor_id, box_type, pos, health)
+box_cl::box_cl(level *lvl, uint actor_id, char box_type, vec *pos, float health, int target, gameRenderer *arenderer, gui_hud *ahud)
+	: box(lvl, actor_id, box_type, pos, health, target)
 {
 	this->renderer = arenderer;
 	this->hud = ahud;
@@ -144,14 +144,15 @@ void box_cl::frame(double time_delta)
 	}
 
 
+	///////////////////////////////////////////////
 	// turret
 	if (box_type == BOX_TYPE_TURRET)
 	{
 		// continous attack
-		/*my.attack_count += my.attack_speed*time_step;
+		attack_count += (double)attack_speed*time_delta;
 
 		// attack target
-		if (my.target_ent != 0)
+		/*if (target >= 0)
 		{
 			ptr_temp = enet_ent_locpointer(my.target_ent - 1);
 			if (ptr_temp != NULL)

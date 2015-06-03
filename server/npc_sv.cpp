@@ -71,10 +71,10 @@ void npc_sv::frame(double time_delta)
 		{
 			// do actual damage, only on server
 			actor *t = lvl->actorlist.at(target);
-			if (t == NULL) {target = 0;}
+			if (t == NULL) {target = -1;}
 			else
 			{
-				if (t->health <= 0)  {target = 0;}
+				if (t->health <= 0)  {target = -1;}
 				else
 				{
 					if (state == ST_ATTACK)

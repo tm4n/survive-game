@@ -1,10 +1,13 @@
 #include "box_sv.h"
 #include "net_sv.h"
+#include "helper.h"
+#include <algorithm>
 
 box_sv::box_sv(level *lvl, char abox_type, vec *pos, int *counter)
-: box(lvl, abox_type, pos, 100.f)
+: box(lvl, abox_type, pos)
 {
 	box_counter = counter;
+	turret_target_timer = 0.;
 	
 	// set health
 	if (abox_type == BOX_TYPE_WOOD) health = 100.f;
@@ -13,7 +16,7 @@ box_sv::box_sv(level *lvl, char abox_type, vec *pos, int *counter)
 	if (abox_type == BOX_TYPE_TURRET) health = 50.f;
 
 	// send creation to all connected players
-	net_server->broadcast_sync_box(id, abox_type, pos, health);
+	net_server->broadcast_sync_box(id, abox_type, pos, health, target);
 	
 	*box_counter += 1;
 }
@@ -40,87 +43,86 @@ void box_sv::frame(double time_delta)
 	if (box_type == BOX_TYPE_TURRET)
 	{
 		// check for valid target entity
-		/*if (my.target_ent != 0)
+		if (target >= 0)
 		{
-			ptr_temp = enet_ent_locpointer(my.target_ent - 1);
-			if (ptr_temp == NULL) { sv_debug("TURRET LOST TARGET: didnt exist"); my.target_ent = 0; enet_send_skills(enet_ent_globpointer(me), SK_TARGET_ENT, SK_TARGET_ENT, BROADCAST); }
+			actor *ac = lvl->actorlist.at(target);
+			if (ac == NULL) { log(LOG_DEBUG_VERBOSE, "TURRET LOST TARGET: didnt exist"); target = -1; net_server->broadcast_update_target(id, target); }
 			else
 			{
-				if (ptr_temp.health <= 0 || vec_dist(ptr_temp.x, my.x) > my.attack_range) { sv_debug("TURRET LOST TARGET: health or range"); my.target_ent = 0; enet_send_skills(enet_ent_globpointer(me), SK_TARGET_ENT, SK_TARGET_ENT, BROADCAST); }
+				if (ac->health <= 0.f || position.dist(&ac->position) > attack_range) { log(LOG_DEBUG_VERBOSE, "TURRET LOST TARGET: health or range");  target = -1; net_server->broadcast_update_target(id, target); }
 				else
 				{
-					you = ptr_temp;
-					if (asinv(abs(my.z - ptr_temp.z) / vec_dist(my.x, ptr_temp.x)) >= 40 || c_trace(vector(my.x, my.y, my.z + 22), you.x, IGNORE_ME | IGNORE_YOU | IGNORE_PASSABLE | IGNORE_SPRITES) != 0)
+					vec from(position.x, position.y, position.z + 22.f);
+					if (asin(abs(position.z - ac->position.z) / position.dist(&ac->position)) >= toRadians(40.f)
+						|| lvl->trace(from, ac->position, NULL, NULL, id, target) == true)
 					{
-						sv_debug("TURRET LOST TARGET: blocked or angle"); my.target_ent = 0; enet_send_skills(enet_ent_globpointer(me), SK_TARGET_ENT, SK_TARGET_ENT, BROADCAST);
+						log(LOG_DEBUG_VERBOSE, "TURRET LOST TARGET: blocked or angle"); target = -1; net_server->broadcast_update_target(id, target);
 					}
-					you = NULL;
 				}
 			}
 		}
 
-		npc_target_timer += time_frame;
+		turret_target_timer += time_delta;
 
-		if (my.target_ent == 0 && my.npc_target_timer >= 32)
+		if (target < 0 && turret_target_timer >= 32.)
 		{
-			my.npc_target_timer = 0;
+			turret_target_timer = 0.;
 
 			// get new target
-
-			dist = 99999;
-			ent = NULL;
-			ptr_temp = ent_next(NULL); // retrieve first entity
-			while (ptr_temp) // repeat until there are no more entities
+			float dist = 99999;
+			actor *ac_nearest = NULL;
+			for (uint i = 0; i < lvl->actorlist.size; i++) // repeat for all actors
 			{
+				actor *ac = lvl->actorlist.at(i);
 				// check if its a possible candidate
-				if (ptr_temp.type_id == TYPE_ID_NPC)
+				if (ac != NULL)
 				{
-					if (asinv(abs(my.z - ptr_temp.z) / vec_dist(my.x, ptr_temp.x)) < 40 && ptr_temp.health > 0 && vec_dist(my.x, ptr_temp.x) <= my.attack_range)
+					// is of right type
+					if (ac->type == ACTOR_TYPE_NPC)
 					{
-						you = ptr_temp;
-						if (vec_dist(my.x, ptr_temp.x) < dist && c_trace(vector(my.x, my.y, my.z + 22), you.x, IGNORE_ME | IGNORE_YOU | IGNORE_PASSABLE | IGNORE_SPRITES) == 0)
+							// is alive, within range and turret can turn to face him
+						if (ac->health > 0 && position.dist(&ac->position) <= attack_range
+							&& asin(abs(position.z - ac->position.z) / position.dist(&ac->position)) < toRadians(40.f))
 						{
-							dist = vec_dist(my.x, ptr_temp.x);
-							ent = ptr_temp;
+							// no obstacle is in the way
+							vec from(position.x, position.y, position.z + 22.f);
+							if (position.dist(&ac->position) < dist && lvl->trace(from, ac->position, NULL, NULL, id, i) == false)
+							{
+								dist = position.dist(&ac->position);
+								ac_nearest = ac;
+							}
 						}
-						you = NULL;
 					}
 				}
-				ptr_temp = ent_next(ptr_temp); // get next entity
 			}
 
 
-			if (ent != NULL)
+			if (ac_nearest != NULL)
 			{
-				sv_debug("TURRET FOUND TARGET");
-				my.target_ent = enet_ent_globpointer(ent) + 1;
-				enet_send_skills(enet_ent_globpointer(me), SK_TARGET_ENT, SK_TARGET_ENT, BROADCAST);
+				log(LOG_DEBUG_VERBOSE, "TURRET FOUND TARGET");
+				target = ac_nearest->id;
+				net_server->broadcast_update_target(id, target);
 			}
-		}*/
+		}
 
 		// continous attack
-		/*my.attack_count += my.attack_speed*time_step;
+		attack_count += (double)attack_speed*time_delta;
 
 		// attack target
-		if (my.target_ent != 0)
+		if (target >= 0)
 		{
-			ptr_temp = enet_ent_locpointer(my.target_ent - 1);
-			if (ptr_temp != NULL)
+			actor *ac = lvl->actorlist.at(target);
+			if (ac != NULL)
 			{
-
-				if (my.attack_count > 100)
+				if (attack_count > 100.)
 				{
 				
-					ptr_temp.health -= 0.6; // damage target
-					ptr_temp.health = maxv(0, ptr_temp.health);
+					ac->health -= 0.6f; // damage target
+					ac->health = std::max(0.f, ac->health);
 
-					my.attack_count = 0;
+					attack_count = 0.;
 				}
 			}
 		}
-		else
-		{
-			
-		}*/
 	}
 }

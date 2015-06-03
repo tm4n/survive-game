@@ -8,7 +8,7 @@
 class box_cl : public box
 {
 public:
-	box_cl(level *lvl, uint actor_id, char box_type, vec *, float health, gameRenderer *arenderer, gui_hud *hud);
+	box_cl(level *lvl, uint actor_id, char box_type, vec *, float health, int target, gameRenderer *arenderer, gui_hud *hud);
 	virtual ~box_cl();
 	
 	virtual void frame(double time_delta);

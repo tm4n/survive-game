@@ -61,12 +61,13 @@ void npc::movement(double time_delta)
 		if (target >= 0 && state != ST_FL_ASC)
 		{
 			actor *t = lvl->actorlist.at(target);
-			if (t == NULL) {target = 0;}
+			if (t == NULL) { target = -1; log(LOG_DEBUG, "UNSETTING TARGET, invalid\n");}
 			else
 			{
 				if (t->health <= 0)
 				{
-					target = 0;
+					target = -1;
+					log(LOG_DEBUG, "UNSETTING TARGET, no health\n");
 				}
 				else
 				{

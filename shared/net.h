@@ -92,6 +92,7 @@ struct s_net_sync_box
 	uint32_t box_type;
 	vec pos;
 	float health;
+	int32_t target;
 };
 
 struct s_net_sync_collectible
@@ -108,7 +109,7 @@ struct s_net_sync_npc
 	vec pos;
 	vec angle;
 	float health;
-	int target;
+	int32_t target;
 };
 
 struct s_net_remove_actor
@@ -177,7 +178,7 @@ struct s_net_update_state
 struct s_net_update_target
 {
     uint32_t actor_id;
-    uint32_t target;
+    int32_t target;
 };
 
 struct s_net_update_pos

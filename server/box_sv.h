@@ -15,6 +15,8 @@ protected:
 	
 	int *box_counter;
 
+	double turret_target_timer;
+
 private:
 
 };

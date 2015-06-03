@@ -16,8 +16,8 @@ class box : public actor
 {
 
 public:
-	box(level *, char box_type, vec *, float health);
-	box(level *, uint actor_id, char box_type, vec *, float health);
+	box(level *, char box_type, vec *);
+	box(level *, uint actor_id, char box_type, vec *, float health, int target);
 	
 	void movement(double);
 
@@ -26,6 +26,11 @@ public:
 	float gravity;
 	float take_animation; // progress while animating box
 	vec pickup_place; //  position difference where box was picked up
+
+	double attack_count;
+
+	static float attack_range;
+	static float attack_speed;
 };
 
 
