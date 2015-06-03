@@ -36,6 +36,7 @@ npc_cl::~npc_cl()
 void npc_cl::frame(double time_delta)
 {
 	if (state == ST_WALKING && random_int_range(4000) == 0) snd_taunt();
+
 	movement(time_delta);
 
 	animate(time_delta);

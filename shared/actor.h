@@ -54,9 +54,9 @@ class actor
         float health;
 		int faction;
 
-        float move_speed;
+		int target; // entity to attack now
 
-        int target; // either next node to walk to or entity to attack now
+        float move_speed;
 
         ushort state;
 

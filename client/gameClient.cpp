@@ -415,7 +415,6 @@ void gameClient::handle_netevent(ENetEvent *event)
 						npc_cl *np = lvl_cl->get_npc(d->actor_id);
 						if (np != NULL)
 						{
-							//printf("setting target for %i \n", d->actor_id);
 							np->npc_orders = d->npc_orders;
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_NPC_ORDERS for non-npc or invalid actor");

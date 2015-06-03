@@ -10,7 +10,6 @@ class npc : public actor
 {
     public:
         uint npc_type;
-		int target;
 
 		float attack_count;
 		bool attack_done;

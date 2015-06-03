@@ -29,7 +29,7 @@ public:
 
     void get_actors_within(std::list<uint> *res, vec *pos, double range);
     int get_generator();
-	bool level::trace(vec &from, vec &to, vec *hitpos, int *actor_hit, int actor_ignore1 = -1, int actor_ignore2 = -1);
+	bool trace(vec &from, vec &to, vec *hitpos, int *actor_hit, int actor_ignore1 = -1, int actor_ignore2 = -1);
 };
 
 

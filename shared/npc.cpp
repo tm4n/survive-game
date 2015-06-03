@@ -56,12 +56,11 @@ void npc::movement(double time_delta)
 	vec v;
 	if (health > 0.f)
 	{
-
 		// walk towards target
 		if (target >= 0 && state != ST_FL_ASC)
 		{
 			actor *t = lvl->actorlist.at(target);
-			if (t == NULL) { target = -1; log(LOG_DEBUG, "UNSETTING TARGET, invalid\n");}
+			if (t == NULL) { log(LOG_DEBUG, "UNSETTING TARGET, invalid\n"); target = -1; }
 			else
 			{
 				if (t->health <= 0)
@@ -120,7 +119,6 @@ void npc::movement(double time_delta)
 								if (attack_count > 30.f && attack_done == false)
 								{
 									attack_done = true;
-									//if (is_server == 0) snd_hit(ptr_temp);
 								}
 		
 								if (attack_count > 100.f) {attack_count = 0.f; state = ST_FL_DESC;}
