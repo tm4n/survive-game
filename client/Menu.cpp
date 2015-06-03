@@ -6,6 +6,7 @@
 #include <sstream>
 
 bool clicked_options = false;
+bool clicked_help = false;
 
 // Callback classes
 class optionsCallback : public GUICallback {
@@ -22,6 +23,24 @@ optionsCallback::optionsCallback(Menu *am) : GUICallback(), m(am) {}
 void optionsCallback::callback(int obj_id)
 {
 	clicked_options = true;
+
+	m->snd_click();
+}
+
+class helpCallback : public GUICallback {
+
+public:
+	helpCallback(Menu *am);
+	virtual void callback(int obj_id);
+	Menu *m;
+
+};
+
+helpCallback::helpCallback(Menu *am) : GUICallback(), m(am) {}
+
+void helpCallback::callback(int obj_id)
+{
+	clicked_help = true;
 
 	m->snd_click();
 }
@@ -181,6 +200,22 @@ void optionsAntialiasCallback::callback(int obj_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Help class
+
+class helpCloseCallback : public GUICallback{
+public:
+	helpCloseCallback(Menu *am);
+	virtual void callback(int obj_id);
+	Menu *m;
+};
+helpCloseCallback::helpCloseCallback(Menu *am) : GUICallback(), m(am) {}
+void helpCloseCallback::callback(int obj_id)
+{
+	m->help_hide();
+	m->snd_click();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Menu class
 
 const int Menu::screenresolutions_x[] = { 800, 1024, 1024, 1152, 1280, 1280, 1280, 1360, 1366, 1400, 1440, 1600, 1680, 1920, 1920, 2560, 3840, 4096 };
@@ -199,13 +234,15 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	optionsCancelCallback *optCancelCb = new optionsCancelCallback(this);
 	optionsInputCallback *optInputCb = new optionsInputCallback(this);
 
+	helpCallback *hlpCb = new helpCallback(this);
+
 	// add menu background
 	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
 
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
-	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
-	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, NULL);
+	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayer), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
+	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);
 	
@@ -219,63 +256,72 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 	gui->setButtonSwitchUp(button_ids[4], button_ids[3]); 
 
 	// add options menu
-	black_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::BlackBg), 3, GUIObject::Alignment::scaled, 0.0f, 0.0f, 5);
+	black_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::BlackBg), 3, GUIObject::Alignment::scaled, 0.0f, 0.0f, GUI_GROUP_OPTIONS);
 	gui->setAlpha(black_bg_id, 0.6f);
 	gui->setScaleX(black_bg_id, 1920.f/640.f);
 	gui->setScaleY(black_bg_id, 1080.f/480.f);
 
-	st_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f, 5);
+	st_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f, GUI_GROUP_OPTIONS);
 
-	st_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, optCancelCb, 5);
-	st_cancel_txt = gui->addText("Discard", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 186.0f + 28.0f, -275.0f + 450.f + 2.0f, 5);
+	st_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, optCancelCb, GUI_GROUP_OPTIONS);
+	st_cancel_txt = gui->addText("Discard", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 186.0f + 28.0f, -275.0f + 450.f + 2.0f, GUI_GROUP_OPTIONS);
 
-	st_ok_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f+436.0f, -275.0f+450.f, optOkCb, 5);
-	st_ok_txt = gui->addText("Apply", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 436.0f + 37.0f, -275.0f + 450.f + 2.0f, 5);
+	st_ok_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 436.0f, -275.0f + 450.f, optOkCb, GUI_GROUP_OPTIONS);
+	st_ok_txt = gui->addText("Apply", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 436.0f + 37.0f, -275.0f + 450.f + 2.0f, GUI_GROUP_OPTIONS);
 
-	st_playername_head = gui->addText("Player Name:", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 45.0f, 5);
-	st_playername_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 70.f, optInputCb, 5);
-	st_playername_txt = gui->addText("Playa", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 72.0f, 5);
+	st_playername_head = gui->addText("Player Name:", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 45.0f, GUI_GROUP_OPTIONS);
+	st_playername_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 70.f, optInputCb, GUI_GROUP_OPTIONS);
+	st_playername_txt = gui->addText("Playa", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 72.0f, GUI_GROUP_OPTIONS);
 
 	st_mousesens_head = gui->addText("Mouse Sensitivity: (default 2.0)", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 145.0f, 5);
-	st_mousesens_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 170.f, optInputCb, 5);
-	st_mousesens_txt = gui->addText("2.0", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 172.0f, 5);
+	st_mousesens_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 170.f, optInputCb, GUI_GROUP_OPTIONS);
+	st_mousesens_txt = gui->addText("2.0", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 172.0f, GUI_GROUP_OPTIONS);
 
 	optionsMouseinvCallback *micb = new optionsMouseinvCallback(this);
-	st_mouseinv_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 230.f, micb, 5);
-	st_mouseinv_txt = gui->addText("Invert Mouse", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 58.0f, -275.0f + 226.0f, 5);
+	st_mouseinv_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 230.f, micb, GUI_GROUP_OPTIONS);
+	st_mouseinv_txt = gui->addText("Invert Mouse", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 58.0f, -275.0f + 226.0f, GUI_GROUP_OPTIONS);
 
-	st_volume_head = gui->addText("Sound Volume: (0-100)", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 315.0f, 5);
-	st_volume_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 340.f, optInputCb, 5);
-	st_volume_txt = gui->addText("100", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 342.0f, 5);
+	st_volume_head = gui->addText("Sound Volume: (0-100)", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 315.0f, GUI_GROUP_OPTIONS);
+	st_volume_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Inputbox), resources->getTex(ResourceLoader::texType::InputBoxSel), 5, GUIObject::Alignment::center, -375.0f + 30.0f, -275.0f + 340.f, optInputCb, GUI_GROUP_OPTIONS);
+	st_volume_txt = gui->addText("100", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 40.0f, -275.0f + 342.0f, GUI_GROUP_OPTIONS);
 
-	st_res_head = gui->addText("Resolution:", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 45.0f, 5);
+	st_res_head = gui->addText("Resolution:", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 45.0f, GUI_GROUP_OPTIONS);
 	optionsResLeftCallback* rlcb = new optionsResLeftCallback(this);
-	st_res_bt_left = gui->addButton(resources->getTex(ResourceLoader::texType::ButtonLeft), resources->getTex(ResourceLoader::texType::ButtonLeftSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 70.f, rlcb, 5);
+	st_res_bt_left = gui->addButton(resources->getTex(ResourceLoader::texType::ButtonLeft), resources->getTex(ResourceLoader::texType::ButtonLeftSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 70.f, rlcb, GUI_GROUP_OPTIONS);
 	optionsResRightCallback *rrcb = new optionsResRightCallback(this);
-	st_res_bt_right = gui->addButton(resources->getTex(ResourceLoader::texType::ButtonRight), resources->getTex(ResourceLoader::texType::ButtonRightSel), 5, GUIObject::Alignment::center, -375.0f + 650.0f, -275.0f + 70.f, rrcb, 5);
-	st_res_txt = gui->addText("1980 x 1080", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 577.0f, -275.0f + 85.0f, 5);
+	st_res_bt_right = gui->addButton(resources->getTex(ResourceLoader::texType::ButtonRight), resources->getTex(ResourceLoader::texType::ButtonRightSel), 5, GUIObject::Alignment::center, -375.0f + 650.0f, -275.0f + 70.f, rrcb, GUI_GROUP_OPTIONS);
+	st_res_txt = gui->addText("1980 x 1080", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -375.0f + 577.0f, -275.0f + 85.0f, GUI_GROUP_OPTIONS);
 	gui->setCentered(st_res_txt, true);
 
 	optionsFullscreenCallback *fucb = new optionsFullscreenCallback(this);
-	st_fullscreen_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 130.f, fucb, 5);
-	st_fullscreen_txt = gui->addText("Fullscreen", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 126.0f, 5);
+	st_fullscreen_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 130.f, fucb, GUI_GROUP_OPTIONS);
+	st_fullscreen_txt = gui->addText("Fullscreen", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 126.0f, GUI_GROUP_OPTIONS);
 
 	//st_shadows_bt, st_shadows_txt; //TODO: implement shadows
 
 	optionsShaderCallback *shcb = new optionsShaderCallback(this);
-	st_shader_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 190.f, shcb, 5);
-	st_shader_txt = gui->addText("Shader Effects", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 186.0f, 5);
+	st_shader_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 190.f, shcb, GUI_GROUP_OPTIONS);
+	st_shader_txt = gui->addText("Shader Effects", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 186.0f, GUI_GROUP_OPTIONS);
 	
 	optionsAntialiasCallback *ancb = new optionsAntialiasCallback(this);
-	st_antialias_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 230.f, ancb, 5);
-	st_antialias_txt = gui->addText("Antialiasing", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 226.0f, 5);
+	st_antialias_bt = gui->addButton(resources->getTex(ResourceLoader::texType::CheckboxOff), resources->getTex(ResourceLoader::texType::CheckboxOffSel), 5, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 230.f, ancb, GUI_GROUP_OPTIONS);
+	st_antialias_txt = gui->addText("Antialiasing", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 226.0f, GUI_GROUP_OPTIONS);
 
-	gui->addText("Changing graphic settings\nrequires a restart", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 326.0f, 5);
+	gui->addText("Changing graphic settings\nrequires a restart", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 326.0f, GUI_GROUP_OPTIONS);
 
 	// hide options menu
 	options_hide();
 
-	// settings buttons
+	// help menu
+	gui->addPanel(resources->getTex(ResourceLoader::texType::HelpBg), 4, GUIObject::Alignment::center, -275.0f, -210.0f, GUI_GROUP_HELP);
+
+	helpCloseCallback *hccb = new helpCloseCallback(this);
+	gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -275.0f + 200.0f, -210.0f + 350.f, hccb, GUI_GROUP_HELP);
+	gui->addText("Close", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -275.0f + 200.0f + 38.0f, -210.0f + 350.f + 2.0f, GUI_GROUP_HELP);
+
+	gui->addText(str_help, resources->getFont(ResourceLoader::fontType::fnt_norm), 6, GUIObject::Alignment::center, -275.0f + 20.0f, -210.0f + 40.f, GUI_GROUP_HELP);
+
+	help_hide();
 
 	// Add version text
 	SDL_Color c = {255, 255, 255};
@@ -328,6 +374,13 @@ void Menu::frame(double time_frame)
 		clicked_options = false;
 
 		options_show();
+	}
+
+	if (clicked_help == true)
+	{
+		clicked_help = false;
+
+		help_show();
 	}
 
 	if (current_inputbox >= 0)
@@ -553,7 +606,7 @@ void Menu::options_show()
 	options_update();
 
 	// show options menu 
-	gui->setGroupVisible(5, true);
+	gui->setGroupVisible(GUI_GROUP_OPTIONS, true);
 }
 
 void Menu::options_hide()
@@ -562,7 +615,7 @@ void Menu::options_hide()
 	disable_inputbox();
 
 	// hide options menu 
-	gui->setGroupVisible(5, false);
+	gui->setGroupVisible(GUI_GROUP_OPTIONS, false);
 
 	// show buttons below
 	for (int i = 0; i < SELECTION_MAX; i++)
@@ -570,3 +623,44 @@ void Menu::options_hide()
 		gui->setVisible(button_ids[i], true);
 	}
 }
+
+void Menu::help_show()
+{
+	// hide buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		gui->setVisible(button_ids[i], false);
+	}
+
+	// Show help
+	gui->setVisible(black_bg_id, true);
+	gui->setGroupVisible(GUI_GROUP_HELP, true);
+}
+
+void Menu::help_hide()
+{
+	// hide help
+	gui->setVisible(black_bg_id, false);
+	gui->setGroupVisible(GUI_GROUP_HELP, false);
+
+	// show buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		gui->setVisible(button_ids[i], true);
+	}
+}
+
+std::string Menu::str_help = "First, go to \"Options\" and set your player name.\n"
+"To start playing, click \"Play\".\n\n"
+
+"Your objective is to protect the generator in the center of the map.\n"
+"The crates around you can be moved to build up a defence against \n"
+"the incoming monster horde. \n"
+"Use the right mouse button to pick up and drop crates.\n"
+
+"As the game progresses, new weapons will be dropped in the world.\n"
+"Get near the small crates containing them to pick them up.\n"
+"You can then switch weapons using the keys 1 to 10 or your mouse\n"
+"wheel.\n\n"
+
+"Good luck out there, watch your back!";

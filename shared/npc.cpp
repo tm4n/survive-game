@@ -76,7 +76,7 @@ void npc::movement(double time_delta)
 						{
 							npc_orders &= ~NPC_ORDER_JUMP;
 							state = ST_JUMPING;
-							gravity += 20;
+							gravity += 20.f;
 						}
 						
 						if (state != ST_JUMPING) state = ST_WALKING;
@@ -142,14 +142,10 @@ void npc::movement(double time_delta)
 							if (attack_count > 30 && attack_done == false)
 							{
 								attack_done = true;
-								if (get_attack_type() >= NPC_ATTACK_TYPE_RANGED_FIREBALL) // ranged attack
+								/*if (get_attack_type() >= NPC_ATTACK_TYPE_RANGED_FIREBALL) // ranged attack
 								{
 									//ent_create("proj.mdl", vector(my.x, my.y, my.z+my.max_z-10), npc_projectile);
-								}
-								else
-								{
-									//if (is_server == 0) snd_hit(ptr_temp);
-								}
+								}*/
 							}
 	
 							if (attack_count > 100.f) {attack_count = 0; state = ST_WALKING;}

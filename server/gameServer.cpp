@@ -803,11 +803,15 @@ void gameServer::start_match()
 	v.set(400, 0, lvl->level_ground);
 	new npc_sv(lvl_sv, NPC_MUMMY, &v, &t, &sv_num_npcs);
 
-	/*v.set(400, 300, 0.f);
+	//DEBUG
+	v.set(400, 300, 0.f);
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);
 
 	v.set(400, 300, lvl->border_ground);
-	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);*/
+	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
+
+	v.set(400, 800, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WEREWOLF, &v, &t, &sv_num_npcs);
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);

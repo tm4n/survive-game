@@ -88,10 +88,10 @@ float actor::move_rel_col(vec *reldir)
 	actor *col_move_nearest[3];
 	ch_old_pos.set(&position);
 	
-	// convert to world space
-	col_move_world.x = cos(toRadians(angle.x))*reldir->x + cos(toRadians(angle.x+90.f))*reldir->y;
-	col_move_world.y = sin(toRadians(angle.x))*reldir->x + sin(toRadians(angle.x+90.f))*reldir->y;
-	col_move_world.z = reldir->z;
+	// convert to world space (pan and tilt!);
+	col_move_world.x = cos(toRadians(angle.x))*cos(toRadians(angle.y))*reldir->x + cos(toRadians(angle.x+90.f))*reldir->y;
+	col_move_world.y = sin(toRadians(angle.x))*cos(toRadians(angle.y))*reldir->x + sin(toRadians(angle.x+90.f))*reldir->y;
+	col_move_world.z = sin(toRadians(angle.y)) + reldir->z;
 	
 	col_move_border_min.set(lvl->border_min, lvl->border_min, lvl->border_ground);
 	col_move_border_max.set(lvl->border_max, lvl->border_max, lvl->border_height);

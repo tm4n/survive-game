@@ -3,6 +3,8 @@
 
 #define SELECTION_MAX 5
 
+#define GUI_GROUP_OPTIONS 5
+#define GUI_GROUP_HELP 6
 
 #include "GUI.h"
 #include "ResourceLoader.h"
@@ -23,6 +25,9 @@ public:
 
 	void options_safe_to_settings();
 	void options_load_from_settings();
+
+	void help_show();
+	void help_hide();
 
 	void snd_click();
 
@@ -47,6 +52,8 @@ public:
 
 	int current_inputbox;
 	std::string *current_inputstring;
+
+	static std::string str_help;
 
 private:
 

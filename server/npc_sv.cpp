@@ -202,7 +202,7 @@ void npc_sv::event_callback(int event_type, actor *ac)
 		
 		if (get_ai_type() == NPC_AI_PLAYER_JUMP && jump_timer <= 0.f && state != ST_JUMPING && ac->type == ACTOR_TYPE_BOX)
 		{
-			npc_orders |= INPUT_JUMP;
+			npc_orders |= NPC_ORDER_JUMP;
 			jump_timer = 16.f;
 			net_server->broadcast_update_npc_orders(id, npc_orders);
 		}

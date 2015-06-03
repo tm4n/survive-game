@@ -143,4 +143,52 @@ void box_cl::frame(double time_delta)
 		}
 	}
 
+
+	// turret
+	if (box_type == BOX_TYPE_TURRET)
+	{
+		// continous attack
+		/*my.attack_count += my.attack_speed*time_step;
+
+		// attack target
+		if (my.target_ent != 0)
+		{
+			ptr_temp = enet_ent_locpointer(my.target_ent - 1);
+			if (ptr_temp != NULL)
+			{
+				vec_set(vtemp, ptr_temp.x);
+				vec_sub(vtemp, ent_gun.x);
+				vec_to_angle(ent_gun.pan, vtemp);
+
+				if (my.target_ent != old_target_ent)
+				{
+					old_target_ent = my.target_ent;
+					if (my.target_ent != NULL) snd_turret(1);
+				}
+
+				if (my.attack_count > 100)
+				{
+					// show muzzle flash, make sound effect
+					snd_ent_shoot(1);
+					eff_muzzleflash(ent_gun);
+
+					// get random target vector
+					vec_set(target, ptr_temp.x);
+					vec_add(target, vector(random(10) - 5, random(10) - 5, random(10) - 5));
+					eff_bullettrail(ent_gun.x, target);
+
+					you = ptr_temp;
+					eff_blood();
+						you = NULL;
+
+					my.attack_count = 0;
+				}
+			}
+		}
+		else
+		{
+			ent_gun.tilt = -40;
+		}*/
+	}
+
 }

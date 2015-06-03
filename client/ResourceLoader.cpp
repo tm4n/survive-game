@@ -318,6 +318,7 @@ void ResourceLoader::loadMenu()
 	textures[(int)texType::BlackBg] = new Texture("assets/gui/black.tga");
 
 	textures[(int)texType::OptionsBg] = new Texture("assets/gui/options_bg.tga");
+	textures[(int)texType::HelpBg] = new Texture("assets/gui/help_bg.tga");
 
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)

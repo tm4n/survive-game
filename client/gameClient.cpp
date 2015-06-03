@@ -404,6 +404,22 @@ void gameClient::handle_netevent(ENetEvent *event)
 						
 						break;
 					}
+
+					case NET_UPDATE_NPC_ORDERS:
+					{
+						// get send data
+						s_net_update_npc_orders *d = (s_net_update_npc_orders *)data;
+
+						npc_cl *np = lvl_cl->get_npc(d->actor_id);
+						if (np != NULL)
+						{
+							//printf("setting target for %i \n", d->actor_id);
+							np->npc_orders = d->npc_orders;
+						}
+						else log(LOG_ERROR, "Received NET_UPDATE_NPC_ORDERS for non-npc or invalid actor");
+
+						break;
+					}
 					
 					case NET_UPDATE_AMMO_MAGAZIN:
 					{

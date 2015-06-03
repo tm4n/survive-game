@@ -31,7 +31,7 @@ public:
 		 ButtonLeft = 23, ButtonLeftSel = 24, ButtonRight = 25, ButtonRightSel = 26,
 		 GuiAmmo = 31, GuiHealth = 32, GuiCrosshair = 33, GuiScoreboard = 34,
 		 IngameMenuBg = 35, BlackBg = 36,
-		 OptionsBg = 37,
+		 OptionsBg = 37, HelpBg = 38,
 		 FlashRed = 40, FlashGreen = 50,
 		 pBlood1 = 60, pBlood2 = 61, pSpark = 62
 	};
