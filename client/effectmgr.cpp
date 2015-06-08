@@ -158,26 +158,22 @@ void blood2_init(particle_data *pdata)
 	//set (p, TRANSLUCENT | MOVE);
 }
 
-void effectmgr::eff_blood(const vec *position, const vec *mypos, const vec *youpos)
+void effectmgr::eff_blood(const vec *target_position, const vec *mypos, const vec *youpos)
 {
-	vec dir;
+	vec vnull(0, 0, 0);
+	renderer->partmgr->emit(15, ResourceLoader::texType::pBlood2, &blood2_cb, &blood2_init, target_position, &vnull);
 
-	vec null(0, 0, 0);
-	renderer->partmgr->emit(15, ResourceLoader::texType::pBlood2, &blood2_cb, &blood2_init, position, &null);
 
-	/*vec_set(atemp,you.x); 
-	vec_sub(atemp,my.x);
-	vec_to_angle(dir,atemp); // now MY looks at YOU
-	dir[0] += random (30) -15;
-	dir[1] = 0;
-	vec_for_angle(atemp,dir);
-	
+	vec v(target_position->x - mypos->x, target_position->y - mypos->y, target_position->z - mypos->z);
+	float dir = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0 / M_PI));
+	dir += random_range(30) - 15;
 
-	vec_inverse(atemp);
-	effect_local (eff_blood_act, 4, target, atemp);*/
+	vec vel;
+	vel.x = cos(toRadians(dir))*-1.f;
+	vel.y = sin(toRadians(dir))*-1.f;
 
-	null.x = 1.0f;
-	renderer->partmgr->emit(4, ResourceLoader::texType::pBlood1, &blood_cb, &blood_init, position, &null);
+	vnull.x = 1.0f;
+	renderer->partmgr->emit(4, ResourceLoader::texType::pBlood1, &blood_cb, &blood_init, target_position, &vel);
 }
 
 

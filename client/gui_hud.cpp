@@ -63,7 +63,7 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	gui->setCentered(crosshair_id, true);
 
 	// create game status message indicator
-	status_id = gui->addText("Status goes here!", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::upcenter, 0.f, 30.f);
+	status_id = gui->addText("Status goes here!", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::upcenter, 0.f, 80.f);
 	gui->setCentered(status_id, true);
 
 	message_id = gui->addText("Animated message goes here!", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::downcenter, 0.f, -100.f);

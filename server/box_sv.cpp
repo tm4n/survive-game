@@ -117,7 +117,7 @@ void box_sv::frame(double time_delta)
 				if (attack_count > 100.)
 				{
 				
-					//t->health -= 0.6f; // damage target
+					t->health -= 0.6f; // damage target
 					if (t->health <= 0.f)
 					{
 						t->health = 0.f; t->target = 0;
