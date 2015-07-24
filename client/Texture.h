@@ -38,9 +38,14 @@ public:
 	Texture(const char* filename);
 	Texture(std::string txt, TTF_Font *fnt, SDL_Color c);
 	~Texture();
+	
+protected:
+	tga_file *tgaFile;
+	tga_file *readTGA(const char *filename);
+	bool uploadTGA(const tga_file *tga);
 
 private:
-	tga_file *tgaFile;
+	
 };
 
 
