@@ -15,6 +15,7 @@
 #include "GUI.h"
 #include "particlemgr.h"
 #include "glm/glm.hpp"
+#include "MeshSkybox.h"
 
 
 class gameRenderer
@@ -23,6 +24,8 @@ public:
 	ResourceLoader resources;
 	GUI *gui;
 	particlemgr *partmgr;
+
+	MeshSkybox *meshSkybox;
 
 	gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, bool antialias);
 	~gameRenderer();

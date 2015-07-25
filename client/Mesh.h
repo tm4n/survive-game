@@ -31,6 +31,7 @@ public:
 
 	std::list<RenderObject*> objectList;
 
+	Mesh();
 	Mesh(const char *mesh_file, const char *tex_file);
 
 	virtual void draw(const glm::mat4 &mVPMatrix);

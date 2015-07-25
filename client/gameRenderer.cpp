@@ -91,6 +91,9 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 
 	// load menu resources
 	resources.loadMenu();
+	// load skybox
+	meshSkybox = new MeshSkybox((CubeTexture*)resources.getTex(ResourceLoader::texType::Sky));
+	meshSkybox->initShader();
 	
 	// initialize gzu
 	gui = new GUI();
@@ -127,21 +130,26 @@ void gameRenderer::drawFrame(double time_delta)
 	float camx = (float) (cos(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));
     float camy = (float) (sin(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));
     float camz = (float) (sin(toRadians(CameraAngle.y)));
+	glm::vec3 lookDir(CameraPos.x + camx, CameraPos.y + camy, CameraPos.z + camz);
 	mVMatrix       = glm::lookAt(
     glm::vec3(CameraPos.x, CameraPos.y, CameraPos.z), // Camera in World Space
-    glm::vec3(CameraPos.x + camx, CameraPos.y + camy, CameraPos.z + camz), // and looks t the eye point
-    glm::vec3(0,0,1)  // Head is up (set to 0,-1,0 to look upside-down)
+    lookDir,
+    glm::vec3(0,0,1)  // Head is up 
     );
 
 	mVPMatrix = mProjMatrix * mVMatrix;
 
-	// TODO: draw skybox
 
 	// draw all meshes
     for (int i = 0; i < MAX_MESHES; i ++) {
 		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
         if (m != NULL) m->draw(mVPMatrix);
     }
+
+	// draw skybox
+	meshSkybox->draw(mProjMatrix, mVMatrix);
+
+	// TODO: draw transparent stuff sorted
 
 	// Draw particles
 	partmgr->draw(time_delta, mVPMatrix, CameraPos);

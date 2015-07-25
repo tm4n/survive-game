@@ -183,7 +183,7 @@ void particlemgr::draw(double time_frame, const glm::mat4 &mVPMatrix, const glm:
 
 	 for (int i = 0; i < MAX_TEXTURES; i ++) {
 		Texture *t = resources->getTex(static_cast<ResourceLoader::texType>(i));
-        if (t != NULL)
+        if (t != NULL && t->isParticleTex == true)
 		{
 			// bind texture of this element
 			glBindTexture(GL_TEXTURE_2D, t->mTextureID);

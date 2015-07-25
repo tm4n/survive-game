@@ -32,7 +32,7 @@ public:
 		 GuiAmmo = 31, GuiHealth = 32, GuiCrosshair = 33, GuiScoreboard = 34,
 		 IngameMenuBg = 35, BlackBg = 36,
 		 OptionsBg = 37, HelpBg = 38,
-		 FlashRed = 40, FlashGreen = 50,
+		 FlashRed = 40, FlashGreen = 41, Sky = 42,
 		 pBlood1 = 60, pBlood2 = 61, pSpark = 62
 	};
 

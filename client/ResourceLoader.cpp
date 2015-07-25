@@ -4,6 +4,7 @@
 #include "MeshGUI.h"
 #include "MeshBlend.h"
 #include "helper.h"
+#include "CubeTexture.h"
 
 ResourceLoader::ResourceLoader()
 {
@@ -208,7 +209,7 @@ void ResourceLoader::loadIngame()
 	m->initShader();
 	
 	
-	// ingame textures
+	// ingame gui textures
 	
 	textures[(int)texType::GuiAmmo] = new Texture("assets/gui/gui_ammo.tga");
 	textures[(int)texType::GuiHealth] = new Texture("assets/gui/gui_health.tga");
@@ -221,8 +222,11 @@ void ResourceLoader::loadIngame()
 
 	// particles
 	textures[(int)texType::pBlood1] = new Texture("assets/textures/blood1.tga");
+	textures[(int)texType::pBlood1]->isParticleTex = true;
 	textures[(int)texType::pBlood2] = new Texture("assets/textures/blood2.tga");
+	textures[(int)texType::pBlood2]->isParticleTex = true;
 	textures[(int)texType::pSpark] = new Texture("assets/textures/spark.tga");
+	textures[(int)texType::pSpark]->isParticleTex = true;
 
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)
@@ -319,6 +323,11 @@ void ResourceLoader::loadMenu()
 
 	textures[(int)texType::OptionsBg] = new Texture("assets/gui/options_bg.tga");
 	textures[(int)texType::HelpBg] = new Texture("assets/gui/help_bg.tga");
+
+	// load skycube here already because its initialized early
+	std::vector<std::string> skytx{ "assets/textures/sky_2.tga", "assets/textures/sky_0.tga", "assets/textures/sky_top.tga", 
+									"assets/textures/sky_bot.tga", "assets/textures/sky_1.tga", "assets/textures/sky_3.tga" };
+	textures[(int)texType::Sky] = new CubeTexture(skytx);
 
 	// check if all textures have been successfully loaded
 	for (int i = 0; i < MAX_TEXTURES; i++)

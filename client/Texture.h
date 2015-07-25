@@ -28,6 +28,7 @@ class Texture {
 
 public:
 	bool loaded;
+	bool isParticleTex;
 
 	std::string file;
 
@@ -35,6 +36,7 @@ public:
 
 	GLuint mTextureID;
 
+	Texture();
 	Texture(const char* filename);
 	Texture(std::string txt, TTF_Font *fnt, SDL_Color c);
 	~Texture();

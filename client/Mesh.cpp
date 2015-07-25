@@ -68,6 +68,11 @@ typedef struct {
 } mdl_frame_t;
 
 
+Mesh::Mesh()
+{
+	loaded = false;
+}
+
 
 Mesh::Mesh(const char *mesh_file, const char *tex_file)
 {

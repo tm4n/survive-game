@@ -213,6 +213,7 @@ std::string b_settings::get_settings_file_path()
 	else
 	{
 		err("Cold not get Appdata Path from Windows");
+		return std::string("");
 	}
 #else
 	const char *homedir;
