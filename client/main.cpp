@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 
 				// start client in this thread
 				cl = new gameClient(renderer);
-				cl->connect("127.0.0.1", 5454);
+				cl->connect("192.168.0.36", 1201);
 			}
 		}
 

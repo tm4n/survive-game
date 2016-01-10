@@ -89,8 +89,6 @@ void player_cl::order_take_object()
 
 void player_cl::frame(double time_delta)
 {
-	// turn player with camera
-	angle.x = renderer->CameraAngle.x;
 
 	// shooting
 	if (wpmgr->wp_ready == true && input_shoot == true)
@@ -112,6 +110,9 @@ void player_cl::frame(double time_delta)
 	// only for local player: send my position +angle to the server:
 	if (local_player == true)
 	{
+		// turn player with camera
+		angle.x = renderer->CameraAngle.x;
+
 		// send regularly
 		send_angle_timer += (float)time_delta;
 		if (send_angle_timer >= CL_SEND_ANGLE_RATE) 
