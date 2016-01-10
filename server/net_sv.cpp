@@ -48,8 +48,14 @@ s_peer_data *net_sv::get_peer_data_for_id(int id)
 		for (uint i = 0; i < eHost->peerCount; i++)
 		{
 			ENetPeer *p = &eHost->peers[i];
-			s_peer_data *d = (s_peer_data *)p->data;
-			if (d->clstate == 2 && d->player_actor_id == (uint)id) return d;
+			if (p != NULL)
+			{
+				s_peer_data *d = (s_peer_data *)p->data;
+				if (d != NULL)
+				{
+					if (d->clstate == 2 && d->player_actor_id == (uint)id) return d;
+				}
+			}
 		}
 	}
 	return NULL;
