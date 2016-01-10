@@ -1,7 +1,9 @@
 #ifndef __B_WEAPONS_H__
 #define __B_WEAPONS_H__
 
+#ifndef server
 #include "ResourceLoader.h"
+#endif
 #include "defs.h"
 #include <iostream>
 #include <string>
@@ -27,8 +29,10 @@
 
 struct s_weapons{
 	std::string name;
+	#ifndef server
 	ResourceLoader::meshType wp_mesh;
 	ResourceLoader::meshType hand_mesh;
+	#endif
 	int wp_type;
 	float damage;
 	int magazin_size;
@@ -41,11 +45,12 @@ struct s_weapons{
 	float recoil;
 	
 	// effect 
+	#ifndef server
 	ResourceLoader::sndType snd_shoot;
 	ResourceLoader::sndType snd_reload;
 	float snd_reload_delay;
 	ResourceLoader::sndType snd_bg_loop;
-	
+	#endif
 	vec muzzle_pos;
 	float muzzle_size;
 };

@@ -9,7 +9,6 @@ CubeTexture::CubeTexture(std::vector<std::string> file) : Texture()
 {
 	if (file.size() != 6) return;
 	files = file;
-	tga_file *tga = NULL;
 
 	glGenTextures(1, &mTextureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);

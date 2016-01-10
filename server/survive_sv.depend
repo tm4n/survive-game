@@ -1,85 +1,93 @@
 # depslib dependency file v1.0
-1389279060 source:/home/tilman/projects/survive/shared/game.cpp
+1406584653 source:/home/tilman/projects/survive/shared/game.cpp
 	"game.h"
 
-1389968997 /home/tilman/projects/survive/shared/game.h
+1406584653 /home/tilman/projects/survive/shared/game.h
 	"defs.h"
 	"enet/enet.h"
 	"level.h"
 	<vector>
 
-1390005914 /home/tilman/projects/survive/shared/defs.h
+1433360590 /home/tilman/projects/survive/shared/defs.h
 	"vec.h"
 	"stdio.h"
 
-1389976147 /home/tilman/projects/survive/shared/vec.h
+1406677726 /home/tilman/projects/survive/shared/vec.h
+	<iostream>
 
-1389975801 /home/tilman/projects/survive/shared/level.h
+1452428926 /home/tilman/projects/survive/shared/level.h
 	"defs.h"
 	"flist.h"
 	<list>
 
-1347230598 /home/tilman/projects/survive/shared/flist.h
+1452428926 /home/tilman/projects/survive/shared/flist.h
 	"defs.h"
 	"stdio.h"
 
-1390005947 source:/home/tilman/projects/survive/shared/helper.cpp
+1452428926 source:/home/tilman/projects/survive/shared/helper.cpp
 	"helper.h"
+	"defs.h"
 	<cmath>
 	<cstdio>
 	<cstdlib>
 	<sstream>
-	"backends/b_game.h"
+	<random>
 	"unistd.h"
 	<windows.h>
 	<Shlobj.h>
 	<Shlwapi.h>
 	<malloc.h>
+	<android/log.h>
 
-1390267218 /home/tilman/projects/survive/shared/helper.h
+1452428926 /home/tilman/projects/survive/shared/helper.h
 	<vector>
 	<string>
+	<glm/glm.hpp>
+	"vec.h"
 
 1348020329 /home/tilman/projects/survive/shared/backends/b_game.h
 	"defs.h"
 	<string>
 
-1390264822 source:/home/tilman/projects/survive/shared/level.cpp
+1433360590 source:/home/tilman/projects/survive/shared/level.cpp
 	"level.h"
 	"string.h"
 	<cmath>
 	<iostream>
 	<fstream>
 	"helper.h"
+	"actor.h"
+	"box.h"
 
-1390393162 source:/home/tilman/projects/survive/shared/net.cpp
+1452440076 source:/home/tilman/projects/survive/shared/net.cpp
 	"net.h"
 	"string.h"
 	<iostream>
 	<sstream>
 	<string>
 
-1390317782 /home/tilman/projects/survive/shared/net.h
+1433360590 /home/tilman/projects/survive/shared/net.h
 	"flist.h"
 	"defs.h"
 	"enet/enet.h"
 	"vec.h"
 	<cstdint>
 	<list>
+	<mutex>
 
-1389976136 source:/home/tilman/projects/survive/shared/vec.cpp
+1406677726 source:/home/tilman/projects/survive/shared/vec.cpp
 	"vec.h"
 	<math.h>
 
 1334872270 source:/home/tilman/projects/survive/server/base85.cpp
 	<stdio.h>
 
-1390313790 source:/home/tilman/projects/survive/server/gameServer.cpp
+1452428926 source:/home/tilman/projects/survive/server/gameServer.cpp
 	"gameServer.h"
-	"SDL/SDL.h"
+	"SDL2/SDL.h"
 	"Timer.h"
-	<pthread.h>
 	<cmath>
+	<algorithm>
 	<ctime>
 	<iostream>
 	<sstream>
@@ -87,6 +95,9 @@
 	"net_sv.h"
 	"level_sv.h"
 	"player_sv.h"
+	"projectile_sv.h"
+	"collectible_sv.h"
+	"scoremgr.h"
 
 1389279322 /home/tilman/projects/survive/server/include/gameServer.h
 	<game.h>
@@ -107,20 +118,20 @@
 	"net.h"
 	"actor.h"
 
-1390264822 /home/tilman/projects/survive/shared/actor.h
+1433407210 /home/tilman/projects/survive/shared/actor.h
 	"defs.h"
 	"level.h"
 
-1390243615 source:/home/tilman/projects/survive/server/level_sv.cpp
+1452428926 source:/home/tilman/projects/survive/server/level_sv.cpp
 	"level_sv.h"
 
-1390316367 source:/home/tilman/projects/survive/server/main.cpp
+1452440145 source:/home/tilman/projects/survive/server/main.cpp
 	<string>
 	<sstream>
 	<iostream>
 	"gameServer.h"
 
-1390311894 source:/home/tilman/projects/survive/server/net_sv.cpp
+1433360590 source:/home/tilman/projects/survive/server/net_sv.cpp
 	"net_sv.h"
 	"vec.h"
 	"string.h"
@@ -129,64 +140,187 @@
 	"Timer.h"
 	"SDL/SDL.h"
 
-1390265316 source:/home/tilman/projects/survive/shared/actor.cpp
+1433327464 source:/home/tilman/projects/survive/shared/actor.cpp
 	"actor.h"
 	<cmath>
 	<algorithm>
 	"defs.h"
+	"helper.h"
 	"stdio.h"
 
-1390174499 source:/home/tilman/projects/survive/shared/box.cpp
+1433360590 source:/home/tilman/projects/survive/shared/box.cpp
 	"box.h"
+	"helper.h"
+	<algorithm>
 
-1390174499 /home/tilman/projects/survive/shared/box.h
+1433360590 /home/tilman/projects/survive/shared/box.h
 	"actor.h"
 
-1390177019 source:/home/tilman/projects/survive/server/box_sv.cpp
+1433855799 source:/home/tilman/projects/survive/server/box_sv.cpp
 	"box_sv.h"
 	"net_sv.h"
+	"helper.h"
+	<algorithm>
 
-1390177031 /home/tilman/projects/survive/server/box_sv.h
+1433360590 /home/tilman/projects/survive/server/box_sv.h
 	"box.h"
 
-1390317761 /home/tilman/projects/survive/server/gameServer.h
+1406584653 /home/tilman/projects/survive/server/gameServer.h
 	<game.h>
 	"enet/enet.h"
 	"level_sv.h"
 	<string>
 	<list>
+	<mutex>
 	<set>
 
-1390243690 /home/tilman/projects/survive/server/level_sv.h
+1452428926 /home/tilman/projects/survive/server/level_sv.h
 	"level.h"
 	"game.h"
 	<list>
 	"box_sv.h"
 	"player_sv.h"
+	"collectible_sv.h"
+	"npc_sv.h"
+	"projectile_sv.h"
 
 1306739856 /home/tilman/projects/survive/server/Timer.h
 
-1390311787 /home/tilman/projects/survive/server/net_sv.h
+1433360590 /home/tilman/projects/survive/server/net_sv.h
 	"net.h"
 	"actor.h"
 
-1390311961 source:/home/tilman/projects/survive/shared/player.cpp
+1406584653 source:/home/tilman/projects/survive/shared/player.cpp
 	"player.h"
 	"string.h"
 	"helper.h"
 
-1390311976 /home/tilman/projects/survive/shared/player.h
+1405583995 /home/tilman/projects/survive/shared/player.h
 	"actor.h"
 
-1390311909 source:/home/tilman/projects/survive/server/player_sv.cpp
+1431511038 source:/home/tilman/projects/survive/server/player_sv.cpp
 	"player_sv.h"
 	"net_sv.h"
 	<sstream>
 
-1390307285 /home/tilman/projects/survive/server/player_sv.h
+1406584653 /home/tilman/projects/survive/server/player_sv.h
 	"gameServer.h"
 	"player.h"
 	<enet/enet.h>
 	"level_sv.h"
 	"enet/enet.h"
+	"weaponmgr_sv.h"
+
+1405583995 /home/tilman/projects/survive/server/weaponmgr_sv.h
+	"weaponmgr.h"
+	"enet/enet.h"
+
+1405326905 /home/tilman/projects/survive/shared/weaponmgr.h
+	"backends/b_weapons.h"
+	"level.h"
+
+1452439808 /home/tilman/projects/survive/shared/backends/b_weapons.h
+	"ResourceLoader.h"
+	"defs.h"
+	<iostream>
+	<string>
+	<memory>
+	<mutex>
+
+1392214361 /home/tilman/projects/survive/server/collectible_sv.h
+	"collectible.h"
+	"level_sv.h"
+
+1392212504 /home/tilman/projects/survive/shared/collectible.h
+	"actor.h"
+
+1452428926 /home/tilman/projects/survive/server/npc_sv.h
+	"npc.h"
+	"game.h"
+	"level_sv.h"
+
+1452428926 /home/tilman/projects/survive/shared/npc.h
+	"actor.h"
+	"backends/b_npcs.h"
+
+1452439338 /home/tilman/projects/survive/shared/backends/b_npcs.h
+	"ResourceLoader.h"
+	"defs.h"
+	<iostream>
+	<string>
+	<memory>
+	<mutex>
+
+1452428926 /home/tilman/projects/survive/server/projectile_sv.h
+	"projectile.h"
+	"player_sv.h"
+
+1452428926 /home/tilman/projects/survive/shared/projectile.h
+	"vec.h"
+	"level.h"
+
+1452439490 source:/home/tilman/projects/survive/shared/backends/b_npcs.cpp
+	"b_npcs.h"
+	"helper.h"
+	<sstream>
+
+1452439643 source:/home/tilman/projects/survive/shared/backends/b_weapons.cpp
+	"b_weapons.h"
+	"helper.h"
+	<sstream>
+
+1406584653 source:/home/tilman/projects/survive/shared/collectible.cpp
+	"collectible.h"
+
+1452428926 source:/home/tilman/projects/survive/shared/npc.cpp
+	"npc.h"
+	<backends/b_npcs.h>
+
+1452428926 source:/home/tilman/projects/survive/shared/projectile.cpp
+	"projectile.h"
+	"helper.h"
+
+1390552684 source:/home/tilman/projects/survive/shared/Timer.cpp
+	"Timer.h"
+	"SDL2/SDL.h"
+
+1390552684 /home/tilman/projects/survive/shared/Timer.h
+
+1405329454 source:/home/tilman/projects/survive/shared/weaponmgr.cpp
+	"weaponmgr.h"
+
+1406584653 source:/home/tilman/projects/survive/server/collectible_sv.cpp
+	"collectible_sv.h"
+	"net_sv.h"
+	<sstream>
+
+1406584653 /home/tilman/projects/survive/server/scoremgr.h
+	"defs.h"
+	"enet/enet.h"
+
+1452428926 source:/home/tilman/projects/survive/server/npc_sv.cpp
+	"npc_sv.h"
+	"net_sv.h"
+	"helper.h"
+	<sstream>
+	<algorithm>
+	"projectile_sv.h"
+
+1452428926 source:/home/tilman/projects/survive/server/projectile_sv.cpp
+	"projectile_sv.h"
+	"net_sv.h"
+
+1406584939 source:/home/tilman/projects/survive/server/scoremgr.cpp
+	"scoremgr.h"
+	"net_sv.h"
+	<sstream>
+
+1433360590 source:/home/tilman/projects/survive/server/weaponmgr_sv.cpp
+	"weaponmgr_sv.h"
+	"helper.h"
+	"net_sv.h"
+	"npc_sv.h"
+	"scoremgr.h"
+	"backends/b_weapons.h"
+	<sstream>
 

@@ -15,6 +15,7 @@
 				<Option parameters="1" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Dserver" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -44,10 +45,18 @@
 			<Add library="../libs/enet/.libs/libenet.a" />
 			<Add library="SDL" />
 		</Linker>
+		<Unit filename="../shared/Timer.cpp" />
+		<Unit filename="../shared/Timer.h" />
 		<Unit filename="../shared/actor.cpp" />
 		<Unit filename="../shared/actor.h" />
+		<Unit filename="../shared/backends/b_npcs.cpp" />
+		<Unit filename="../shared/backends/b_npcs.h" />
+		<Unit filename="../shared/backends/b_weapons.cpp" />
+		<Unit filename="../shared/backends/b_weapons.h" />
 		<Unit filename="../shared/box.cpp" />
 		<Unit filename="../shared/box.h" />
+		<Unit filename="../shared/collectible.cpp" />
+		<Unit filename="../shared/collectible.h" />
 		<Unit filename="../shared/defs.h" />
 		<Unit filename="../shared/flist.h" />
 		<Unit filename="../shared/game.cpp" />
@@ -58,15 +67,21 @@
 		<Unit filename="../shared/level.h" />
 		<Unit filename="../shared/net.cpp" />
 		<Unit filename="../shared/net.h" />
+		<Unit filename="../shared/npc.cpp" />
+		<Unit filename="../shared/npc.h" />
 		<Unit filename="../shared/player.cpp" />
 		<Unit filename="../shared/player.h" />
+		<Unit filename="../shared/projectile.cpp" />
+		<Unit filename="../shared/projectile.h" />
 		<Unit filename="../shared/vec.cpp" />
 		<Unit filename="../shared/vec.h" />
-		<Unit filename="Timer.cpp" />
-		<Unit filename="Timer.h" />
+		<Unit filename="../shared/weaponmgr.cpp" />
+		<Unit filename="../shared/weaponmgr.h" />
 		<Unit filename="base85.cpp" />
 		<Unit filename="box_sv.cpp" />
 		<Unit filename="box_sv.h" />
+		<Unit filename="collectible_sv.cpp" />
+		<Unit filename="collectible_sv.h" />
 		<Unit filename="gameServer.cpp" />
 		<Unit filename="gameServer.h" />
 		<Unit filename="level_sv.cpp" />
@@ -74,8 +89,16 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="net_sv.cpp" />
 		<Unit filename="net_sv.h" />
+		<Unit filename="npc_sv.cpp" />
+		<Unit filename="npc_sv.h" />
 		<Unit filename="player_sv.cpp" />
 		<Unit filename="player_sv.h" />
+		<Unit filename="projectile_sv.cpp" />
+		<Unit filename="projectile_sv.h" />
+		<Unit filename="scoremgr.cpp" />
+		<Unit filename="scoremgr.h" />
+		<Unit filename="weaponmgr_sv.cpp" />
+		<Unit filename="weaponmgr_sv.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

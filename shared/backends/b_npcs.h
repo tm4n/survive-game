@@ -1,7 +1,10 @@
 #ifndef __B_NPC_H__
 #define __B_NPC_H__
 
+#ifndef server
 #include "ResourceLoader.h"
+#endif // server
+
 #include "defs.h"
 #include <iostream>
 #include <string>
@@ -34,7 +37,9 @@
 
 struct s_npcs{
 	const char* name;
+	#ifndef server
 	ResourceLoader::meshType res_mesh;
+	#endif
 	float max_health;
 	float move_speed;
 	int attack_type;
@@ -47,8 +52,10 @@ struct s_npcs{
 	float anim_speed;
 	vec bb_min;
 	vec bb_max;
+	#ifndef server
 	ResourceLoader::sndType res_snd_taunt1;
 	ResourceLoader::sndType res_snd_taunt2;
+	#endif
 };
 
 class b_npcs

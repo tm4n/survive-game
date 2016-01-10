@@ -11,7 +11,7 @@ Texture::Texture()
 	tgaFile = NULL;
 }
 
-Texture::Texture(const char* filename)
+Texture::Txture(const char* filename)
 {
 	isParticleTex = false;
 	loaded = false;

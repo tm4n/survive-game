@@ -43,6 +43,8 @@
 			<Add library="SDL2_mixer" />
 			<Add library="pthread" />
 		</Linker>
+		<Unit filename="client/CubeTexture.cpp" />
+		<Unit filename="client/CubeTexture.h" />
 		<Unit filename="client/GUI.cpp" />
 		<Unit filename="client/GUI.h" />
 		<Unit filename="client/GUIObject.cpp" />
@@ -55,6 +57,8 @@
 		<Unit filename="client/MeshBlend.h" />
 		<Unit filename="client/MeshGUI.cpp" />
 		<Unit filename="client/MeshGUI.h" />
+		<Unit filename="client/MeshSkybox.cpp" />
+		<Unit filename="client/MeshSkybox.h" />
 		<Unit filename="client/MeshTerrain.cpp" />
 		<Unit filename="client/MeshTerrain.h" />
 		<Unit filename="client/RenderObject.cpp" />
@@ -94,6 +98,8 @@
 		<Unit filename="client/particlemgr.h" />
 		<Unit filename="client/player_cl.cpp" />
 		<Unit filename="client/player_cl.h" />
+		<Unit filename="client/projectile_cl.cpp" />
+		<Unit filename="client/projectile_cl.h" />
 		<Unit filename="client/weaponmgr_cl.cpp" />
 		<Unit filename="client/weaponmgr_cl.h" />
 		<Unit filename="server/box_sv.cpp" />
@@ -110,6 +116,8 @@
 		<Unit filename="server/npc_sv.h" />
 		<Unit filename="server/player_sv.cpp" />
 		<Unit filename="server/player_sv.h" />
+		<Unit filename="server/projectile_sv.cpp" />
+		<Unit filename="server/projectile_sv.h" />
 		<Unit filename="server/scoremgr.cpp" />
 		<Unit filename="server/scoremgr.h" />
 		<Unit filename="server/weaponmgr_sv.cpp" />
@@ -139,6 +147,8 @@
 		<Unit filename="shared/npc.h" />
 		<Unit filename="shared/player.cpp" />
 		<Unit filename="shared/player.h" />
+		<Unit filename="shared/projectile.cpp" />
+		<Unit filename="shared/projectile.h" />
 		<Unit filename="shared/vec.cpp" />
 		<Unit filename="shared/vec.h" />
 		<Unit filename="shared/weaponmgr.cpp" />

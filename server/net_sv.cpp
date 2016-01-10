@@ -75,14 +75,20 @@ void net_sv::update_respawn_timers(float time_frame)
 		for (uint i = 0; i < eHost->peerCount; i++)
 		{
 			ENetPeer *p = &eHost->peers[i];
-			s_peer_data *d = (s_peer_data *)p->data;
-			if (d->respawn_timer > 0.f && d->clstate == 3)
+			if (p != NULL)
 			{
-				d->respawn_timer -= time_frame/16.f;
-				if (d->respawn_timer <= 0.f)
+				s_peer_data *d = (s_peer_data *)p->data;
+				if (d != NULL)
 				{
-					d->respawn_timer = 0.f;
-					d->clstate = 1;
+					if (d->respawn_timer > 0.f && d->clstate == 3)
+					{
+						d->respawn_timer -= time_frame/16.f;
+						if (d->respawn_timer <= 0.f)
+						{
+							d->respawn_timer = 0.f;
+							d->clstate = 1;
+						}
+					}
 				}
 			}
 		}
