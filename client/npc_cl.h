@@ -13,6 +13,8 @@ public:
 	virtual void frame(double time_delta);
 	void animate(double time_delta);
 
+	virtual void callback_attack_done(int target, const vec &target_pos);
+
 	Mesh* getMesh() {return renderer->resources.getMesh(b_npcs::instance()->at(npc_type)->res_mesh);}
 
 	RenderObject *ro;

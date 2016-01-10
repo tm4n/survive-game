@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "weaponmgr_cl.h"
+#include "projectile_cl.h"
 #include "helper.h"
 
 npc_cl::npc_cl(level *lvl, uint actor_id, int npc_type, vec *pos, vec*ang, float health, int target, gameRenderer *arenderer)
@@ -103,6 +104,18 @@ void npc_cl::animate(double time_delta)
 	}
 
 	if (anim_prog > 100.f && (state == ST_WALKING || state == ST_IDLE)) {anim_prog -= 100.f;}
+}
+
+void npc_cl::callback_attack_done(int target, const vec &target_pos)
+{
+	if (get_attack_type() >= NPC_ATTACK_TYPE_RANGED_FIREBALL) // ranged attack
+	{
+		vec startpos(position.x, position.y, position.z + bb_max.z - 10.f);
+		// calculate angle
+		vec vdiff(target_pos.x - position.x, target_pos.y - position.y, target_pos.z - position.z);
+		vec ang(angle.x, vec::angle((asin(vdiff.z / vdiff.length())*(float)(180.0 / M_PI))), 0.f);
+		projectile_cl *pr = new projectile_cl(lvl, startpos, ang, 30., get_damage(), renderer, renderer->resources.getMesh(ResourceLoader::meshType::Fireball), id);
+	}
 }
 
 void npc_cl::snd_taunt()

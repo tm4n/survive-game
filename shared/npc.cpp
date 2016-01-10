@@ -1,6 +1,7 @@
 #include "npc.h"
 #include <backends/b_npcs.h>
 
+
 npc::npc(level* lvl, uint npc_type, vec *pos, vec *pan) : actor(lvl, ACTOR_TYPE_NPC, pos, pan)
 {
     this->npc_type = npc_type;
@@ -141,10 +142,7 @@ void npc::movement(double time_delta)
 							if (attack_count > 30 && attack_done == false)
 							{
 								attack_done = true;
-								/*if (get_attack_type() >= NPC_ATTACK_TYPE_RANGED_FIREBALL) // ranged attack
-								{
-									//ent_create("proj.mdl", vector(my.x, my.y, my.z+my.max_z-10), npc_projectile);
-								}*/
+								callback_attack_done(t->id, &t->position);
 							}
 	
 							if (attack_count > 100.f) {attack_count = 0; state = ST_WALKING;}

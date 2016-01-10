@@ -6,6 +6,7 @@
 #include "box_cl.h"
 #include "player_cl.h"
 #include "npc_cl.h"
+#include "projectile_cl.h"
 
 class level_cl : public level
 {

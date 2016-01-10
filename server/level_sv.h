@@ -8,6 +8,7 @@
 #include "player_sv.h"
 #include "collectible_sv.h"
 #include "npc_sv.h"
+#include "projectile_sv.h"
 class player_sv;
 class npc_sv;
 class collectible_sv;

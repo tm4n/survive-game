@@ -5,7 +5,7 @@
 #include "flist.h"
 #include <list>
 class actor;
-
+class projectile;
 
 
 class level
@@ -23,6 +23,7 @@ public:
 
 	// actors in level
 	flist<actor> actorlist;
+	flist<projectile> projectilelist;
 
 	level(const char *);
 	virtual ~level();

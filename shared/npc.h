@@ -21,6 +21,8 @@ class npc : public actor
 
         virtual void movement(double time_delta);
 
+		virtual void callback_attack_done(int target, const vec &target_pos) = 0;
+
 		// inline getter functions
 		float get_move_speed() {return (b_npcs::instance()->at(npc_type)->move_speed);}
 		int get_attack_type() {return (b_npcs::instance()->at(npc_type)->attack_type);}

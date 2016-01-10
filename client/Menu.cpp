@@ -221,7 +221,7 @@ void helpCloseCallback::callback(int obj_id)
 const int Menu::screenresolutions_x[] = { 800, 1024, 1024, 1152, 1280, 1280, 1280, 1360, 1366, 1400, 1440, 1600, 1680, 1920, 1920, 2560, 3840, 4096 };
 const int Menu::screenresolutions_y[] = { 600, 600,  768,  864,  720,  800,  1024, 768,  768,  1050, 900,  1200, 1050, 1080, 1200, 1440, 2160, 2304 };
 
-Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallback *quitCb)
+Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICallback *playCb, GUICallback *quitCb)
 {
 	gui = agui;
 	resources = aresources;
@@ -241,7 +241,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playCb, GUICallba
 
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
-	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayer), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
+	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, playMpCb);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);

@@ -36,6 +36,12 @@ level_cl::~level_cl()
 	{
 		if (actorlist.at(i) != 0) delete actorlist.at(i);
 	}
+	//assert(actorlist.filled == 0);
+	for (uint i = 0; i < projectilelist.size; i++)
+	{
+		if (projectilelist.at(i) != 0) delete projectilelist.at(i);
+	}
+	//assert(projectilelist.filled == 0);
 
 	for (RenderObject *o : env)
 	{

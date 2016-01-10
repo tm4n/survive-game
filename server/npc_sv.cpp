@@ -3,6 +3,7 @@
 #include "helper.h"
 #include <sstream>
 #include <algorithm>
+#include "projectile_sv.h"
 
 npc_sv::npc_sv(level_sv* lvl_sv, uint npc_type, vec *pos, vec *pan, int* counter) : npc(lvl_sv, npc_type, pos, pan)
 {
@@ -206,5 +207,17 @@ void npc_sv::event_callback(int event_type, actor *ac)
 			jump_timer = 16.f;
 			net_server->broadcast_update_npc_orders(id, npc_orders);
 		}
+	}
+}
+
+void npc_sv::callback_attack_done(int target, const vec &target_pos)
+{
+	if (get_attack_type() >= NPC_ATTACK_TYPE_RANGED_FIREBALL) // ranged attack
+	{
+		vec startpos(position.x, position.y, position.z + bb_max.z - 10.f);
+		// calculate angle
+		vec vdiff(target_pos.x - position.x, target_pos.y - position.y, target_pos.z - position.z);
+		vec ang(angle.x, vec::angle((asin(vdiff.z / vdiff.length())*(float)(180.0 / M_PI))), 0.f);
+		projectile_sv *pr = new projectile_sv(lvl, startpos, ang, 30., get_damage(), id);
 	}
 }

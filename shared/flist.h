@@ -42,6 +42,7 @@ class flist
 		uint add_at(T*, uint pos);
 		bool exists(uint i);
         bool remove(uint i);
+		void clear();
 
     protected:
     private:
@@ -165,6 +166,13 @@ template <class T> bool flist<T>::remove(uint i)
     filled--;
 
     return true;
+}
+
+template <class T> void flist<T>::clear()
+{
+	if (filled == 0) return;
+	for (uint i = 0; i < size; i++) elem[i] = NULL;
+	filled = 0;
 }
 
 

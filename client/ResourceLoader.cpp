@@ -138,6 +138,11 @@ void ResourceLoader::loadIngame()
 	
 
 	// weapons
+	m = new Mesh("assets/models/fireball.mdl", NULL);
+	meshes[(int)meshType::Fireball] = m;
+	if (m->loaded == false) { std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1); }
+	m->initShader();
+
 	m = new Mesh("assets/models/bullet.mdl", NULL);
 	meshes[(int)meshType::Bullet] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}

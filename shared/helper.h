@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
+#include "vec.h"
 
 #define clamp(x, a, b) (x > b ? b : (x < a ? a : x))
 
@@ -44,11 +45,13 @@ void check_heap(char *file, int line);
 #endif
 
 float toRadians(float d);
+double toRadians(double d);
 
 float random_range(float mx);
 int random_int_range(int mx);
 void random_seed(int seed);
 
 void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float byy, float byz);
+void move_dir(vec &tomove, const vec &direction, float byx, float byy, float byz);
 
 #endif // __HELPER_H__

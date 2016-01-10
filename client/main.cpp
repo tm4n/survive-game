@@ -17,6 +17,7 @@ const int FRAMES_PER_SECOND = 60;
 
 bool quit = false;
 bool play = false;
+bool playMp = false;
 bool multiplayer = false;
 
 gameClient *cl = NULL;
@@ -52,6 +53,25 @@ void playCallback::callback(int obj_id)
 	menu->gui->draw();
 	
 	play = true;
+
+	menu->snd_click();
+}
+
+
+// Callback classes
+class mpCallback : public GUICallback {
+
+public:
+	virtual void callback(int obj_id);
+
+};
+
+void mpCallback::callback(int obj_id)
+{
+	menu->hide();
+	menu->gui->draw();
+
+	playMp = true;
 
 	menu->snd_click();
 }
@@ -93,8 +113,9 @@ int main(int argc, char **argv)
 
 	// create menu
 	playCallback *pcb = new playCallback();
+	mpCallback *mpcb = new mpCallback();
 	quitCallback *qck = new quitCallback();
-	menu = new Menu(renderer->gui, &renderer->resources, pcb, qck);
+	menu = new Menu(renderer->gui, &renderer->resources, mpcb, pcb, qck);
 
 	// Timer used to calculate time_delta (frame time)
     Timer frametime;
@@ -197,9 +218,12 @@ int main(int argc, char **argv)
 				delete cl; 
 				cl = NULL;
 
-				sv->quit = true;
-				svthread.join();
-				delete sv;
+				if (sv)
+				{
+					sv->quit = true;
+					svthread.join();
+					delete sv;
+				}
 				menu->show();
 			}
 		}
@@ -222,6 +246,18 @@ int main(int argc, char **argv)
 				// start client in this thread
 				cl = new gameClient(renderer);
 				cl->connect(&l2, &m2, &l1, &m1);
+			}
+			if (playMp == true)
+			{
+				// play pressed!
+				playMp = false;
+
+				// load other resources
+				menu->resources->loadIngame();
+
+				// start client in this thread
+				cl = new gameClient(renderer);
+				cl->connect("127.0.0.1", 5454);
 			}
 		}
 

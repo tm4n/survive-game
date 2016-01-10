@@ -253,6 +253,11 @@ float toRadians(float d)
 	return (d * (float)M_PI / 180.f);
 }
 
+double toRadians(double d)
+{
+	return (d * M_PI / 180.);
+}
+
 // global generator
 std::minstd_rand *gen = NULL;
 
@@ -295,4 +300,21 @@ void move_dir(glm::vec3 &tomove, const glm::vec3 &direction, float byx, float by
 	tomove[0] -= (float) (cos(toRadians(direction.x))*cos(toRadians(direction.y-90.f))) * byz;
 	tomove[1] -= (float) (sin(toRadians(direction.x))*cos(toRadians(direction.y-90.f))) * byz;
 	tomove[2] -= (float) (sin(toRadians(direction.y-90.f))) * byz;
+}
+
+void move_dir(vec &tomove, const vec &direction, float byx, float byy, float byz)
+{
+	// move by x
+	tomove.x += (float)(cos(toRadians(direction.x))*cos(toRadians(direction.y))) * byx;
+	tomove.y += (float)(sin(toRadians(direction.x))*cos(toRadians(direction.y))) * byx;
+	tomove.z += (float)(sin(toRadians(direction.y))) * byx;
+
+	// move by y
+	tomove.x -= (float)(cos(toRadians(direction.x - 90.f))) * byy;
+	tomove.y -= (float)(sin(toRadians(direction.x - 90.f))) * byy;
+
+	// move by z
+	tomove.x -= (float)(cos(toRadians(direction.x))*cos(toRadians(direction.y - 90.f))) * byz;
+	tomove.y -= (float)(sin(toRadians(direction.x))*cos(toRadians(direction.y - 90.f))) * byz;
+	tomove.z -= (float)(sin(toRadians(direction.y - 90.f))) * byz;
 }

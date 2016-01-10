@@ -7,6 +7,7 @@
 #include "box_cl.h"
 #include "collectible_cl.h"
 #include "npc_cl.h"
+#include "projectile_cl.h"
 #include "backends/b_settings.h"
 #include <sstream>
 
@@ -747,6 +748,10 @@ void gameClient::frame(double time_delta)
 		for (uint i = 0; i < lvl->actorlist.size; i++)
 		{
 			if (lvl->actorlist.elem[i] != 0) lvl->actorlist.elem[i]->frame(time_delta);
+		}
+		for (uint i = 0; i < lvl->projectilelist.size; i++)
+		{
+			if (lvl->projectilelist.elem[i] != 0) lvl->projectilelist.elem[i]->frame(time_delta);
 		}
 	}
 

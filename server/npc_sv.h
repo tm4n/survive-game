@@ -17,6 +17,8 @@ class npc_sv : public npc
         virtual void frame(double time_delta);
 		virtual void event_callback(int event_type, actor *ac);
 
+		virtual void callback_attack_done(int target, const vec &target_pos);
+
     protected:
 
 		actor *get_nearest_target(bool get_barrier);

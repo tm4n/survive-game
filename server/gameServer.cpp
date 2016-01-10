@@ -19,6 +19,7 @@ using namespace std;
 #include "net_sv.h"
 #include "level_sv.h"
 #include "player_sv.h"
+#include "projectile_sv.h"
 #include "collectible_sv.h"
 #include "scoremgr.h"
 
@@ -255,6 +256,10 @@ void gameServer::run()
         {
             if (lvl->actorlist.elem[i] != 0) lvl->actorlist.elem[i]->frame(time_delta);
         }
+		for (uint i = 0; i < lvl->projectilelist.size; i++)
+		{
+			if (lvl->projectilelist.elem[i] != 0) lvl->projectilelist.elem[i]->frame(time_delta);
+		}
 
 
 
@@ -807,11 +812,11 @@ void gameServer::start_match()
 	/*v.set(400, 300, 0.f);
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);*/
 
-	v.set(400, 300, lvl->border_ground);
-	new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
+	//v.set(400, 300, lvl->border_ground);
+	//new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
 
 	v.set(400, 800, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WEREWOLF, &v, &t, &sv_num_npcs);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);

@@ -12,6 +12,12 @@ level_sv::~level_sv()
 	{
 		if (actorlist.at(i) != 0) delete actorlist.at(i);
 	}
+	//assert(actorlist.filled == 0);
+	for (uint i = 0; i < projectilelist.size; i++)
+	{
+		if (projectilelist.at(i) != 0) delete projectilelist.at(i);
+	}
+	//assert(projectilelist.filled == 0);
 }
 
 player_sv *level_sv::get_player(uint actor_id)
