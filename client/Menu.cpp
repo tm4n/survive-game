@@ -8,6 +8,7 @@
 bool clicked_options = false;
 bool clicked_help = false;
 
+#ifndef ANDROID
 // Callback classes
 class optionsCallback : public GUICallback {
 
@@ -26,6 +27,7 @@ void optionsCallback::callback(int obj_id)
 
 	m->snd_click();
 }
+#endif
 
 class helpCallback : public GUICallback {
 
@@ -47,6 +49,7 @@ void helpCallback::callback(int obj_id)
 
 //////////////////////////
 // Options Callback classes
+#ifndef ANDROID
 class optionsOkCallback : public GUICallback {
 
 	public:
@@ -198,7 +201,7 @@ void optionsAntialiasCallback::callback(int obj_id)
 	m->options_update();
 	m->snd_click();
 }
-
+#endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Help class
 
@@ -229,11 +232,13 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	current_inputbox = -1;
 	current_inputstring = NULL;
 
+	#ifndef ANDROID
 	optionsCallback *optCb = new optionsCallback(this);
 	optionsOkCallback *optOkCb = new optionsOkCallback(this);
 	optionsCancelCallback *optCancelCb = new optionsCancelCallback(this);
 	optionsInputCallback *optInputCb = new optionsInputCallback(this);
-
+	#endif
+	
 	helpCallback *hlpCb = new helpCallback(this);
 
 	// add menu background
@@ -243,7 +248,9 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
 	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, playMpCb);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
+	#ifndef ANDROID
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
+	#endif
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);
 	
 	gui->setButtonSwitchDown(button_ids[0], button_ids[1]);
@@ -251,10 +258,13 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	gui->setButtonSwitchUp(button_ids[1], button_ids[0]);
 	gui->setButtonSwitchDown(button_ids[2], button_ids[3]);
 	gui->setButtonSwitchUp(button_ids[2], button_ids[1]);
+	#ifndef ANDROID
 	gui->setButtonSwitchDown(button_ids[3], button_ids[4]);
 	gui->setButtonSwitchUp(button_ids[3], button_ids[2]);
+	#endif
 	gui->setButtonSwitchUp(button_ids[4], button_ids[3]); 
 
+	#ifndef ANDROID
 	// add options menu
 	black_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::BlackBg), 3, GUIObject::Alignment::scaled, 0.0f, 0.0f, GUI_GROUP_OPTIONS);
 	gui->setAlpha(black_bg_id, 0.6f);
@@ -308,9 +318,10 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	st_antialias_txt = gui->addText("Antialiasing", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 508.0f, -275.0f + 226.0f, GUI_GROUP_OPTIONS);
 
 	gui->addText("Changing graphic settings\nrequires a restart", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, -375.0f + 480.0f, -275.0f + 326.0f, GUI_GROUP_OPTIONS);
-
+	
 	// hide options menu
 	options_hide();
+	#endif
 
 	// help menu
 	gui->addPanel(resources->getTex(ResourceLoader::texType::HelpBg), 4, GUIObject::Alignment::center, -275.0f, -210.0f, GUI_GROUP_HELP);
@@ -369,12 +380,14 @@ void Menu::hide()
 
 void Menu::frame(double time_frame)
 {
+	#ifndef ANDROID
 	if (clicked_options == true)
 	{
 		clicked_options = false;
 
 		options_show();
 	}
+	#endif
 
 	if (clicked_help == true)
 	{
@@ -395,7 +408,9 @@ void Menu::frame(double time_frame)
 			else current_inputstring->push_back('|');
 			caret_visible = !caret_visible;
 
+			#ifndef ANDROID
 			options_update();
+			#endif
 		}
 	}
 }
@@ -405,6 +420,7 @@ void Menu::enable_inputbox(int id)
 	if (current_inputbox >= 0) disable_inputbox();
 	SDL_StartTextInput();
 
+	#ifndef ANDROID
 	if (id == st_playername_bt)
 	{
 		current_inputbox = id;
@@ -420,6 +436,7 @@ void Menu::enable_inputbox(int id)
 		current_inputbox = id;
 		current_inputstring = &str_volume;
 	}
+	#endif
 
 	if (current_inputbox >= 0)
 	{
@@ -463,7 +480,9 @@ void Menu::event_input_keys(SDL_Event *evt)
 				if (first == '.' && current_inputstring->find('.') == std::string::npos) current_inputstring->append(str_first);
 			}
 			if (caret_visible) current_inputstring->push_back('|');
+			#ifndef ANDROID
 			options_update();
+			#endif // ANDROID
 		}
 	}
 	if (evt->type == SDL_TEXTEDITING)
@@ -472,7 +491,9 @@ void Menu::event_input_keys(SDL_Event *evt)
 		{
 			// TODO: does this really work? no, it deletes the text when out of focus
 			//current_inputstring->assign(evt->edit.text);
+			#ifndef ANDROID
 			options_update();
+			#endif
 		}
 		/*composition = event.edit.text;
 		cursor = event.edit.start;
@@ -489,7 +510,9 @@ void Menu::event_input_keys(SDL_Event *evt)
 				if (current_inputstring->length() > 0)
 				{
 					current_inputstring->pop_back();
+					#ifndef ANDROID
 					options_update();
+					#endif // ANDROID
 				}
 
 				if (caret_visible) current_inputstring->push_back('|');
@@ -501,7 +524,7 @@ void Menu::event_input_keys(SDL_Event *evt)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // options menu
-
+#ifndef ANDROID
 
 void Menu::options_update()
 {
@@ -623,6 +646,8 @@ void Menu::options_hide()
 		gui->setVisible(button_ids[i], true);
 	}
 }
+#endif //ANDROID
+
 
 void Menu::help_show()
 {

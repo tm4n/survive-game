@@ -23,7 +23,7 @@ b_settings::b_settings()
 {
 #ifdef ANDROID
 	goto default_settings;
-#endif
+#else
 	// load values
 	std::string path = get_settings_file_path();
 	if (path.size() > 0)
@@ -84,7 +84,7 @@ b_settings::b_settings()
 	}
 	
 	std::cout << "\n Could not load settings, using default \n";
-
+#endif
 	// Default settings
 default_settings:
 #ifdef ANDROID
@@ -141,7 +141,7 @@ void b_settings::save_settings()
 {
 #ifdef ANDROID 
 	return;
-#endif
+#else
 	// load values
 	std::string path = get_settings_file_path();
 	if (path.length() > 0)
@@ -197,6 +197,7 @@ void b_settings::save_settings()
 		}
 	}
 	err("Error saving settings file");
+	#endif
 }
 
 std::string b_settings::get_settings_file_path()
@@ -215,7 +216,7 @@ std::string b_settings::get_settings_file_path()
 		err("Cold not get Appdata Path from Windows");
 		return std::string("");
 	}
-#else
+#elifndef ANDROID
 	const char *homedir;
 	if ((homedir = getenv("HOME")) == NULL) {
 		homedir = getpwuid(getuid())->pw_dir;

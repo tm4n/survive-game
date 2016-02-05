@@ -19,12 +19,14 @@ public:
 	void show();
 	void hide();
 	
+	#ifndef ANDROID
 	void options_show();
 	void options_hide();
 	void options_update();
 
 	void options_safe_to_settings();
 	void options_load_from_settings();
+	#endif
 
 	void help_show();
 	void help_hide();

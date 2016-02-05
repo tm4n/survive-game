@@ -67,9 +67,9 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 	{
 		exit(-3);
 	}
-	#endif // ANDROID
 
-	if (antialias) glEnable(GL_MULTISAMPLE);
+	if (antialias) glEnable(GL_MULTISAMPLE);  // not working in android
+	#endif // ANDROID
 
 	// Initialize OpenGL features
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
