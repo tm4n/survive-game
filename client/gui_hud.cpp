@@ -293,7 +293,7 @@ void gui_hud::show_status_noserver()
 
 void gui_hud::show_status_wrongver()
 {
-	gui->updateText(status_id, "Your game version is outdated.\nGet the newest version from the official homepage!");
+	gui->updateText(status_id, "Your game version is outdated.\nGet the newest version!");
 	gui->setVisible(status_id, true);
 }
 

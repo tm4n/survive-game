@@ -246,23 +246,28 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
-	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, playMpCb);
+	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	#ifndef ANDROID
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
 	#endif
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);
-	
+
+	#ifdef ANDROID
+	gui->setButtonSwitchDown(button_ids[0], button_ids[2]);
+	gui->setButtonSwitchDown(button_ids[2], button_ids[4]);
+	gui->setButtonSwitchUp(button_ids[2], button_ids[0]);
+	gui->setButtonSwitchUp(button_ids[4], button_ids[2]); 
+	#else
 	gui->setButtonSwitchDown(button_ids[0], button_ids[1]);
 	gui->setButtonSwitchDown(button_ids[1], button_ids[2]);
 	gui->setButtonSwitchUp(button_ids[1], button_ids[0]);
 	gui->setButtonSwitchDown(button_ids[2], button_ids[3]);
 	gui->setButtonSwitchUp(button_ids[2], button_ids[1]);
-	#ifndef ANDROID
 	gui->setButtonSwitchDown(button_ids[3], button_ids[4]);
 	gui->setButtonSwitchUp(button_ids[3], button_ids[2]);
-	#endif
 	gui->setButtonSwitchUp(button_ids[4], button_ids[3]); 
+	#endif
 
 	#ifndef ANDROID
 	// add options menu
@@ -327,7 +332,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	gui->addPanel(resources->getTex(ResourceLoader::texType::HelpBg), 4, GUIObject::Alignment::center, -275.0f, -210.0f, GUI_GROUP_HELP);
 
 	helpCloseCallback *hccb = new helpCloseCallback(this);
-	gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -275.0f + 200.0f, -210.0f + 350.f, hccb, GUI_GROUP_HELP);
+	help_close_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -275.0f + 200.0f, -210.0f + 350.f, hccb, GUI_GROUP_HELP);
 	gui->addText("Close", resources->getFont(ResourceLoader::fontType::fnt_mids), 6, GUIObject::Alignment::center, -275.0f + 200.0f + 38.0f, -210.0f + 350.f + 2.0f, GUI_GROUP_HELP);
 
 	gui->addText(str_help, resources->getFont(ResourceLoader::fontType::fnt_norm), 6, GUIObject::Alignment::center, -275.0f + 20.0f, -210.0f + 40.f, GUI_GROUP_HELP);
@@ -660,6 +665,8 @@ void Menu::help_show()
 	// Show help
 	gui->setVisible(black_bg_id, true);
 	gui->setGroupVisible(GUI_GROUP_HELP, true);
+	
+	gui->setButtonDefault(help_close_bt);
 }
 
 void Menu::help_hide()
@@ -673,8 +680,25 @@ void Menu::help_hide()
 	{
 		gui->setVisible(button_ids[i], true);
 	}
+	
+	gui->setButtonDefault(button_ids[2]);
 }
 
+#ifdef ANDROID
+std::string Menu::str_help = 
+"Please Note: This is a beta version!\n"
+"Multiplayer is not yet working on Android consoles.\n"
+"The button mapping will be displayed while loading.\n"
+
+"Your objective is to protect the generator in the center of the map.\n"
+"The crates around you can be moved to build up a defence against \n"
+"the incoming monster horde. \n"
+
+"As the game progresses, new weapons will be dropped in the world.\n"
+"Get near the small crates containing them to pick them up.\n"
+"\n\nPress the A button to open the ingame menu,\n"
+"which includes a help screen.";
+#else 
 std::string Menu::str_help = "First, go to \"Options\" and set your player name.\n"
 "To start playing, click \"Play\".\n\n"
 
@@ -687,5 +711,5 @@ std::string Menu::str_help = "First, go to \"Options\" and set your player name.
 "Get near the small crates containing them to pick them up.\n"
 "You can then switch weapons using the keys 1 to 10 or your mouse\n"
 "wheel.\n\n"
-
 "Good luck out there, watch your back!";
+#endif

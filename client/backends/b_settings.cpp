@@ -106,7 +106,7 @@ default_settings:
 	return;
 #endif
 	// Other systems default settings
-	playername.assign("Player");;
+	playername.assign("Android Player");;
 	server.assign("Survive! Server");
 
 	mouse_sensitivity = 2.0f;

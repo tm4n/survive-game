@@ -71,6 +71,8 @@ private:
 	//int st_shadows_bt, st_shadows_txt; //TODO: implement shadows
 	int st_shader_bt, st_shader_txt;
 	int st_antialias_bt, st_antialias_txt;
+	
+	int help_close_bt;
 
 	int button_ids[SELECTION_MAX];
 	int button_sel_ids[SELECTION_MAX];
