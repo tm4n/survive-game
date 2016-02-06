@@ -48,7 +48,7 @@ public:
 	Flesh_hit = 30, Metal_hit1 = 31, Wood_hit1 = 32, Wood_hit2 = 33, Wood_hit3 = 34, Fireball = 35, Fireball_hit = 36,
 	Generator = 40, Zombie1= 41, Zombie2 = 42, Monster = 43, Harpy1 = 44, Harpy2 = 45}; // TODO: finish
 
-	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_mid = 5, fnt_mids = 6, fnt_menu = 7};
+	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_larges = 5, fnt_mid = 6, fnt_mids = 7, fnt_menu = 8};
 
 	ResourceLoader();
 

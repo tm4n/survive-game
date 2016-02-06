@@ -348,11 +348,11 @@ void ResourceLoader::loadMenu()
 	
 
 	// Fonts
-
 	openFont(fontType::fnt_small, "assets/OpenSans-Semibold.ttf", 10);
 	openFont(fontType::fnt_norm, "assets/OpenSans-Semibold.ttf", 16);
 	openFont(fontType::fnt_normp, "assets/OpenSans-Bold.ttf", 16);
 	openFont(fontType::fnt_large, "assets/OpenSans-Bold.ttf", 36);
+	openFont(fontType::fnt_larges, "assets/OpenSans-Bold.ttf", 30);
 	openFont(fontType::fnt_mid, "assets/OpenSans-Bold.ttf", 24);
 	openFont(fontType::fnt_mids, "assets/OpenSans-Bold.ttf", 18);
 	openFont(fontType::fnt_menu, "assets/OpenSans-Bold.ttf", 20);

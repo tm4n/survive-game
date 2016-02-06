@@ -87,7 +87,7 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mProjMatrix = glm::perspective(70.f, ratio, 2.f, 6000.f);
+	mProjMatrix = glm::perspective(70.f, ratio, 10.f, 8000.f);
 
 	// load menu resources
 	resources.loadMenu();

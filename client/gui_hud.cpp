@@ -47,36 +47,65 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	this->msg_timer = 1200.f;
 
 	// create debug info
-	debug_id = gui->addText("TEST!", resources->getFont(ResourceLoader::fontType::fnt_small), 1, GUIObject::Alignment::upleft, 0.1f, 0.1f);
+	//debug_id = gui->addText("TEST!", resources->getFont(ResourceLoader::fontType::fnt_small), 1, GUIObject::Alignment::upleft, 0.1f, 0.1f);
 
 	// create health info
+#ifndef ANDROID
 	health_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiHealth), 1, GUIObject::Alignment::downleft, 20.f, -148.f);
 	health_txt_id = gui->addText("100", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::downleft, 60.f, -93.f);
+#else
+	health_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiHealth), 1, GUIObject::Alignment::downleft, 120.f, -210.f);
+	gui->setScaleX(health_bg_id, 1.2f); gui->setScaleY(health_bg_id, 1.2f);
+	health_txt_id = gui->addText("100", resources->getFont(ResourceLoader::fontType::fnt_large), 1, GUIObject::Alignment::downleft, 170.f, -150.f);
+#endif
 
 	// create ammo info
+#ifndef ANDROID
 	ammo_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiAmmo), 1, GUIObject::Alignment::downright, -148.f, -148.f);
 	ammo_mag_txt_id = gui->addText("50", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::downright, -103.f, -93.f);
 	ammo_txt_id = gui->addText("10", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::downright, -71.f, -86.f);
-
+#else
+	ammo_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiAmmo), 1, GUIObject::Alignment::downright, -260.f, -210.f);
+	gui->setScaleX(ammo_bg_id, 1.2f); gui->setScaleY(ammo_bg_id, 1.2f);
+	ammo_mag_txt_id = gui->addText("50", resources->getFont(ResourceLoader::fontType::fnt_large), 1, GUIObject::Alignment::downright, -220.f, -160.f);
+	ammo_txt_id = gui->addText("10", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::downright, -170.f, -148.f);
+#endif
 	// create crosshair
 	crosshair_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiCrosshair), 1, GUIObject::Alignment::center, 0.0f, 0.0f);
 	gui->setCentered(crosshair_id, true);
 
 	// create game status message indicator
+#ifndef ANDROID
 	status_id = gui->addText("Status goes here!", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::upcenter, 0.f, 80.f);
+#else
+	status_id = gui->addText("Status goes here!", resources->getFont(ResourceLoader::fontType::fnt_larges), 1, GUIObject::Alignment::upcenter, 0.f, 140.f);
+#endif
 	gui->setCentered(status_id, true);
 
+#ifndef ANDROID
 	message_id = gui->addText("Animated message goes here!", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::downcenter, 0.f, -100.f);
+#else
+	message_id = gui->addText("Animated message goes here!", resources->getFont(ResourceLoader::fontType::fnt_large), 1, GUIObject::Alignment::downcenter, 0.f, -130.f);
+#endif
 	gui->setCentered(message_id, true);
 	gui->setVisible(message_id, false);
 
+#ifndef ANDROID
 	wave_points_id = gui->addText("Wave: 0 \nPoints: 2", resources->getFont(ResourceLoader::fontType::fnt_mid), 1, GUIObject::Alignment::upright, -150.f, 10.f);
+#else
+	wave_points_id = gui->addText("Wave: 0 \nPoints: 2", resources->getFont(ResourceLoader::fontType::fnt_larges), 1, GUIObject::Alignment::upright, -285.f, 70.f);
+#endif
 	
 	// wave timer
+#ifndef ANDROID
 	wave_timer_txt_id =  gui->addText("seconds until next wave!", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::upcenter, 0.f, 30.f);
-	gui->setCentered(wave_timer_txt_id, true);
 	wave_timer_id =  gui->addText("999", resources->getFont(ResourceLoader::fontType::fnt_mids), 1, GUIObject::Alignment::upcenter, -135.f, 30.f, 200, 0, 0);
+#else
+	wave_timer_txt_id = gui->addText("seconds until next wave!", resources->getFont(ResourceLoader::fontType::fnt_larges), 1, GUIObject::Alignment::upcenter, 0.f, 80.f);
+	wave_timer_id = gui->addText("999", resources->getFont(ResourceLoader::fontType::fnt_larges), 1, GUIObject::Alignment::upcenter, -220.f, 80.f, 200, 0, 0);
+#endif
 	gui->setCentered(wave_timer_id, true);
+	gui->setCentered(wave_timer_txt_id, true);
 
 	// highscore:
 	score_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::GuiScoreboard), 5, GUIObject::Alignment::center, -225.f, -150.f);
@@ -140,7 +169,7 @@ gui_hud::~gui_hud()
 	hide_wave_timer();*/
 
 	// delete added stuff
-	gui->removeObject(debug_id);
+	//gui->removeObject(debug_id);
 	// delete health info
 	gui->removeObject(health_bg_id);
 	gui->removeObject(health_txt_id);
@@ -182,7 +211,7 @@ void gui_hud::set_state(hud_state new_state)
 	
 	// deactivate old state
 	// hide everything
-	gui->setVisible(debug_id, false);
+	//gui->setVisible(debug_id, false);
 	gui->setVisible(health_bg_id, false);
 	gui->setVisible(health_txt_id, false);
 	gui->setVisible(ammo_bg_id, false);
@@ -194,12 +223,12 @@ void gui_hud::set_state(hud_state new_state)
 	
 	if (new_state == hud_state::spectating)
 	{
-		gui->setVisible(debug_id, true);
+		//gui->setVisible(debug_id, true);
 		gui->setVisible(wave_points_id, true);
 	}
 	if (new_state == hud_state::playing)
 	{
-		gui->setVisible(debug_id, true);
+		//gui->setVisible(debug_id, true);
 		gui->setVisible(health_bg_id, true);
 		gui->setVisible(health_txt_id, true);
 		gui->setVisible(ammo_bg_id, true);
@@ -214,7 +243,7 @@ void gui_hud::set_state(hud_state new_state)
 
 void gui_hud::set_debug(std::string s)
 {
-	gui->updateText(debug_id, s);
+	//gui->updateText(debug_id, s);
 }
 
 void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, uint points)
@@ -268,8 +297,13 @@ void gui_hud::show_status_end()
 
 void gui_hud::show_status_join(bool respawn)
 {
+#ifndef ANDROID
 	if (!respawn) gui->updateText(status_id, "You are spectating. Leftclick to join the game.");
 	else gui->updateText(status_id, "Leftclick to rejoin the game. You will loose a third of your points.");
+#else
+	if (!respawn) gui->updateText(status_id, "Press right trigger to start.");
+	else gui->updateText(status_id, "Press right trigger to respawn. You will loose a third of your points.");
+#endif
 	gui->setVisible(status_id, true);
 }
 void gui_hud::show_status_respawn_timer(int respawn_timer)
