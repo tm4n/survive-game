@@ -52,6 +52,8 @@ const char *GUI::mFragmentShaderCode =
 
 GUI::GUI()
 {
+	InputJoyCooldown[0] = false; InputJoyCooldown[1] = false;
+	InputJoyCooldown[2] = false; InputJoyCooldown[3] = false;
 	selected_button = -1;
 	default_button = -1;
 	// ready up draw shaders
@@ -180,16 +182,25 @@ void GUI::event_mouse(SDL_Event *evt)
 	}
 	if (evt->type == SDL_JOYAXISMOTION)
 	{
-		if (evt->caxis.axis == 1 || evt->caxis.axis == 3)
+		if (!InputJoyCooldown[0] && !InputJoyCooldown[1] && !InputJoyCooldown[2] && !InputJoyCooldown[3])
 		{
-			if (evt->caxis.value > 10000) InputSwitchDown();
-			if (evt->caxis.value < -10000) InputSwitchUp();
+			if (evt->caxis.axis == 1 || evt->caxis.axis == 3)
+			{
+				if (evt->caxis.value > 20000) {InputJoyCooldown[evt->caxis.axis] = true; InputSwitchDown(); return;}
+				if (evt->caxis.value < -20000) {InputJoyCooldown[evt->caxis.axis] = true; InputSwitchUp(); return;}
+				
+			}
+			if (evt->caxis.axis == 0 || evt->caxis.axis == 2)
+			{
+				if (evt->caxis.value > 20000) {InputJoyCooldown[evt->caxis.axis] = true; InputSwitchRight(); return;}
+				if (evt->caxis.value < -20000) {InputJoyCooldown[evt->caxis.axis] = true; InputSwitchLeft(); return;}
+			}
 		}
-		if (evt->caxis.axis == 0 || evt->caxis.axis == 2)
+		else
 		{
-			if (evt->caxis.value > 10000) InputSwitchRight();
-			if (evt->caxis.value < -10000) InputSwitchLeft();
+			if (evt->caxis.axis <= 3 && evt->caxis.value < 10000 && evt->caxis.value > -10000) InputJoyCooldown[evt->caxis.axis] = false;
 		}
+		
 	}
 }
 

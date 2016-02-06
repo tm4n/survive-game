@@ -86,6 +86,8 @@ private:
 	void InputSwitchDown();
 	void InputSwitchLeft();
 	void InputSwitchRight();
+	
+	bool InputJoyCooldown[4];
 
 	static float squareCoords[18];
 	

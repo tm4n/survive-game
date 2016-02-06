@@ -116,6 +116,11 @@ gameRenderer::~gameRenderer()
 	Mix_CloseAudio();
 }
 
+// helper function for signum. can't believe cpp does not have this
+double sgn(float val) {
+    if (val < 0) return (-1.0); else return (1.0);
+}
+
 void gameRenderer::drawFrame(double time_delta)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,8 +128,12 @@ void gameRenderer::drawFrame(double time_delta)
 	// move camera by input (joy only, mouse done in event)
 	if (CameraJoyInputY < 2600 && CameraJoyInputY > -2600) CameraJoyInputY = 0.f;
 	if (CameraJoyInputX < 2600 && CameraJoyInputX > -2600) CameraJoyInputX = 0.f;
-	CameraAngle.y -= CameraJoyInputY*0.0001f*(float)time_delta;
-	CameraAngle.x -= CameraJoyInputX*0.0002f*(float)time_delta;
+	CameraAngle.y -= (float)(sgn(CameraJoyInputY)*pow(CameraJoyInputY*0.00005, 2)*time_delta);
+	double acc_x = pow(CameraJoyInputX*0.00005, 2)*time_delta;
+	if (CameraJoyInputX > 12000 || CameraJoyInputX < -12000) acc_x *= 2;
+	CameraAngle.x -= (float)(sgn(CameraJoyInputX)*acc_x);
+	//CameraAngle.y -= CameraJoyInputY*0.0001f*(float)time_delta;
+	//CameraAngle.x -= CameraJoyInputX*0.0002f*(float)time_delta;
 
 	// calculate matrices
 	float camx = (float) (cos(toRadians(CameraAngle.x))*cos(toRadians(CameraAngle.y)));
@@ -145,6 +154,9 @@ void gameRenderer::drawFrame(double time_delta)
 		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
         if (m != NULL) m->draw(mVPMatrix);
     }
+    // workaroud to always draw muzzle flash. seems not to be needed
+    //Mesh *m = resources.getMesh(ResourceLoader::meshType::Muzzleflash);
+    //if (m != NULL) m->draw(mVPMatrix);
 
 	// draw skybox
 	meshSkybox->draw(mProjMatrix, mVMatrix);

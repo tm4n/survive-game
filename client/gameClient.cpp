@@ -245,7 +245,11 @@ void gameClient::handle_netevent(ENetEvent *event)
 								else log(LOG_ERROR, "FATAL! Invalid actor_id on NET_JOIN!");
 
 							// display help
+							#ifndef ANDROID
 							if (points == 0) hud->show_message("Use the crates to build a defence. Move them with right-click.");
+							#else
+							if (points == 0) hud->show_message("Use the crates to build a defence. Move them with (A).");
+							#endif // ANDROID
 
 						}
 						else log (LOG_ERROR, "Received NET_JOIN while not spectating");
@@ -430,7 +434,12 @@ void gameClient::handle_netevent(ENetEvent *event)
 						player_cl *pl= lvl_cl->get_player(d->actor_id);
 						if (pl != NULL)
 						{
-							if (!(pl->wpmgr->pickups & (1 << d->weapon_id))) hud->show_message("You've picked up a new weapon! Change weapons with mouse wheel or number keys.");
+							if (!(pl->wpmgr->pickups & (1 << d->weapon_id)))
+							#ifndef ANDROID
+								hud->show_message("You've picked up a new weapon! Change weapons with mouse wheel or number keys.");
+							#else
+								hud->show_message("You've picked up a new weapon! Change weapons with U and Y buttons.");
+							#endif
 
 							pl->wpmgr->set_mag_ammo(d->weapon_id, (short)d->ammo_magazin, d->ammo_magazin >> 16);
 						}

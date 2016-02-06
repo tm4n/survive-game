@@ -291,7 +291,11 @@ void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int 
 // status
 void gui_hud::show_status_end()
 {
-	gui->updateText(status_id, "The Generator has been destroyed. Please wait for a new round to start!");
+	#ifndef ANDROID
+		gui->updateText(status_id, "The Generator has been destroyed. Game over!");
+	#else
+		gui->updateText(status_id, "The Generator has been destroyed. Game over! Press A for menu.");
+	#endif // ANDROID
 	gui->setVisible(status_id, true);
 }
 

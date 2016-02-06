@@ -34,7 +34,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	ro_mf->visible = false;
 	ro_mf->alpha = 0.f;
 
-	renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->addRenderObject(ro_mf);
+	renderer->resources.getMesh(ResourceLoader::meshType::Chainsaw)->addRenderObject(ro_mf);
 }
 
 weaponmgr_cl::~weaponmgr_cl()
@@ -156,6 +156,7 @@ void weaponmgr_cl::frame(double time_frame)
 
 
 	// muzzle flash
+	
 	ro_mf->translation[0] = renderer->CameraPos.x;
 	ro_mf->translation[1] = renderer->CameraPos.y;
 	ro_mf->translation[2] = renderer->CameraPos.z;
