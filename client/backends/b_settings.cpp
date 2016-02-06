@@ -216,7 +216,7 @@ std::string b_settings::get_settings_file_path()
 		err("Cold not get Appdata Path from Windows");
 		return std::string("");
 	}
-#elifndef ANDROID
+#elif not defined(ANDROID)
 	const char *homedir;
 	if ((homedir = getenv("HOME")) == NULL) {
 		homedir = getpwuid(getuid())->pw_dir;
