@@ -34,7 +34,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	ro_mf->visible = false;
 	ro_mf->alpha = 0.f;
 
-	renderer->resources.getMesh(ResourceLoader::meshType::Chainsaw)->addRenderObject(ro_mf);
+	renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->addRenderObject(ro_mf);
 }
 
 weaponmgr_cl::~weaponmgr_cl()
@@ -75,7 +75,7 @@ void weaponmgr_cl::input_shoot(vec &cam_pos, vec &cam_angle)
 	recoil.z = random_range(2); // pan negative or positive
 
 	set_anim_state(1);
-	// TODO: shoot-sound
+
 	show_muzzleflash(*curr_weapon);
 
 }
@@ -403,9 +403,6 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			orig.x = ro_mf->translation[0]; orig.y = ro_mf->translation[1]; orig.z = ro_mf->translation[2];
 
 			effmgr->eff_bullettrail(&orig, &shoot_target);
-
-			Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
-			if (snd) snd->play(1, 128.f);
 		}
 		else
 		{
@@ -413,11 +410,20 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 			orig.set(&shoot_origin);
 			orig.z -= 7.f;
 			effmgr->eff_bullettrail(&orig, &shoot_target);
-
-			Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
-			if (snd) snd->play3D(1, ro, 128.f);
 		}
 	
+	}
+
+	// Sound
+	if (*local_player == true)
+	{
+		Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
+		if (snd) snd->play(1, 128.f);
+	}
+	else
+	{
+		Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
+		if (snd) snd->play3D(1, ro, 128.f);
 	}
 }
 

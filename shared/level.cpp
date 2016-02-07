@@ -84,8 +84,8 @@ bool level::trace(vec &from, vec &to, vec *hitpos, int *actor_hit, int actor_ign
 	col_move_border_min.set(border_min, border_min, border_ground);
 	col_move_border_max.set(border_max, border_max, border_height);
 
-	// int steps = to.dist(from);
-	int steps = 10000;
+	int steps = (int)(to.dist(&from)*1.5f);
+	steps = clamp(steps, 5, 10000);
 	vec curr_pos;
 	for (int i = 0; i < steps; i++)
 	{

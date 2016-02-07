@@ -817,6 +817,14 @@ void gameServer::start_match()
 
 	v.set(400, 800, lvl->border_ground);
 	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
+	v.set(400, 1000, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
+	v.set(400, 1200, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
+	v.set(400, 1400, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
+	v.set(400, 1600, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);
@@ -1018,8 +1026,8 @@ void gameServer::spawner(double time_frame)
 		}
 	}
 	
-	sv_spawn_timer += (float)(time_frame * 0.16);
-	sv_barrier_timer += (float)(time_frame * 0.16);
+	sv_spawn_timer += (float)(time_frame * 0.0625);
+	sv_barrier_timer += (float)(time_frame * 0.0625);
 }
 
 
@@ -1065,7 +1073,7 @@ void gameServer::npc_spawn(int etype, float ebonus)
 void gameServer::box_spawn()
 {
 	vec pos;
-	int dice;
+	float dice;
 	
 	log(LOG_DEBUG, "Spawning barrier crate");
 		
@@ -1074,10 +1082,10 @@ void gameServer::box_spawn()
 	pos.y = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.z = 1500.f;
 	
-	dice = (int)random_range(75);
-	if (dice <= 12)
+	dice = random_range(75);
+	if (dice <= 12.f)
 	{
-		if (dice <= 1.5)
+		if (dice <= 1.3f && wave > 5)
 			new box_sv(lvl_sv, BOX_TYPE_TURRET, &pos, &sv_num_barriers);
 		else new box_sv(lvl_sv, BOX_TYPE_METAL, &pos, &sv_num_barriers);
 	}

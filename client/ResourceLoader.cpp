@@ -138,7 +138,7 @@ void ResourceLoader::loadIngame()
 	
 
 	// weapons
-	m = new Mesh("assets/models/fireball.mdl", NULL);
+	m = new MeshBlend("assets/models/fireball.mdl", NULL);
 	meshes[(int)meshType::Fireball] = m;
 	if (m->loaded == false) { std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1); }
 	m->initShader();
@@ -208,7 +208,7 @@ void ResourceLoader::loadIngame()
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshBlend("assets/models/weapons/muzzle.mdl", NULL);
+	m = new Mesh("assets/models/weapons/muzzle.mdl", NULL);
 	meshes[(int)meshType::Muzzleflash] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -328,6 +328,7 @@ void ResourceLoader::loadMenu()
 
 	textures[(int)texType::OptionsBg] = new Texture("assets/gui/options_bg.tga");
 	textures[(int)texType::HelpBg] = new Texture("assets/gui/help_bg.tga");
+	textures[(int)texType::ControllerHelp] = new Texture("assets/gui/OUYA_mapping.tga");
 
 	// load skycube here already because its initialized early
 	std::vector<std::string> skytx{ "assets/textures/sky_2.tga", "assets/textures/sky_0.tga", "assets/textures/sky_top.tga", 

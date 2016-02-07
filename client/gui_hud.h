@@ -60,6 +60,8 @@ protected:
 
 	int ingame_menu_bg, ingame_but_disconnect, ingame_but_close; // ingame_but_options,
 
+	int controller_help_id;
+
 	std::list<GUICallback*> callbacks;
 	std::list<Texture*> textures;
 };

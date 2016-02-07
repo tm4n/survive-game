@@ -117,8 +117,20 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	highscore_txt_id = gui->addText(" ", resources->getFont(ResourceLoader::fontType::fnt_normp), 6, GUIObject::Alignment::center, 0.f, 125.f);
 	gui->setCentered(highscore_txt_id, true);
 
+	// controller help
+#ifdef ANDROID
+	controller_help_id = gui->addPanel(resources->getTex(ResourceLoader::texType::ControllerHelp), 3, GUIObject::Alignment::center, 0.f, 0.f);
+	gui->setCentered(controller_help_id, true);
+	gui->setAlpha(controller_help_id, 0.8f);
+#endif
+
 	// ingame menu
-	ingame_menu_bg = gui->addPanel(resources->getTex(ResourceLoader::texType::IngameMenuBg), 3, GUIObject::Alignment::center, -150.f, -225.f);
+#ifdef ANDROID
+	float pos_offset = 550.f;
+#else
+	float pos_offset = 0.f;
+#endif
+	ingame_menu_bg = gui->addPanel(resources->getTex(ResourceLoader::texType::IngameMenuBg), 3, GUIObject::Alignment::center, -150.f+pos_offset, -225.f);
 	gui->setAlpha(ingame_menu_bg, 0.8f);
 
 	SDL_Color c = {255, 255, 255};
@@ -126,7 +138,7 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	disconCallback *dc = new disconCallback(quit);
 	Texture *tex = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	Texture *tex_sel = new Texture("Disconnect", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
-	ingame_but_disconnect = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, -200.f, dc);
+	ingame_but_disconnect = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f+pos_offset, -200.f, dc);
 	callbacks.push_back(dc);
 	textures.push_back(tex); textures.push_back(tex_sel);
 
@@ -139,7 +151,7 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	closeCallback *cc = new closeCallback(this);
 	tex = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), c);
 	tex_sel = new Texture("Back to Game", resources->getFont(ResourceLoader::fontType::fnt_mid), sel);
-	ingame_but_close = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f, 95.f, cc);
+	ingame_but_close = gui->addButton(tex, tex_sel, 4, GUIObject::Alignment::center, -125.f+pos_offset, 95.f, cc);
 	callbacks.push_back(cc);
 	textures.push_back(tex); textures.push_back(tex_sel);
 
@@ -158,6 +170,10 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	show_status_connecting();
 	hide_wave_timer();
 	hide_ingame_menu();
+
+#ifdef ANDROID
+	gui->setVisible(controller_help_id, true);
+#endif
 }
 
 gui_hud::~gui_hud()
@@ -200,6 +216,10 @@ gui_hud::~gui_hud()
 	//gui->removeObject(ingame_but_options);
 	gui->removeObject(ingame_but_close);
 
+#ifdef ANDROID
+	gui->removeObject(controller_help_id);
+#endif
+
 	for (GUICallback *c : callbacks) delete c;
 	for (Texture *t : textures) delete t;
 }
@@ -236,6 +256,9 @@ void gui_hud::set_state(hud_state new_state)
 		gui->setVisible(ammo_mag_txt_id, true);
 		gui->setVisible(crosshair_id, true);
 		gui->setVisible(wave_points_id, true);
+#ifdef ANDROID
+		gui->setVisible(controller_help_id, false);
+#endif
 	}
 	
 	state = new_state;
@@ -463,6 +486,11 @@ void gui_hud::show_ingame_menu()
 	//gui->setVisible(ingame_but_options, true);
 	gui->setVisible(ingame_but_close, true);
 
+#ifdef ANDROID
+	gui->setX(controller_help_id, -300.f);
+	gui->setVisible(controller_help_id, true);
+#endif
+
 	// untrap mouse
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 
@@ -476,6 +504,10 @@ void gui_hud::hide_ingame_menu()
 	gui->setVisible(ingame_but_disconnect, false);
 	//gui->setVisible(ingame_but_options, false);
 	gui->setVisible(ingame_but_close, false);
+
+#ifdef ANDROID
+	gui->setVisible(controller_help_id, false);
+#endif
 
 	// trap mouse
 	SDL_SetRelativeMouseMode(SDL_TRUE);
