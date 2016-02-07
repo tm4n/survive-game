@@ -29,11 +29,11 @@ player_sv::player_sv(level *lvl, vec *pos, vec *ang, float health,
 	// wpmgr->give_weapon(WP_COLT); now automatically given
 
 	// cheats below
-	wpmgr->give_weapon(WP_WESSON);
+	/*wpmgr->give_weapon(WP_WESSON);
 	wpmgr->give_weapon(WP_CHAINSAW);
 	wpmgr->give_weapon(WP_HKSL8);
 	wpmgr->give_weapon(WP_SHOTGUN);
-	wpmgr->give_weapon(WP_USAS12);
+	wpmgr->give_weapon(WP_USAS12);*/
 }
 
 player_sv::~player_sv()

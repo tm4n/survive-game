@@ -99,9 +99,14 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 					npc_sv *np = (npc_sv *)ac;
 					if (np->health > 0)
 					{
-						np->health -= wdata->damage;
+						float dmg = wdata->damage;
+						#ifdef ANDROID
+						dmg *= 1.5f;  // more damage for android
+						#endif // ANDROID
 						
-						scoremgr::add_points(playerpeer, (uint)wdata->damage);
+						np->health -= dmg;
+						
+						scoremgr::add_points(playerpeer, (uint)dmg);
 						if (ac->health <= 0) {ac->health = 0; scoremgr::add_points(playerpeer, b_npcs::instance()->at(np->npc_type)->bounty);}
 						net_server->broadcast_update_health(ac->id, ac->health);
 					}

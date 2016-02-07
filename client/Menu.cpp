@@ -243,13 +243,15 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 
 	// add menu background
 	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
-
+	
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
 	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	#ifndef ANDROID
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
+	#else
+	button_ids[3] = -1;
 	#endif
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);
 
@@ -269,13 +271,13 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	gui->setButtonSwitchUp(button_ids[4], button_ids[3]); 
 	#endif
 
-	#ifndef ANDROID
 	// add options menu
 	black_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::BlackBg), 3, GUIObject::Alignment::scaled, 0.0f, 0.0f, GUI_GROUP_OPTIONS);
 	gui->setAlpha(black_bg_id, 0.6f);
 	gui->setScaleX(black_bg_id, 1920.f/640.f);
 	gui->setScaleY(black_bg_id, 1080.f/480.f);
 
+	#ifndef ANDROID
 	st_bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::OptionsBg), 4, GUIObject::Alignment::center, -375.0f, -275.0f, GUI_GROUP_OPTIONS);
 
 	st_cancel_bt = gui->addButton(resources->getTex(ResourceLoader::texType::Button), resources->getTex(ResourceLoader::texType::ButtonSel), 5, GUIObject::Alignment::center, -375.0f + 186.0f, -275.0f + 450.f, optCancelCb, GUI_GROUP_OPTIONS);
@@ -356,7 +358,7 @@ void Menu::show()
 
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], true);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
 	}
 
 	// untrap mouse
@@ -373,7 +375,7 @@ void Menu::hide()
 
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], false);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
 	}
 			
 	// trap mouse
@@ -626,7 +628,7 @@ void Menu::options_show()
 	// hide buttons below
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], false);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
 	}
 
 	// update menu entries from settings backend
@@ -648,7 +650,7 @@ void Menu::options_hide()
 	// show buttons below
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], true);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
 	}
 }
 #endif //ANDROID
@@ -659,7 +661,7 @@ void Menu::help_show()
 	// hide buttons below
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], false);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
 	}
 
 	// Show help
@@ -678,7 +680,7 @@ void Menu::help_hide()
 	// show buttons below
 	for (int i = 0; i < SELECTION_MAX; i++)
 	{
-		gui->setVisible(button_ids[i], true);
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
 	}
 	
 	gui->setButtonDefault(button_ids[2]);

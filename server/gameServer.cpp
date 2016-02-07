@@ -773,7 +773,7 @@ void gameServer::start_match()
 	// add level starters
 	vec v, t;
 	// create generator
-	v.set(0, 0, lvl->level_ground);
+	v.set(0.1f, 0.1f, lvl->level_ground);
 	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
 	
 	// create starting crates
@@ -805,26 +805,18 @@ void gameServer::start_match()
 	v.set(180, -130, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 
-	v.set(400, 0, lvl->level_ground);
+	//DEBUG
+	/*v.set(400, 0, lvl->level_ground);
 	new npc_sv(lvl_sv, NPC_MUMMY, &v, &t, &sv_num_npcs);
 
-	//DEBUG
-	/*v.set(400, 300, 0.f);
+	v.set(400, 300, 0.f);
 	new npc_sv(lvl_sv, NPC_HARPY, &v, &t, &sv_num_npcs);*/
 
 	//v.set(400, 300, lvl->border_ground);
 	//new box_sv(lvl_sv, BOX_TYPE_TURRET, &v, &sv_num_barriers);
 
-	v.set(400, 800, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
-	v.set(400, 1000, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
-	v.set(400, 1200, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
-	v.set(400, 1400, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
-	v.set(400, 1600, lvl->border_ground);
-	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);
+	/*v.set(400, 800, lvl->border_ground);
+	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);*/
     
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);
@@ -871,6 +863,9 @@ void gameServer::spawner(double time_frame)
 		sv_spawn_cap = -0.2f*(float)get_num_players()+1.8f;
 		if (wave > 12) sv_spawn_cap -= ((float)wave-12.f)*0.1f;
 		sv_spawn_cap = std::max(sv_spawn_cap, 0.1f);
+		#ifdef ANDROID
+		sv_spawn_cap *= 2.f;  // easier for android singleplayer
+		#endif // ANDROID
 		
 		if (sv_spawn_timer >= sv_spawn_cap)
 		{

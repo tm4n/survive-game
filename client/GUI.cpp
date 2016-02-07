@@ -554,7 +554,7 @@ void GUI::setButtonSwitchRight(int id_from, int id_to)
 
 void GUI::setVisible(int id, bool vis)
 {
-	if (elements.at(id) == NULL) {log(LOG_ERROR, "ERROR: INVALID ELEMENTS!"); exit(-1); }
+	if (elements.at(id) == NULL) {log(LOG_ERROR, "ERROR: INVALID ELEMENTS in GUI::setVisible!"); }
 	elements.at(id)->visible = vis;
 }
 
