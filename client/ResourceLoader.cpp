@@ -208,7 +208,7 @@ void ResourceLoader::loadIngame()
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/muzzle.mdl", NULL);
+	m = new MeshBlend("assets/models/weapons/muzzle.mdl", NULL);
 	meshes[(int)meshType::Muzzleflash] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
