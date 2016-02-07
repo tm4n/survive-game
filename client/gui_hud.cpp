@@ -317,7 +317,7 @@ void gui_hud::show_status_end()
 	#ifndef ANDROID
 		gui->updateText(status_id, "The Generator has been destroyed. Game over!");
 	#else
-		gui->updateText(status_id, "The Generator has been destroyed. Game over! Press A for menu.");
+		gui->updateText(status_id, "The Generator has been destroyed. Game over! Press (A) for menu.");
 	#endif // ANDROID
 	gui->setVisible(status_id, true);
 }

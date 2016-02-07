@@ -18,7 +18,12 @@ typedef unsigned int uint;
 typedef unsigned short ushort;
 typedef unsigned char uchar;
 
+#ifndef ANDROID
 #define DEF_NAME_STR "Survive! 0.72 Alpha"
+#else
+#define DEF_NAME_STR "Survive! for Android 0.72 Alpha"
+#endif // ANDROID
+
 #define DEF_VERSION 110
 #define PLAYERNAME_LENGTH 32
 

@@ -696,7 +696,7 @@ std::string Menu::str_help =
 
 "As the game progresses, new weapons will be dropped in the world.\n"
 "Get near the small crates containing them to pick them up.\n"
-"\n\nPress the A button to open the ingame menu,\n"
+"\n\nPress the (A) button to open the ingame menu,\n"
 "which includes a help screen.";
 #else 
 std::string Menu::str_help = "First, go to \"Options\" and set your player name.\n"

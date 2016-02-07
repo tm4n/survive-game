@@ -129,8 +129,8 @@ void gameRenderer::drawFrame(double time_delta)
 	if (CameraJoyInputY < 2600 && CameraJoyInputY > -2600) CameraJoyInputY = 0.f;
 	if (CameraJoyInputX < 2600 && CameraJoyInputX > -2600) CameraJoyInputX = 0.f;
 	CameraAngle.y -= (float)(sgn(CameraJoyInputY)*pow(CameraJoyInputY*0.00005, 2)*time_delta);
-	double acc_x = pow(CameraJoyInputX*0.00005, 2)*time_delta;
-	if (CameraJoyInputX > 35000 || CameraJoyInputX < -35000) acc_x *= 10;
+	double acc_x = pow(CameraJoyInputX*0.00006, 2)*time_delta*1.5;
+	if (CameraJoyInputX > 31800 || CameraJoyInputX < -31800) acc_x *= 1.5;
 	CameraAngle.x -= (float)(sgn(CameraJoyInputX)*acc_x);
 	//CameraAngle.y -= CameraJoyInputY*0.0001f*(float)time_delta;
 	//CameraAngle.x -= CameraJoyInputX*0.0002f*(float)time_delta;
