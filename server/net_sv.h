@@ -60,6 +60,7 @@ public:
 	
 	int broadcast_take(uint actor_id, int taken_id);
 
+	int broadcast_input_keys_except(uint actor_id, int input, ENetPeer *);
 	int broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *);
 	int broadcast_update_pos(uint actor_id, vec *v);
 	int broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *);

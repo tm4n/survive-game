@@ -502,6 +502,9 @@ void gameServer::handle_netevent(ENetEvent *event)
 							if (pl != NULL)
 							{
 								pl->input = d->input;
+								
+								// resend input to all others
+								net_server->broadcast_input_keys_except(d->actor_id, d->input, event->peer);
 							}
 							else log(LOG_ERROR, "Received NET_INPUT_KEYS for non-player actor");
 							

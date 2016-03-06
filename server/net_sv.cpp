@@ -355,6 +355,16 @@ int net_sv::broadcast_update_pos_except(uint actor_id, vec *v, ENetPeer *except)
     return broadcast_event_except(NET_UPDATE_POS, (const char*) &s, sizeof(s_net_update_pos), except);
 }
 
+int net_sv::broadcast_input_keys_except(uint actor_id, int input, ENetPeer *except)
+{
+	s_net_input_keys s;
+
+	s.actor_id = actor_id;
+	s.input = input;
+
+    return broadcast_event_except(NET_INPUT_KEYS, (const char*) &s, sizeof(s_net_input_keys), except);
+}
+
 int net_sv::broadcast_update_ang_except(uint actor_id, float ang, float ang_interp_dir, ENetPeer *except)
 {
 	s_net_update_ang s;
