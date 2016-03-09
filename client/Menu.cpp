@@ -246,7 +246,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
-	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, NULL);
+	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, playMpCb);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	#ifndef ANDROID
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
@@ -256,9 +256,11 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	button_ids[4] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuQuit), resources->getTex(ResourceLoader::texType::MenuQuitSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.766f, quitCb);
 
 	#ifdef ANDROID
-	gui->setButtonSwitchDown(button_ids[0], button_ids[2]);
+	gui->setButtonSwitchDown(button_ids[0], button_ids[1]);
+	gui->setButtonSwitchDown(button_ids[1], button_ids[2]);
+	gui->setButtonSwitchUp(button_ids[1], button_ids[0]);
 	gui->setButtonSwitchDown(button_ids[2], button_ids[4]);
-	gui->setButtonSwitchUp(button_ids[2], button_ids[0]);
+	gui->setButtonSwitchUp(button_ids[2], button_ids[1]);
 	gui->setButtonSwitchUp(button_ids[4], button_ids[2]); 
 	#else
 	gui->setButtonSwitchDown(button_ids[0], button_ids[1]);

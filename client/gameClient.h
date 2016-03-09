@@ -25,6 +25,8 @@ public:
 	gameClient(gameRenderer *arenderer);
 	~gameClient();
 
+	void reset();
+
 	void handle_netevent(ENetEvent *event);
 
 	bool connect(const char *ip, int port);

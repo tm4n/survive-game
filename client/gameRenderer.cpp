@@ -11,6 +11,7 @@ gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, boo
 {
 	CameraJoyInputY = 0.f;
 	CameraJoyInputX = 0.f;
+	render_sky = false;
 
 	// Initialize sound
 	if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1 )
@@ -159,7 +160,7 @@ void gameRenderer::drawFrame(double time_delta)
     //if (m != NULL) m->draw(mVPMatrix);
 
 	// draw skybox
-	meshSkybox->draw(mProjMatrix, mVMatrix);
+	if (render_sky) meshSkybox->draw(mProjMatrix, mVMatrix);
 
 	// TODO: draw transparent stuff sorted
 

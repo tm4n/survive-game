@@ -2,6 +2,7 @@
 #include "box_cl.h"
 #include "net_cl.h"
 #include "helper.h"
+#include <algorithm>
 
 player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health,
                const char *name, int weapon, int input, int object_taken, gameRenderer *arenderer, effectmgr *effmgr)
@@ -89,6 +90,7 @@ void player_cl::order_take_object()
 
 void player_cl::frame(double time_delta)
 {
+	if (health <= 0.f) printf("0 health player!");
 
 	// shooting
 	if (wpmgr->wp_ready == true && input_shoot == true)
@@ -133,6 +135,12 @@ void player_cl::frame(double time_delta)
 			net_client->send_update_pos(id, &position, net_client->serverpeer);
 		}
 	}
+	else
+	{
+		animate(time_delta);
+	}
+
+	wpmgr->frame(time_delta, position, angle, ro->animFrame);
 	
 	ro->translation[0] = position.x; ro->translation[1] = position.y; ro->translation[2] = position.z; 
 	ro->rotation[0] = angle.x; ro->rotation[1] = angle.y; ro->rotation[2] = angle.z;
@@ -149,6 +157,54 @@ void player_cl::frame(double time_delta)
 	else { step_count = 0.; step_first = false; }
 }
 
+void player_cl::animate(double time_delta)
+{
+	if (old_anim != state) { anim_prog = 0; old_anim = state; }
+
+	float anim_speed;
+	if (input & INPUT_SPRINT) anim_speed = 1.4f; else anim_speed = 0.9f;
+	float move_speed = 9.0f;
+	Mesh *mesh = renderer->resources.getMesh(ResourceLoader::meshType::Soldier);
+
+	if (state == ST_IDLE)
+	{
+		if (object_taken == -1) mesh->animate(ro, "stand", anim_prog, 1); else mesh->animate(ro, "crate_stand", anim_prog, 1);
+		anim_prog += move_speed / 4.f*(float)time_delta*anim_speed;
+	}
+
+	if (state == ST_WALKING)
+	{
+		if (object_taken == -1) mesh->animate(ro, "run", anim_prog, 1); else mesh->animate(ro, "crate_run", anim_prog, 1);
+		anim_prog += move_speed*1.2f*(float)time_delta*anim_speed;
+	}
+
+	if (state == ST_WALKING_LEFT)
+	{
+		if (object_taken == -1) mesh->animate(ro, "left_run", anim_prog, 1); else mesh->animate(ro, "crate_left_run", anim_prog, 1);
+		anim_prog += move_speed*1.2f*(float)time_delta*anim_speed;
+	}
+
+	if (state == ST_WALKING_RIGHT)
+	{
+		if (object_taken == -1) mesh->animate(ro, "right_run", anim_prog, 1); else mesh->animate(ro, "crate_right_run", anim_prog, 1);
+		anim_prog += move_speed*1.2f*(float)time_delta*anim_speed;
+	}
+
+	if (state == ST_JUMPING)
+	{
+		mesh->animate(ro, "jump", anim_prog, 0);
+		anim_prog += move_speed*2.f*(float)time_delta*anim_speed;
+	}
+
+	if (state == ST_DEATH)
+	{
+		anim_prog = std::min(anim_prog, 100.f);
+		mesh->animate(ro, "death", anim_prog, 0);
+		return;
+	}
+
+	if (anim_prog > 100.f && (state == ST_WALKING || state == ST_IDLE)) { anim_prog -= 100.f; }
+}
 
 void player_cl::snd_ent_step(bool dir)
 {

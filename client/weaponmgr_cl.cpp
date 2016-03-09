@@ -21,13 +21,23 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	// displayed weapon
 
 	//s_weapons *wdata = b_weapons::instance()->at(1);
-	ro = new RenderObject();
-	ro->translation[0] = 5;
-    ro->translation[1] = -2;
-	ro->translation[2] = -74;
+	ro_h = new RenderObject();
+	ro_h->translation[0] = 5;
+    ro_h->translation[1] = -2;
+	ro_h->translation[2] = -74;
+	ro_h->visible = false;
+	
+	ro_w = new RenderObject();
+	ro_w->translation[0] = 0;
+    ro_w->translation[1] = 0;
+	ro_w->translation[2] = 0;
+	ro_w->visible = false;
         	
-	this->curr_mesh = getMesh(*curr_weapon);
-	this->curr_mesh->addRenderObject(ro);
+	this->curr_handmesh = get_handmesh(*curr_weapon);
+	this->curr_handmesh->addRenderObject(ro_h);
+	
+	this->curr_wpmesh = get_wpmesh(*curr_weapon);
+	this->curr_wpmesh->addRenderObject(ro_w);
 
 	// muzzle flash
 	ro_mf = new RenderObject();
@@ -39,8 +49,11 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 
 weaponmgr_cl::~weaponmgr_cl()
 {
-	this->curr_mesh->removeRenderObject(ro);
-	delete ro;
+	this->curr_wpmesh->removeRenderObject(ro_w);
+	delete ro_w;
+	
+	this->curr_handmesh->removeRenderObject(ro_h);
+	delete ro_h;
 
 	renderer->resources.getMesh(ResourceLoader::meshType::Muzzleflash)->removeRenderObject(ro_mf);
 	delete ro_mf;
@@ -128,9 +141,22 @@ void weaponmgr_cl::input_reload()
 	reload();
 }
 
-void weaponmgr_cl::frame(double time_frame)
+void weaponmgr_cl::frame(double time_frame, vec &pl_pos, vec &pl_angle, int frame)
 {
-	if (*local_player == false) return; // TODO: hold ro in hand
+	if (*local_player == false)
+	{
+		ro_h->visible = false;
+		ro_w->visible = true;
+		
+		// TODO: hold ro in hand
+		ro_h->rotation[0] = pl_angle.x;
+		ro_h->rotation[1] = pl_angle.y;
+		ro_h->rotation[2] = pl_angle.z;
+		
+		return;
+	}
+	ro_h->visible = true;
+	ro_w->visible = false;
 
 	float time_frame_float = (float)time_frame;
 
@@ -142,17 +168,17 @@ void weaponmgr_cl::frame(double time_frame)
 	}
 
 
-	// display weapon
+	// display hand weapon
 
-	ro->translation[0] = renderer->CameraPos.x;
-    ro->translation[1] = renderer->CameraPos.y;
-	ro->translation[2] = renderer->CameraPos.z;
+	ro_h->translation[0] = renderer->CameraPos.x;
+    ro_h->translation[1] = renderer->CameraPos.y;
+	ro_h->translation[2] = renderer->CameraPos.z;
 
-	move_dir(ro->translation, renderer->CameraAngle, 5.f, -2.f, -74.f);
+	move_dir(ro_h->translation, renderer->CameraAngle, 5.f, -2.f, -74.f);
 
-	ro->rotation[0] = renderer->CameraAngle.x;
-	ro->rotation[1] = -renderer->CameraAngle.y;
-	ro->rotation[2] = renderer->CameraAngle.z;
+	ro_h->rotation[0] = renderer->CameraAngle.x;
+	ro_h->rotation[1] = -renderer->CameraAngle.y;
+	ro_h->rotation[2] = renderer->CameraAngle.z;
 
 
 	// muzzle flash
@@ -180,7 +206,7 @@ void weaponmgr_cl::frame(double time_frame)
 	{
 		if ((*plstate == ST_WALKING || *plstate == ST_WALKING_LEFT || *plstate == ST_WALKING_RIGHT) && wp_ready == true && wp_reloading == 0)
 		{
-			curr_mesh->animate(ro, "bob", anim_count, 1);
+			curr_handmesh->animate(ro_h, "bob", anim_count, 1);
 			anim_count += 9.f * time_frame_float;
 			if (anim_count > 100.f) anim_count -= 100.f;
 		}
@@ -189,14 +215,14 @@ void weaponmgr_cl::frame(double time_frame)
 			if (anim_count != 0.f)
 			{
 				anim_count = 0.f;
-				curr_mesh->animate(ro, "bob", anim_count, 1);
+				curr_handmesh->animate(ro_h, "bob", anim_count, 1);
 			}
 		}
 	}
 	// shoot
 	if (anim_state == 1)
 	{
-		curr_mesh->animate(ro, "fire", anim_count, 0);
+		curr_handmesh->animate(ro_h, "fire", anim_count, 0);
 		anim_count += b_weapons::instance()->at(*curr_weapon)->shootspeed*10.f*time_frame_float;
 		if (anim_count >= 100.f) set_anim_state(0);
 
@@ -216,7 +242,7 @@ void weaponmgr_cl::frame(double time_frame)
 	{
 		if (anim_count <= 50.f)
 		{
-			curr_mesh->animate(ro, "arm", 100.f-(anim_count*2.f), 0);
+			curr_handmesh->animate(ro_h, "arm", 100.f-(anim_count*2.f), 0);
 			//if (wp_pl_loop_handle != 0) snd_tune(wp_pl_loop_handle, 100-(anim_count*2), 0, 0);
 		}
 		if (anim_count > 50.f)
@@ -225,16 +251,16 @@ void weaponmgr_cl::frame(double time_frame)
 			{
 				wp_cooldown = 0.f;
 
-				curr_mesh->removeRenderObject(ro);
-				curr_mesh = getMesh(wp_switching);
-				curr_mesh->addRenderObject(ro);
+				curr_handmesh->removeRenderObject(ro_h);
+				curr_handmesh = get_handmesh(wp_switching);
+				curr_handmesh->addRenderObject(ro_h);
 				
 				// sound
 				/*if (wp_pl_loop_handle != 0) snd_stop(wp_pl_loop_handle);
 				if (wp_data[num].snd_bg_loop != NULL) wp_pl_loop_handle = snd_loop(wp_data[num].snd_bg_loop, 0, 0);
 				else wp_pl_loop_handle = 0;*/
 			}
-			curr_mesh->animate(ro, "arm",  ((anim_count-50.f)*2.f), 0);
+			curr_handmesh->animate(ro_h, "arm",  ((anim_count-50.f)*2.f), 0);
 			//if (wp_pl_loop_handle != 0) snd_tune(wp_pl_loop_handle, (anim_count-50)*2, 0, 0);
 		}
 		
@@ -243,7 +269,7 @@ void weaponmgr_cl::frame(double time_frame)
 	}
 	if (anim_state == 3)
 	{
-		curr_mesh->animate(ro, "reload", anim_count, 0);
+		curr_handmesh->animate(ro_h, "reload", anim_count, 0);
 		anim_count += b_weapons::instance()->at(*curr_weapon)->reloadspeed*10.f*time_frame_float;
 		if (anim_count >= 100.f)
 		{
@@ -254,14 +280,14 @@ void weaponmgr_cl::frame(double time_frame)
 	if (anim_state == 4)
 	{
 		// hide
-		curr_mesh->animate(ro, "arm", 100.f-anim_count, 0);
+		curr_handmesh->animate(ro_h, "arm", 100.f-anim_count, 0);
 		anim_count += 9.f*4.f*time_frame_float;
 		anim_count = std::min(anim_count, 100.f);
 	}
 	if (anim_state == 5)
 	{
 		// unhide
-		curr_mesh->animate(ro, "arm", anim_count, 0);
+		curr_handmesh->animate(ro_h, "arm", anim_count, 0);
 		anim_count += 9.f*4.f*time_frame_float;
 		if (anim_count >= 100.f) {set_anim_state(0);}
 	}
@@ -272,7 +298,7 @@ void weaponmgr_cl::hide_wp()
 	if (hidden == true) return;
 	hidden = true;
 	set_anim_state(4);
-	//ro->visible = false;
+	//ro_h->visible = false;
 }
 
 void weaponmgr_cl::show_wp()
@@ -280,7 +306,7 @@ void weaponmgr_cl::show_wp()
 	if (hidden == false) return;
 	hidden = false;
 	set_anim_state(5);
-	//ro->visible = true;
+	//ro_h->visible = true;
 }
 
 void weaponmgr_cl::set_anim_state(int new_state)
@@ -289,7 +315,7 @@ void weaponmgr_cl::set_anim_state(int new_state)
 
 	if (anim_state == 0 || new_state == 0)
 	{
-		curr_mesh->animate(ro, "bob", 1.f, 0);
+		curr_handmesh->animate(ro_h, "bob", 1.f, 0);
 	}
 
 	anim_state = new_state;
@@ -334,18 +360,30 @@ void weaponmgr_cl::update_curr_weapon(int new_curr_weapon)
 	wp_ready = true;
 	wp_switching = 0;
 
-	if (getMesh(new_curr_weapon) != curr_mesh) 
+	if (get_handmesh(new_curr_weapon) != curr_handmesh) 
 	{
 		// switch weapon mesh
-		curr_mesh->removeRenderObject(ro);
-		curr_mesh = getMesh(new_curr_weapon);
-		curr_mesh->addRenderObject(ro);
+		curr_handmesh->removeRenderObject(ro_h);
+		curr_handmesh = get_handmesh(new_curr_weapon);
+		curr_handmesh->addRenderObject(ro_h);
+	}
+	if (get_wpmesh(new_curr_weapon) != curr_handmesh) 
+	{
+		// switch weapon mesh
+		curr_wpmesh->removeRenderObject(ro_w);
+		curr_wpmesh = get_wpmesh(new_curr_weapon);
+		curr_wpmesh->addRenderObject(ro_w);
 	}
 }
 
-MeshGUI *weaponmgr_cl::getMesh(int weapon_id)
+MeshGUI *weaponmgr_cl::get_handmesh(int weapon_id)
 {
 	return dynamic_cast<MeshGUI*> (renderer->resources.getMesh(b_weapons::instance()->at(weapon_id)->hand_mesh));
+}
+
+Mesh *weaponmgr_cl::get_wpmesh(int weapon_id)
+{
+	return dynamic_cast<Mesh*> (renderer->resources.getMesh(b_weapons::instance()->at(weapon_id)->wp_mesh));
 }
 
 void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
@@ -423,7 +461,7 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 	else
 	{
 		Sound *snd = renderer->resources.getSnd(wdata->snd_shoot);
-		if (snd) snd->play3D(1, ro, 128.f);
+		if (snd) snd->play3D(1, ro_h, 128.f);
 	}
 }
 

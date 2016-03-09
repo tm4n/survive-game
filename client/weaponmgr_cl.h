@@ -19,7 +19,7 @@ public:
 	void input_scroll_down();
 	void input_reload();
 
-	void frame(double time_frame);
+	void frame(double time_frame, vec &pl_pos, vec &pl_angle, int frame);
 
 	void set_mag_ammo(int weapon_id, short magazin, short ammo);
 	void switch_cl(int new_weapon_id);
@@ -46,11 +46,13 @@ protected:
 
 	bool hidden;
 
-	RenderObject *ro, *ro_mf;
-	MeshGUI *curr_mesh;
+	RenderObject *ro_h, *ro_w, *ro_mf;
+	MeshGUI *curr_handmesh;
+	Mesh *curr_wpmesh;
 
 	void set_anim_state(int new_state);
-	MeshGUI *getMesh(int weapon_id);
+	MeshGUI *get_handmesh(int weapon_id);
+	Mesh *get_wpmesh(int weapon_id);
 	void show_muzzleflash(int weapon_id);
 
 };

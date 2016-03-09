@@ -34,6 +34,8 @@ public:
 
 	glm::vec3 CameraPos;
 	glm::vec3 CameraAngle;
+
+	bool render_sky;
 	
 	float CameraJoyInputY;
 	float CameraJoyInputX;

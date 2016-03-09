@@ -16,9 +16,9 @@ gameClient::gameClient(gameRenderer *arenderer)
 	renderer = arenderer;
 	local_state = 0;
 	respawn_timer = -1.f;
+	
+	reset();
 
-	points = 0;
-	input = 0;
 	input_enable = true;
 	cam_bob_offset = 0.f;
 
@@ -31,10 +31,16 @@ gameClient::~gameClient()
 {
 	if (hud != NULL) delete hud;
 	if (lvl_cl != NULL) delete lvl_cl;
+	renderer->render_sky = false;
 	delete effmgr;
 	if (net_client != NULL) delete net_client;
 }
 
+void gameClient::reset()
+{
+	points = 0;
+	input = 0;
+}
 
 
 void gameClient::handle_netevent(ENetEvent *event)
@@ -126,6 +132,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 						// load level
 						lvl_cl = new level_cl((char*)d->mapfile, renderer);
 						lvl = lvl_cl;
+
+						// show sky
+						renderer->render_sky = true;
 
 						break;
 					}
@@ -263,6 +272,14 @@ void gameClient::handle_netevent(ENetEvent *event)
 						
 						state = d->state;
 
+						if (local_state == 3)
+						{
+							local_state = 1;
+							respawn_timer = 0.f;
+							reset();
+
+							hud->show_status_join(false);
+						}
 						if (state == GAME_STATE_END)
 						{
 							local_state = 3;
@@ -298,43 +315,47 @@ void gameClient::handle_netevent(ENetEvent *event)
 					case NET_TAKE:
 					{
 						s_net_take *d = (s_net_take*)data;
-						
-						player_cl *pl = lvl_cl->get_player(d->actor_id);
-						
-						if (pl != NULL)
+
+						if (lvl_cl != NULL)
 						{
-							if (d->taken_id < 0)
+							player_cl *pl = lvl_cl->get_player(d->actor_id);
+
+							if (pl != NULL)
 							{
-								box_cl *box = lvl_cl->get_box((uint)pl->object_taken);
-								if (box != NULL)
+								if (d->taken_id < 0)
 								{
-									pl->object_taken = -1;
-									if (!(input & INPUT_SPRINT)) pl->wpmgr->show_wp();
-									box->taker_id = -1;
-									box->state = BOX_STATE_DEFAULT;
+									box_cl *box = lvl_cl->get_box((uint)pl->object_taken);
+									if (box != NULL)
+									{
+										pl->object_taken = -1;
+										if (!(input & INPUT_SPRINT)) pl->wpmgr->show_wp();
+										box->taker_id = -1;
+										box->state = BOX_STATE_DEFAULT;
+									}
+									else
+									{
+										pl->object_taken = -1;
+										log(LOG_ERROR, "Received NET_TAKE, and player had invalid object in hand");
+									}
 								}
 								else
 								{
-									pl->object_taken = -1;
-									log(LOG_ERROR, "Received NET_TAKE, and player had invalid object in hand");
+									box_cl *box = lvl_cl->get_box((uint)d->taken_id);
+									if (box != NULL)
+									{
+										pl->object_taken = d->taken_id;
+										pl->wpmgr->cancel_reload();
+										pl->wpmgr->hide_wp();
+										box->taker_id = d->actor_id;
+										box->state = BOX_STATE_TAKEN;
+									}
+									else log(LOG_ERROR, "Received NET_TAKE with invalid box");
 								}
 							}
-							else
-							{
-								box_cl *box = lvl_cl->get_box((uint)d->taken_id);
-								if (box != NULL)
-								{
-									pl->object_taken = d->taken_id;
-									pl->wpmgr->cancel_reload();
-									pl->wpmgr->hide_wp();
-									box->taker_id = d->actor_id;
-									box->state = BOX_STATE_TAKEN;
-								}
-								else log(LOG_ERROR, "Received NET_TAKE with invalid box");
-							}
+							else log(LOG_ERROR, "Received NET_TAKE invalid player");
 						}
-						else log(LOG_ERROR, "Received NET_TAKE invalid player");
-						
+						else log(LOG_ERROR, "Received NET_TAKE without level");
+
 						break;
 					}
 
@@ -342,12 +363,17 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_update_pos *d = (s_net_update_pos *)data;
 
-						actor *ac = lvl_cl->actorlist.at(d->actor_id);
-						if (ac != NULL)
+						if (lvl_cl != NULL)
 						{
-							ac->position.set(&d->pos);
+
+							actor *ac = lvl_cl->actorlist.at(d->actor_id);
+							if (ac != NULL)
+							{
+								ac->position.set(&d->pos);
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_POS for invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_POS for invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_POS without level");
 
 						break;
 					}
@@ -356,16 +382,38 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						// get send data
 						s_net_update_ang *d = (s_net_update_ang *)data;
-						
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+
+						if (lvl_cl != NULL)
 						{
-							printf("setting angle for %i \n", d->actor_id);
-							pl->angle.x = d->ang;
-							pl->ang_interp_dir = d->ang_interp_dir;
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								pl->angle.x = d->ang;
+								pl->ang_interp_dir = d->ang_interp_dir;
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player or invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player or invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_ANG without level");
 						
+						break;
+					}
+
+					case NET_INPUT_KEYS:
+					{
+						// get send data
+						s_net_input_keys *d = (s_net_input_keys *)data;
+
+						if (lvl_cl != NULL)
+						{
+							player_cl *pl = lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								pl->input = d->input;
+							}
+							else log(LOG_ERROR, "Received NET_INPUT_KEYS for non-player or invalid actor");
+						}
+						else log(LOG_ERROR, "Received NET_INPUT_KEYS without level");
+
 						break;
 					}
 					
@@ -374,22 +422,26 @@ void gameClient::handle_netevent(ENetEvent *event)
 						// get send data
 						s_net_update_health *d = (s_net_update_health *)data;
 						
-						actor * ac = lvl_cl->actorlist.at(d->actor_id);
-						if (ac != NULL)
+						if (lvl_cl != NULL)
 						{
-							if (local_state == 2 && ac->type == ACTOR_TYPE_PLAYER && ac->id == own_actor_id)
+							actor * ac = lvl_cl->actorlist.at(d->actor_id);
+							if (ac != NULL)
 							{
-								//printf("setting health for own player %i \n", d->actor_id);
-								if (ac->health > d->health) effmgr->eff_pl_flash(1);
-								if (ac->health < d->health) effmgr->eff_pl_flash(2);
-							}
+								if (local_state == 2 && ac->type == ACTOR_TYPE_PLAYER && ac->id == own_actor_id)
+								{
+									//printf("setting health for own player %i \n", d->actor_id);
+									if (ac->health > d->health) effmgr->eff_pl_flash(1);
+									if (ac->health < d->health) effmgr->eff_pl_flash(2);
+								}
 
-							//printf("setting health for %i \n", d->actor_id);
-							ac->health = d->health;
+								//printf("setting health for %i \n", d->actor_id);
+								ac->health = d->health;
 
 							
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_HEALTH for invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_HEALTH for invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_HEALTH without level");
 						
 						break;
 					}
@@ -399,15 +451,19 @@ void gameClient::handle_netevent(ENetEvent *event)
 						// get send data
 						s_net_update_target *d = (s_net_update_target *)data;
 						
-						actor *ac = lvl_cl->actorlist.at(d->actor_id);
-						if (ac != NULL)
+						if (lvl_cl != NULL)
 						{
-							std::cout << "Received target" << d->target << " for actor " << d->actor_id << std::endl;
-							if (ac->type == ACTOR_TYPE_NPC || ac->type == ACTOR_TYPE_BOX) ac->target = d->target;
-							else log(LOG_ERROR, "Received NET_UPDATE_TARGET for wrong actor type");
-							std::cout << "Target now: " << ac->target << " for actor " << ac->id << std::endl;
+							actor *ac = lvl_cl->actorlist.at(d->actor_id);
+							if (ac != NULL)
+							{
+								std::cout << "Received target" << d->target << " for actor " << d->actor_id << std::endl;
+								if (ac->type == ACTOR_TYPE_NPC || ac->type == ACTOR_TYPE_BOX) ac->target = d->target;
+								else log(LOG_ERROR, "Received NET_UPDATE_TARGET for wrong actor type");
+								std::cout << "Target now: " << ac->target << " for actor " << ac->id << std::endl;
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_TARGET for invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_TARGET for invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_TARGET without level");
 						
 						break;
 					}
@@ -417,12 +473,16 @@ void gameClient::handle_netevent(ENetEvent *event)
 						// get send data
 						s_net_update_npc_orders *d = (s_net_update_npc_orders *)data;
 
-						npc_cl *np = lvl_cl->get_npc(d->actor_id);
-						if (np != NULL)
+						if (lvl_cl != NULL)
 						{
-							np->npc_orders = d->npc_orders;
+							npc_cl *np = lvl_cl->get_npc(d->actor_id);
+							if (np != NULL)
+							{
+								np->npc_orders = d->npc_orders;
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_NPC_ORDERS for non-npc or invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_NPC_ORDERS for non-npc or invalid actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_NPC_ORDERS without level");
 
 						break;
 					}
@@ -431,20 +491,24 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_update_ammo_magazin *d = (s_net_update_ammo_magazin *)data;
 
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+						if (lvl_cl != NULL)
 						{
-							if (!(pl->wpmgr->pickups & (1 << d->weapon_id)))
-							#ifndef ANDROID
-								hud->show_message("You've picked up a new weapon! Change weapons with mouse wheel or number keys.");
-							#else
-								hud->show_message("You've picked up a new weapon! Change weapons with U and Y buttons.");
-							#endif
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								if (!(pl->wpmgr->pickups & (1 << d->weapon_id)))
+								#ifndef ANDROID
+									hud->show_message("You've picked up a new weapon! Change weapons with mouse wheel or number keys.");
+								#else
+									hud->show_message("You've picked up a new weapon! Change weapons with U and Y buttons.");
+								#endif
 
-							pl->wpmgr->set_mag_ammo(d->weapon_id, (short)d->ammo_magazin, d->ammo_magazin >> 16);
+								pl->wpmgr->set_mag_ammo(d->weapon_id, (short)d->ammo_magazin, d->ammo_magazin >> 16);
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
-						
+						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN without level");
+
 						break;
 					}
 
@@ -452,17 +516,21 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_shoot *d = (s_net_shoot *)data;
 
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+						if (lvl_cl != NULL)
 						{
-							vec shoot_origin;
-							shoot_origin.x = pl->position.x;
-							shoot_origin.y = pl->position.y;
-							shoot_origin.z = pl->position.z+pl->bb_max.z-CAMERA_VIEW_HEIGHT;
-							pl->wpmgr->shoot(shoot_origin, d->shoot_dir, d->rnd_seed);
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								vec shoot_origin;
+								shoot_origin.x = pl->position.x;
+								shoot_origin.y = pl->position.y;
+								shoot_origin.z = pl->position.z+pl->bb_max.z-CAMERA_VIEW_HEIGHT;
+								pl->wpmgr->shoot(shoot_origin, d->shoot_dir, d->rnd_seed);
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
 						}
-						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN for non-player or invalid actor");
-						
+						else log(LOG_ERROR, "Received NET_UPDATE_AMMO_MAGAZIN without level");
+
 						break;
 					}
 
@@ -470,16 +538,20 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
 
-						// get player
-     
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+						if (lvl_cl != NULL)
 						{
-							// start teh change
-							log(LOG_ERROR, "Received NET_CHANGE_WEAPON, starting change animation");
-							pl->wpmgr->switch_cl(d->new_weapon_id);
+							// get player
+     
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								// start teh change
+								log(LOG_ERROR, "Received NET_CHANGE_WEAPON, starting change animation");
+								pl->wpmgr->switch_cl(d->new_weapon_id);
+							}
+							else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
 						}
-						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON without level");
 
 						break;
 					}
@@ -488,14 +560,18 @@ void gameClient::handle_netevent(ENetEvent *event)
 					{
 						s_net_update_curr_weapon *d = (s_net_update_curr_weapon*)data;
 
-						// get player
-     
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+						if (lvl_cl != NULL)
 						{
-							pl->wpmgr->update_curr_weapon(d->new_weapon_id);
+							// get player
+     
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								pl->wpmgr->update_curr_weapon(d->new_weapon_id);
+							}
+							else log(LOG_ERROR, "Received NET_UPDATE_CURR_WEAPON for non-player actor");
 						}
-						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+						else log(LOG_ERROR, "Received NET_UPDATE_CURR_WEAPON without level");
 
 						break;
 					}
@@ -516,14 +592,17 @@ void gameClient::handle_netevent(ENetEvent *event)
 						s_net_reload *d = (s_net_reload*)data;
 
 						// get player
-     
-						player_cl *pl= lvl_cl->get_player(d->actor_id);
-						if (pl != NULL)
+						if (lvl_cl != NULL)
 						{
-							//pl->wpmgr->reload();
-							// is done locally now
+							player_cl *pl= lvl_cl->get_player(d->actor_id);
+							if (pl != NULL)
+							{
+								//pl->wpmgr->reload();
+								// is done locally now
+							}
+							else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
 						}
-						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
+						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON without level");
 
 						break;
 					}
@@ -674,7 +753,7 @@ void gameClient::frame(double time_delta)
 		renderer->CameraPos.x += (float) (cos(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
 		renderer->CameraPos.y += (float) (sin(toRadians(renderer->CameraAngle.x-90.f))) * key_velx;
 		
-		if (respawn_timer >= 0.f)
+		if (respawn_timer > 0.f)
 		{
 
 			respawn_timer -= (float)(time_delta/16.);
@@ -729,18 +808,8 @@ void gameClient::frame(double time_delta)
 			renderer->CameraPos.x = pl->position.x;
 			renderer->CameraPos.y = pl->position.y;
 			renderer->CameraPos.z = pl->position.z + pl->bb_max.z - CAMERA_VIEW_HEIGHT + cam_bob_offset;
-
-			std::ostringstream s;
-
-			//s << "Player "<<pl->position << ", tilt=" << renderer->CameraAngle[1] << ", curr_weapon=" << pl->curr_weapon << ", wp->anim_state=" << pl->wpmgr->anim_state;
-
-			s << "DEBUG here if needed";
-
-			hud->set_debug(s.str());
 		
 			hud->frame(time_delta, pl->health, pl->wpmgr->get_curr_ammo(), pl->wpmgr->get_curr_magazin(), wave, points);
-
-			pl->wpmgr->frame(time_delta);
 		}
 	}
 	if (local_state == 3)
