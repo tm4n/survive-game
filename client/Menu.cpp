@@ -691,7 +691,7 @@ void Menu::help_hide()
 #ifdef ANDROID
 std::string Menu::str_help = 
 "Please Note: This is a beta version!\n"
-"Multiplayer is not yet working on Android consoles.\n"
+"\n"
 "The button mapping will be displayed while loading.\n"
 
 "Your objective is to protect the generator in the center of the map.\n"
