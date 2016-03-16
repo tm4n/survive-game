@@ -5,11 +5,13 @@
 #include <iostream>
 #include <sstream>
 
+bool clicked_mp = false;
 bool clicked_options = false;
 bool clicked_help = false;
 
 #ifndef ANDROID
 // Callback classes
+
 class optionsCallback : public GUICallback {
 
 	public:
@@ -28,6 +30,24 @@ void optionsCallback::callback(int obj_id)
 	m->snd_click();
 }
 #endif
+
+class svlistCallback : public GUICallback {
+
+public:
+	svlistCallback(Menu *am);
+	virtual void callback(int obj_id);
+	Menu *m;
+
+};
+
+svlistCallback::svlistCallback(Menu *am) : GUICallback(), m(am) {}
+
+void svlistCallback::callback(int obj_id)
+{
+	clicked_mp = true;
+
+	m->snd_click();
+}
 
 class helpCallback : public GUICallback {
 
@@ -228,6 +248,7 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 {
 	gui = agui;
 	resources = aresources;
+	svlist = new gui_serverlist(gui, resources, playMpCb);
 	
 	current_inputbox = -1;
 	current_inputstring = NULL;
@@ -240,13 +261,14 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 	#endif
 	
 	helpCallback *hlpCb = new helpCallback(this);
+	svlistCallback* svlCb = new svlistCallback(this);
 
 	// add menu background
 	bg_id = gui->addPanel(resources->getTex(ResourceLoader::texType::MenuBackground), 1, GUIObject::Alignment::scaled, 0.0f, 0.0f);
 	
 	// add buttons
 	button_ids[0] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuPlay), resources->getTex(ResourceLoader::texType::MenuPlaySel), 2, GUIObject::Alignment::scaled, 0.653f, 0.20f, playCb);
-	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, playMpCb);
+	button_ids[1] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuMultiplayer), resources->getTex(ResourceLoader::texType::MenuMultiplayerSel), 2, GUIObject::Alignment::scaled, 0.655f, 0.34f, svlCb);
 	button_ids[2] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuHelp), resources->getTex(ResourceLoader::texType::MenuHelpSel), 2, GUIObject::Alignment::scaled, 0.651f, 0.49f, hlpCb);
 	#ifndef ANDROID
 	button_ids[3] = gui->addButton(resources->getTex(ResourceLoader::texType::MenuOptions), resources->getTex(ResourceLoader::texType::MenuOptionsSel), 2, GUIObject::Alignment::scaled, 0.653f, 0.645f, optCb);
@@ -389,6 +411,13 @@ void Menu::hide()
 
 void Menu::frame(double time_frame)
 {
+	if (clicked_mp == true)
+	{
+		clicked_mp = false;
+
+		svlist_show();
+	}
+
 	#ifndef ANDROID
 	if (clicked_options == true)
 	{
@@ -422,6 +451,8 @@ void Menu::frame(double time_frame)
 			#endif
 		}
 	}
+
+	svlist->frame(time_frame);
 }
 
 void Menu::enable_inputbox(int id)
@@ -623,6 +654,21 @@ void Menu::options_load_from_settings()
 	shader = set->shader;
 	antialias = (set->antialias == 1);
 
+}
+
+void Menu::svlist_show()
+{
+	// hide buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
+	}
+	svlist->show();
+}
+
+void Menu::svlist_hide()
+{
+	// TODO: don't know how this is called yet
 }
 
 void Menu::options_show()

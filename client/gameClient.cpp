@@ -64,7 +64,9 @@ void gameClient::handle_netevent(ENetEvent *event)
 			event->peer->data = NULL;
 
 			log(LOG_DEBUG, "disconnect event.");
+			if (hud) hud->show_status_noserver();
 
+			// maybe later:
 			// hide interface
 			// unload level
 

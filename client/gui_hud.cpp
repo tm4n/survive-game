@@ -312,6 +312,7 @@ void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int 
 
 /////////////////////////////////////////////////////////////////////////////
 // status
+
 void gui_hud::show_status_end()
 {
 	#ifndef ANDROID
@@ -348,13 +349,21 @@ void gui_hud::show_status_connecting()
 
 void gui_hud::show_status_noserver()
 {
-	gui->updateText(status_id, "Could not connect to server.");
+#ifdef ANDROID
+	gui->updateText(status_id, "Could not connect to server or got disconnected.\nPress (A) to exit.");
+#else
+	gui->updateText(status_id, "Could not connect to server or got disconnected.\nPress Esc to exit.");
+#endif
 	gui->setVisible(status_id, true);
 }
 
 void gui_hud::show_status_wrongver()
 {
-	gui->updateText(status_id, "Your game version is outdated.\nGet the newest version!");
+#ifdef ANDROID
+	gui->updateText(status_id, "Your game version is outdated.\nGet the newest version!\nPress (A) to exit.");
+#else
+	gui->updateText(status_id, "Your game version is outdated.\nGet the newest version!\nPress Esc to exit.");
+#endif
 	gui->setVisible(status_id, true);
 }
 

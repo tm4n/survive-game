@@ -9,6 +9,7 @@
 #include "GUI.h"
 #include "ResourceLoader.h"
 #include "gameClient.h"
+#include "gui_serverlist.h"
 
 class Menu
 {
@@ -28,6 +29,9 @@ public:
 	void options_load_from_settings();
 	#endif
 
+	void svlist_show();
+	void svlist_hide();
+
 	void help_show();
 	void help_hide();
 
@@ -43,6 +47,7 @@ public:
 	
 	ResourceLoader *resources;
 	GUI *gui;
+	gui_serverlist *svlist;
 
 #define OPT_NUM_SCREENRESOLUTIONS 18
 	static const int screenresolutions_x[OPT_NUM_SCREENRESOLUTIONS];
