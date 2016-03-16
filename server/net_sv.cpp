@@ -61,6 +61,33 @@ s_peer_data *net_sv::get_peer_data_for_id(int id)
 	return NULL;
 }
 
+void net_sv::reset_respawn_timers()
+{
+	//TODO: in case of game end, reset respawn timers here
+	if (local_only)
+	{
+		s_peer_data *d = (s_peer_data *)local_peer->data;
+		d->respawn_timer = 0.f;
+		if (d->clstate > 0) d->clstate = 1;
+	}
+	else
+	{
+		for (uint i = 0; i < eHost->peerCount; i++)
+		{
+			ENetPeer *p = &eHost->peers[i];
+			if (p != NULL)
+			{
+				s_peer_data *d = (s_peer_data *)p->data;
+				if (d != NULL)
+				{
+					d->respawn_timer = 0.f;
+					if (d->clstate > 0) d->clstate = 1;
+				}
+			}
+		}
+	}
+}
+
 void net_sv::update_respawn_timers(float time_frame)
 {
 	if (local_only)
@@ -138,6 +165,7 @@ int net_sv::send_sync_player(uint actor_id, vec *pos, vec *ang, float health, co
 	s.actor_id = actor_id;
 	s.pos.set(pos);
 	s.ang.set(ang);
+	s.health = health;
 	strncpy((char*)s.name, name, 32);
 	s.name[31] = '\0';
 	s.weapon = weapon;

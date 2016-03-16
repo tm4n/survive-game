@@ -24,6 +24,7 @@ public:
 	
 	int num_connected_clients();
 	s_peer_data *get_peer_data_for_id(int id);
+	void reset_respawn_timers();
 	void update_respawn_timers(float time_frame);
 	
 	///////////////////////////////////////////////

@@ -102,6 +102,9 @@ void gameServer::clean_up()
 void gameServer::run() 
 {
     quit = false;
+    
+    //end timeout
+    double restart_countdown = 0.;
 
     //reset frame count
     frame = 0;
@@ -197,6 +200,10 @@ void gameServer::run()
 			{
 				state = GAME_STATE_END;
 				net_server->broadcast_game_state(state);
+				
+				// reset everything
+				reset();
+				net_server->reset_respawn_timers();
 			}
 			
 			// check if there are still players connected!
@@ -245,8 +252,15 @@ void gameServer::run()
 		if (state == GAME_STATE_END)
 		{
 			// Timeout, then switch to GAME_STATE_WAITING
+			restart_countdown += time_delta;
 			
 			// only do once:
+			if (restart_countdown > 5.*16.)
+			{
+				restart_countdown = 0.;
+				state = GAME_STATE_WAITING;
+				net_server->broadcast_game_state(state);
+			}
 		}
 
 
@@ -845,6 +859,14 @@ void gameServer::reset()
 	sv_barrier_timer = 0.f;
 	
 	sv_wave_bonus = 0.f;
+	
+	scoremgr::clear_all();
+	
+	// delete everything
+	for (uint i = 0; i < lvl_sv->actorlist.size; i++)
+	{
+		if (lvl_sv->actorlist.at(i) != 0) delete lvl_sv->actorlist.at(i);
+	}
 }
 
 void gameServer::spawner(double time_frame)
@@ -1040,7 +1062,7 @@ void gameServer::next_wave()
 	// set waiting timer
 	wave_wait_timer = 45 + wave * 10;
 	wave_wait_timer = std::min(wave_wait_timer, 200);
-	//wave_wait_timer = 5; 	//DEBUG: waves immediately
+	wave_wait_timer = 5; 	//DEBUG: waves immediately
 	
 	net_server->broadcast_wave_wait_timer(wave_wait_timer);
 }
