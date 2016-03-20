@@ -251,13 +251,16 @@ int main(int argc, char **argv)
 			{
 				// play pressed!
 				playMp = false;
+				const char *ip = menu->svlist->conn_ip.c_str();
+				int port = menu->svlist->conn_port;
+
 
 				// load other resources
 				menu->resources->loadIngame();
 
 				// start client in this thread
 				cl = new gameClient(renderer);
-				cl->connect("192.168.0.36", 1201);
+				cl->connect(ip, port);
 			}
 		}
 

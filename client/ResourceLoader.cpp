@@ -330,6 +330,8 @@ void ResourceLoader::loadMenu()
 	textures[(int)texType::HelpBg] = new Texture("assets/gui/help_bg.tga");
 	textures[(int)texType::ControllerHelp] = new Texture("assets/gui/OUYA_mapping.tga");
 
+	textures[(int)texType::SvlistBg] = new Texture("assets/gui/svlist_bg.tga");
+
 	// load skycube here already because its initialized early
 	std::vector<std::string> skytx{ "assets/textures/sky_2.tga", "assets/textures/sky_0.tga", "assets/textures/sky_top.tga", 
 									"assets/textures/sky_bot.tga", "assets/textures/sky_1.tga", "assets/textures/sky_3.tga" };

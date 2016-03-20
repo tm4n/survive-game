@@ -223,7 +223,7 @@ void optionsAntialiasCallback::callback(int obj_id)
 }
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Help class
+// Help callback class
 
 class helpCloseCallback : public GUICallback{
 public:
@@ -239,6 +239,22 @@ void helpCloseCallback::callback(int obj_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// svlist close callback class
+
+class SvlistCloseCallback : public GUICallback{
+public:
+	SvlistCloseCallback(Menu *am);
+	virtual void callback(int obj_id);
+	Menu *m;
+};
+SvlistCloseCallback::SvlistCloseCallback(Menu *am) : GUICallback(), m(am) {}
+void SvlistCloseCallback::callback(int obj_id)
+{
+	m->svlist_hide();
+	m->snd_click();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Menu class
 
 const int Menu::screenresolutions_x[] = { 800, 1024, 1024, 1152, 1280, 1280, 1280, 1360, 1366, 1400, 1440, 1600, 1680, 1920, 1920, 2560, 3840, 4096 };
@@ -248,7 +264,8 @@ Menu::Menu(GUI *agui, ResourceLoader *aresources, GUICallback *playMpCb, GUICall
 {
 	gui = agui;
 	resources = aresources;
-	svlist = new gui_serverlist(gui, resources, playMpCb);
+	GUICallback *closeSvlistCb = new SvlistCloseCallback(this);
+	svlist = new gui_serverlist(gui, resources, playMpCb, closeSvlistCb);
 	
 	current_inputbox = -1;
 	current_inputstring = NULL;
@@ -668,7 +685,15 @@ void Menu::svlist_show()
 
 void Menu::svlist_hide()
 {
-	// TODO: don't know how this is called yet
+	svlist->hide();
+
+	// show buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
+	}
+
+	gui->setButtonDefault(button_ids[2]);
 }
 
 void Menu::options_show()
