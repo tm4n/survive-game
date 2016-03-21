@@ -9,7 +9,6 @@
 
 #ifdef _WIN32
 #include <direct.h>
-#include <tchar.h>
 #include <shlwapi.h>
 #pragma comment(lib,"shlwapi.lib")
 #include "shlobj.h"
@@ -198,34 +197,6 @@ void b_settings::save_settings()
 	}
 	err("Error saving settings file");
 	#endif
-}
-
-std::string b_settings::get_settings_file_path()
-{
-#ifdef _WIN32
-	TCHAR szPath[MAX_PATH];
-	// Get path for each computer, non-user specific and non-roaming data.
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
-	{
-		// Append product-specific path
-		PathAppend(szPath, _T("\\Survive"));
-		return std::string(szPath);
-	}
-	else
-	{
-		err("Cold not get Appdata Path from Windows");
-		return std::string("");
-	}
-#elif not defined(ANDROID)
-	const char *homedir;
-	if ((homedir = getenv("HOME")) == NULL) {
-		homedir = getpwuid(getuid())->pw_dir;
-	}
-	
-	std::string res(homedir);
-	res.append("/.Survive");
-	return res;
-#endif
 }
 
 void b_settings::err(const char *msg)

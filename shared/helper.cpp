@@ -11,6 +11,8 @@ using namespace std;
 #ifndef _WIN32
 
 #include "unistd.h"
+#include <sys/types.h>
+#include <pwd.h>
 
 void get_workdir(std::string *out)
 {
@@ -35,6 +37,8 @@ void get_savedir(std::string *out) { } // dummy
 #include <windows.h>
 #include <Shlobj.h>
 #include <Shlwapi.h>
+#pragma comment(lib,"shlwapi.lib")
+#include <tchar.h>
 
 void get_workdir(std::string *out)
 {
@@ -80,6 +84,34 @@ void get_workdir(std::string *out)
 		out->assign(appDataPath);
 	}
 }*/
+
+std::string get_settings_file_path()
+{
+#ifdef _WIN32
+	TCHAR szPath[MAX_PATH];
+	// Get path for each computer, non-user specific and non-roaming data.
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
+	{
+		// Append product-specific path
+		PathAppend(szPath, _T("\\Survive"));
+		return std::string(szPath);
+	}
+	else
+	{
+		log(LOG_ERROR, "Cold not get Appdata Path from Windows");
+		return std::string("");
+	}
+#elif not defined(ANDROID)
+	const char *homedir;
+	if ((homedir = getenv("HOME")) == NULL) {
+		homedir = getpwuid(getuid())->pw_dir;
+	}
+
+	std::string res(homedir);
+	res.append("/.Survive");
+	return res;
+#endif
+}
 
 #endif
 

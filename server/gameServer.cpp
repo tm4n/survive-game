@@ -84,7 +84,7 @@ bool gameServer::init()
 
     printf("Workdir: %s \n", s.c_str());
 
-
+	if (!is_singleplayer()) scoremgr::load_highscore();
 
     //If everything initialized fine
     return true;
@@ -200,6 +200,9 @@ void gameServer::run()
 			{
 				state = GAME_STATE_END;
 				net_server->broadcast_game_state(state);
+
+				// TODO: get high score
+				if (scoremgr::determine_highscore()) scoremgr::save_highscore();
 				
 				// reset everything
 				reset();
@@ -329,6 +332,11 @@ int gameServer::get_num_players()
 		}
 	}
 	return ct;
+}
+
+bool gameServer::is_singleplayer()
+{
+	return net_server->local_only;
 }
 
 //////////////////////////////////////

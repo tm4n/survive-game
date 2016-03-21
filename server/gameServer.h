@@ -38,6 +38,7 @@ public:
 	void handle_netevent(ENetEvent *event);
 	
 	int get_num_players();
+	bool is_singleplayer();
 	
 	void reset();
 	void start_match();

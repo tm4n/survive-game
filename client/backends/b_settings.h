@@ -50,8 +50,6 @@ public:
 
 private:
 
-	std::string get_settings_file_path();
-
 	static std::unique_ptr<b_settings> m_instance;
     static std::once_flag m_onceFlag;
 

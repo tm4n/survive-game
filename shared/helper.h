@@ -12,6 +12,8 @@ void get_workdir(std::string *out);
 
 void get_savedir(const char *account_name, std::string *out);
 
+std::string get_settings_file_path();
+
 std::vector<std::string> split(const char *, char = ' ');
 
 bool str_assemble(std::string *input, int i1, int i2, float f1, float f2, std::string *s1, std::string *s2, std::string *s3);
