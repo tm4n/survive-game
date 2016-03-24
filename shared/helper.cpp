@@ -85,6 +85,9 @@ void get_workdir(std::string *out)
 	}
 }*/
 
+#endif
+
+
 std::string get_settings_file_path()
 {
 #ifdef _WIN32
@@ -112,8 +115,6 @@ std::string get_settings_file_path()
 	return res;
 #endif
 }
-
-#endif
 
 vector<string> split(const char *str, char c)
 {

@@ -87,6 +87,7 @@
 		<Unit filename="client/gl_core_2_1.h" />
 		<Unit filename="client/gui_hud.cpp" />
 		<Unit filename="client/gui_hud.h" />
+		<Unit filename="client/gui_serverlist.cpp" />
 		<Unit filename="client/level_cl.cpp" />
 		<Unit filename="client/level_cl.h" />
 		<Unit filename="client/main.cpp" />

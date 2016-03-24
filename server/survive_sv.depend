@@ -8,7 +8,7 @@
 	"level.h"
 	<vector>
 
-1457601863 /home/tilman/projects/survive/shared/defs.h
+1457797793 /home/tilman/projects/survive/shared/defs.h
 	"vec.h"
 	"stdio.h"
 
@@ -24,7 +24,7 @@
 	"defs.h"
 	"stdio.h"
 
-1452428926 source:/home/tilman/projects/survive/shared/helper.cpp
+1458816222 source:/home/tilman/projects/survive/shared/helper.cpp
 	"helper.h"
 	"defs.h"
 	<cmath>
@@ -33,13 +33,16 @@
 	<sstream>
 	<random>
 	"unistd.h"
+	<sys/types.h>
+	<pwd.h>
 	<windows.h>
 	<Shlobj.h>
 	<Shlwapi.h>
+	<tchar.h>
 	<malloc.h>
 	<android/log.h>
 
-1452428926 /home/tilman/projects/survive/shared/helper.h
+1458816129 /home/tilman/projects/survive/shared/helper.h
 	<vector>
 	<string>
 	<glm/glm.hpp>
@@ -82,7 +85,7 @@
 1334872270 source:/home/tilman/projects/survive/server/base85.cpp
 	<stdio.h>
 
-1457472251 source:/home/tilman/projects/survive/server/gameServer.cpp
+1458816129 source:/home/tilman/projects/survive/server/gameServer.cpp
 	"gameServer.h"
 	"SDL2/SDL.h"
 	"Timer.h"
@@ -165,7 +168,7 @@
 1433360590 /home/tilman/projects/survive/server/box_sv.h
 	"box.h"
 
-1406584653 /home/tilman/projects/survive/server/gameServer.h
+1458816129 /home/tilman/projects/survive/server/gameServer.h
 	<game.h>
 	"enet/enet.h"
 	"level_sv.h"
@@ -294,9 +297,10 @@
 	"net_sv.h"
 	<sstream>
 
-1406584653 /home/tilman/projects/survive/server/scoremgr.h
+1458816129 /home/tilman/projects/survive/server/scoremgr.h
 	"defs.h"
 	"enet/enet.h"
+	<string>
 
 1452428926 source:/home/tilman/projects/survive/server/npc_sv.cpp
 	"npc_sv.h"
@@ -310,10 +314,16 @@
 	"projectile_sv.h"
 	"net_sv.h"
 
-1406584939 source:/home/tilman/projects/survive/server/scoremgr.cpp
+1458816129 source:/home/tilman/projects/survive/server/scoremgr.cpp
 	"scoremgr.h"
 	"net_sv.h"
+	"helper.h"
 	<sstream>
+	<iostream>
+	<fstream>
+	<sys/stat.h>
+	<exception>
+	"direct.h"
 
 1454874134 source:/home/tilman/projects/survive/server/weaponmgr_sv.cpp
 	"weaponmgr_sv.h"

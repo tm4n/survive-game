@@ -24,7 +24,7 @@ typedef unsigned char uchar;
 #define DEF_NAME_STR "Survive! for Android 0.72 Alpha"
 #endif // ANDROID
 
-#define DEF_VERSION 110
+#define DEF_VERSION 110   // Version of network protocol
 #define PLAYERNAME_LENGTH 32
 
 #define RESPAWN_TIME 5.f;
