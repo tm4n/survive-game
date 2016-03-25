@@ -124,7 +124,8 @@ void scoremgr::get_full_string(std::string *str)
 			}
 		}
 	}
-	ss << "Highscore: " << highscore_points << "Points by " << scoreholder;
+	if (highscore_points == 0) ss << "No highscore archieved"
+	else ss << "Highscore: " << highscore_points << " points by " << scoreholder;
 
 	str->assign(ss.str());
 }
