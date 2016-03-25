@@ -124,7 +124,7 @@ void scoremgr::get_full_string(std::string *str)
 			}
 		}
 	}
-	if (highscore_points == 0) ss << "No highscore archieved"
+	if (highscore_points == 0) ss << "No highscore archieved";
 	else ss << "Highscore: " << highscore_points << " points by " << scoreholder;
 
 	str->assign(ss.str());
@@ -159,6 +159,7 @@ bool scoremgr::determine_highscore()
 
 void scoremgr::load_highscore()
 {
+	#ifndef ANDROID
 	std::string path = get_settings_file_path();
 	if (path.size() > 0)
 	{
@@ -203,10 +204,12 @@ void scoremgr::load_highscore()
 			else std::cout << "\n Highscore file had invalid number of lines \n";
 		}
 	}
+	#endif
 }
 
 void scoremgr::save_highscore()
 {
+	#ifndef ANDROID
 	std::string path = get_settings_file_path();
 	if (path.length() > 0)
 	{
@@ -247,4 +250,5 @@ void scoremgr::save_highscore()
 		}
 	}
 	log(LOG_ERROR, "Error saving highscore file");
+	#endif
 }

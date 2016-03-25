@@ -673,29 +673,6 @@ void Menu::options_load_from_settings()
 
 }
 
-void Menu::svlist_show()
-{
-	// hide buttons below
-	for (int i = 0; i < SELECTION_MAX; i++)
-	{
-		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
-	}
-	svlist->show();
-}
-
-void Menu::svlist_hide()
-{
-	svlist->hide();
-
-	// show buttons below
-	for (int i = 0; i < SELECTION_MAX; i++)
-	{
-		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
-	}
-
-	gui->setButtonDefault(button_ids[2]);
-}
-
 void Menu::options_show()
 {
 	// hide buttons below
@@ -728,6 +705,28 @@ void Menu::options_hide()
 }
 #endif //ANDROID
 
+void Menu::svlist_show()
+{
+	// hide buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], false);
+	}
+	svlist->show();
+}
+
+void Menu::svlist_hide()
+{
+	svlist->hide();
+
+	// show buttons below
+	for (int i = 0; i < SELECTION_MAX; i++)
+	{
+		if (button_ids[i] >= 0) gui->setVisible(button_ids[i], true);
+	}
+
+	gui->setButtonDefault(button_ids[2]);
+}
 
 void Menu::help_show()
 {

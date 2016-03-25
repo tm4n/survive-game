@@ -283,7 +283,7 @@ int main(int argc, char **argv)
 		svthread.join();
 		delete sv;
 	}
-
+	
 	TTF_Quit();
 	SDL_Quit();
 	
