@@ -43,6 +43,7 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	this->quit = quit;
 	this->scoreboard_visible = false;
 	this->ingame_menu_visible = false;
+	this->chat_active = false;
 	this->scoreboard_timer = 0.f;
 	this->msg_timer = 1200.f;
 
@@ -124,6 +125,10 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 	gui->setAlpha(controller_help_id, 0.8f);
 #endif
 
+	// chat
+	chat_txt_id = gui->addText("l1\nl2\nl3\nl4\nl5", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 8.f);
+	chat_input_txt_id = gui->addText("Chat input here", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 110.f);
+
 	// ingame menu
 #ifdef ANDROID
 	float pos_offset = 550.f;
@@ -202,6 +207,9 @@ gui_hud::~gui_hud()
 	// delete wave timer
 	gui->removeObject(wave_timer_txt_id);
 	gui->removeObject(wave_timer_id);
+	// delete chat
+	gui->removeObject(chat_txt_id);
+	gui->removeObject(chat_input_txt_id);
 
 	// delete highscore:
 	gui->removeObject(score_bg_id);
@@ -267,6 +275,44 @@ void gui_hud::set_state(hud_state new_state)
 void gui_hud::set_debug(std::string s)
 {
 	//gui->updateText(debug_id, s);
+}
+
+void gui_hud::scroll_chat(const char *msg)
+{
+	// move all strings up by one
+	chatlines[0].assign(chatlines[1]);
+	chatlines[1].assign(chatlines[2]);
+	chatlines[2].assign(chatlines[3]);
+	chatlines[3].assign(chatlines[4]);
+	chatlines[4].assign(msg);
+	// display
+	std::ostringstream s;
+	for (int i = 0; i < 5; i++)
+	{
+		s << chatlines[i] << '\n';
+	}
+	gui->updateText(chat_txt_id, s.str());
+}
+
+void gui_hud::chat_enable()
+{
+	// activate chat
+	chat_active = true;
+	gui->setVisible(chat_input_txt_id, true);
+}
+void gui_hud::chat_cancel()
+{
+	// deactive chat
+	chat_active = false;
+	gui->setVisible(chat_input_txt_id, false);
+	// delete msg
+}
+void gui_hud::chat_enter()
+{
+	// deactive chat
+	chat_active = false;
+	gui->setVisible(chat_input_txt_id, false);
+	// TODO: send message
 }
 
 void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, uint points)

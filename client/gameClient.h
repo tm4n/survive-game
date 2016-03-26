@@ -33,7 +33,7 @@ public:
 	bool connect(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_queue, std::list<ENetPacket*> *out_queue, std::mutex *mutex_out_queue);
 	void disconnect();
 
-	void event_mouse(SDL_Event *evt);
+	void event_input(SDL_Event *evt);
 
 	void frame(double time_delta);
 	

@@ -123,7 +123,10 @@ void gameClient::handle_netevent(ENetEvent *event)
 
 					case NET_CHAT:
 					{
-						// TODO: implement chat
+						if (hud != NULL)
+						{
+							hud->scroll_chat(data);
+						}
 						break;
 					}
 
@@ -837,7 +840,7 @@ void gameClient::frame(double time_delta)
 
 }
 
-void gameClient::event_mouse(SDL_Event *evt)
+void gameClient::event_input(SDL_Event *evt)
 {
 	if (input_enable == false) return;
 
@@ -851,6 +854,24 @@ void gameClient::event_mouse(SDL_Event *evt)
 		if (evt->type == SDL_JOYBUTTONDOWN && evt->jbutton.button == 1) hud->toggle_ingame_menu();
 		renderer->gui->event_mouse(evt);
 		return;
+	}
+	if (hud != NULL && hud->chat_active)
+	{
+		if (evt->type == SDL_KEYDOWN)
+		{
+			switch (evt->key.keysym.sym)
+			{
+			case SDLK_RETURN:
+			case SDLK_RETURN2:
+				hud->chat_enter();
+				break;
+			case SDLK_ESCAPE:
+			case SDLK_TAB:
+				hud->chat_cancel();
+				break;
+			}
+			return; // catch only key inputs
+		}
 	}
 	
 	if (evt->type == SDL_MOUSEMOTION)
@@ -1062,6 +1083,10 @@ void gameClient::event_mouse(SDL_Event *evt)
 
 		case SDLK_TAB:
 			if (!net_client->local_only) hud->show_scoreboard();
+			break;
+
+		case SDLK_RETURN:
+			hud->chat_enable();
 			break;
 
 		case SDLK_ESCAPE:

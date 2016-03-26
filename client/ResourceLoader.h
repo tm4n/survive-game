@@ -49,7 +49,7 @@ public:
 	Flesh_hit = 30, Metal_hit1 = 31, Wood_hit1 = 32, Wood_hit2 = 33, Wood_hit3 = 34, Fireball = 35, Fireball_hit = 36,
 	Generator = 40, Zombie1= 41, Zombie2 = 42, Monster = 43, Harpy1 = 44, Harpy2 = 45}; // TODO: finish
 
-	enum class fontType : int { fnt_small = 1, fnt_norm = 2, fnt_normp = 3, fnt_large = 4, fnt_larges = 5, fnt_mid = 6, fnt_mids = 7, fnt_menu = 8};
+	enum class fontType : int { fnt_small = 1, fnt_smallb = 2, fnt_norm = 3, fnt_normp = 4, fnt_large = 5, fnt_larges = 6, fnt_mid = 7, fnt_mids = 8, fnt_menu = 9 };
 
 	ResourceLoader();
 

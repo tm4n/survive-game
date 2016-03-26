@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 			case SDL_JOYAXISMOTION:
 				if (!menu->visible && cl != NULL)
 				{
-					cl->event_mouse(&evt);
+					cl->event_input(&evt);
 				}
 				else
 				{
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 				if (menu->visible == false && cl != NULL)
 				{
 					// give to gameClient
-					cl->event_mouse(&evt);
+					cl->event_input(&evt);
 				}
 				break;
 				

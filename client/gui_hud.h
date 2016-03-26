@@ -33,6 +33,12 @@ public:
 	void show_wave_timer(int time);
 	void hide_wave_timer();
 
+	void scroll_chat(const char *msg);
+	void chat_enable();
+	void chat_cancel();
+	void chat_enter();
+	bool chat_active;
+
 	void show_scoreboard();
 	void update_scoreboard(const char *sdata);
 	void hide_scoreboard();
@@ -50,11 +56,14 @@ protected:
 
 	float scoreboard_timer;
 	float msg_timer;
+
+	std::string chatlines[5];
 	
 	hud_state state;
 
 	int debug_id, ammo_txt_id, ammo_mag_txt_id, ammo_bg_id, health_txt_id, health_bg_id, crosshair_id;
 	int status_id, message_id, wave_points_id, wave_timer_txt_id, wave_timer_id;
+	int chat_txt_id, chat_input_txt_id;
 
 	int score_bg_id, score_names_txt_id, score_points_txt_id, score_pings_txt_id, highscore_txt_id;
 

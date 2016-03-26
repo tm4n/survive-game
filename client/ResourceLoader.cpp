@@ -352,6 +352,7 @@ void ResourceLoader::loadMenu()
 
 	// Fonts
 	openFont(fontType::fnt_small, "assets/OpenSans-Semibold.ttf", 10);
+	openFont(fontType::fnt_smallb, "assets/OpenSans-Semibold.ttf", 13);
 	openFont(fontType::fnt_norm, "assets/OpenSans-Semibold.ttf", 16);
 	openFont(fontType::fnt_normp, "assets/OpenSans-Bold.ttf", 16);
 	openFont(fontType::fnt_large, "assets/OpenSans-Bold.ttf", 36);
