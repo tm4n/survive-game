@@ -735,7 +735,7 @@ void gameClient::disconnect()
 void gameClient::frame(double time_delta)
 {
 	// deferred creation
-	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources, &quit);
+	if (hud == NULL) hud = new gui_hud(renderer->gui, &renderer->resources, net_client, &quit);
 	
 	// Handle packages
 	ENetEvent event;
@@ -857,6 +857,18 @@ void gameClient::event_input(SDL_Event *evt)
 	}
 	if (hud != NULL && hud->chat_active)
 	{
+		if (evt->type == SDL_TEXTINPUT)
+		{
+			if (hud->chat_carvis) hud->chat_inputstring.pop_back();
+
+			hud->chat_inputstring.append(evt->text.text);
+			if (hud->chat_carvis) hud->chat_inputstring.push_back('|');
+			hud->chat_input_update();
+		}
+		if (evt->type == SDL_TEXTEDITING)
+		{
+				// TODO: does this really work, is it needed? Probably not
+		}
 		if (evt->type == SDL_KEYDOWN)
 		{
 			switch (evt->key.keysym.sym)
@@ -869,8 +881,17 @@ void gameClient::event_input(SDL_Event *evt)
 			case SDLK_TAB:
 				hud->chat_cancel();
 				break;
+			case SDLK_BACKSPACE:
+				if (hud->chat_carvis) hud->chat_inputstring.pop_back();
+				if (hud->chat_inputstring.length() > 0)
+				{
+					hud->chat_inputstring.pop_back();
+					hud->chat_input_update();
+				}
+				if (hud->chat_carvis) hud->chat_inputstring.push_back('|');
+				break;
 			}
-			return; // catch only key inputs
+			return; // catch only key inputs, continue otherwise
 		}
 	}
 	
@@ -1086,7 +1107,7 @@ void gameClient::event_input(SDL_Event *evt)
 			break;
 
 		case SDLK_RETURN:
-			hud->chat_enable();
+			if (!net_client->local_only) hud->chat_enable();
 			break;
 
 		case SDLK_ESCAPE:

@@ -36,16 +36,19 @@ void disconCallback::callback(int obj_id)
 
 ///////////////////////////////////////////////////////////////////////////
 
-gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
+gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, net_cl *net_client, bool *quit)
 {
 	this->gui = gui;
 	this->resources = resources;
+	this->net_client = net_client;
 	this->quit = quit;
 	this->scoreboard_visible = false;
 	this->ingame_menu_visible = false;
 	this->chat_active = false;
+	this->chat_carvis = false;
 	this->scoreboard_timer = 0.f;
 	this->msg_timer = 1200.f;
+	this->chat_caranim = 0.;
 
 	// create debug info
 	//debug_id = gui->addText("TEST!", resources->getFont(ResourceLoader::fontType::fnt_small), 1, GUIObject::Alignment::upleft, 0.1f, 0.1f);
@@ -126,8 +129,8 @@ gui_hud::gui_hud(GUI *gui, ResourceLoader *resources, bool *quit)
 #endif
 
 	// chat
-	chat_txt_id = gui->addText("l1\nl2\nl3\nl4\nl5", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 8.f);
-	chat_input_txt_id = gui->addText("Chat input here", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 110.f);
+	chat_txt_id = gui->addText("", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 8.f);
+	chat_input_txt_id = gui->addText("", resources->getFont(ResourceLoader::fontType::fnt_smallb), 6, GUIObject::Alignment::upleft, 8.f, 110.f);
 
 	// ingame menu
 #ifdef ANDROID
@@ -296,23 +299,45 @@ void gui_hud::scroll_chat(const char *msg)
 
 void gui_hud::chat_enable()
 {
+	chat_inputstring.clear();
 	// activate chat
 	chat_active = true;
 	gui->setVisible(chat_input_txt_id, true);
+	chat_input_update();
+	// deactivate input
+	SDL_StartTextInput();
 }
 void gui_hud::chat_cancel()
 {
+	// deactivate input
+	SDL_StopTextInput();
 	// deactive chat
 	chat_active = false;
 	gui->setVisible(chat_input_txt_id, false);
 	// delete msg
+	chat_inputstring.clear();
+	chat_carvis = false;
 }
 void gui_hud::chat_enter()
 {
+	// deactivate input
+	SDL_StopTextInput();
 	// deactive chat
 	chat_active = false;
 	gui->setVisible(chat_input_txt_id, false);
-	// TODO: send message
+	// send message
+	if (chat_carvis) chat_inputstring.pop_back();
+	if (chat_inputstring.length() > 0)
+	{
+		net_client->send_chat(chat_inputstring.c_str(), chat_inputstring.length() + 1, net_client->serverpeer);
+	}
+	// delete msg
+	chat_inputstring.clear();
+	chat_carvis = false;
+}
+void gui_hud::chat_input_update()
+{
+	gui->updateText(chat_input_txt_id, chat_inputstring);
 }
 
 void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int wave, uint points)
@@ -353,6 +378,21 @@ void gui_hud::frame(double time_frame, float health, int ammo, int magazin, int 
 			net_client->send_scoreboard(net_client->serverpeer);
 		}
 		scoreboard_timer += (float)(time_frame);
+	}
+
+	if (chat_active == true)
+	{
+		// caret navigation (text cursor)
+		chat_caranim += time_frame;
+		if (chat_caranim > 8.)
+		{
+			chat_caranim -= 8.;
+
+			if (chat_carvis) chat_inputstring.pop_back();
+			else chat_inputstring.push_back('|');
+			chat_carvis = !chat_carvis;
+			chat_input_update();
+		}
 	}
 }
 

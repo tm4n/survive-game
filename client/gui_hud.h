@@ -4,13 +4,14 @@
 #include "GUI.h"
 #include "ResourceLoader.h"
 #include "defs.h"
+#include "net_cl.h"
 
 class gui_hud
 {
 public:
 	enum hud_state {hidden, spectating, playing, game_end};
 	
-	gui_hud(GUI *gui, ResourceLoader *resources, bool *quit);
+	gui_hud(GUI *gui, ResourceLoader *resources, net_cl *net_client, bool *quit);
 	~gui_hud();
 
 	void set_state(hud_state new_state);
@@ -37,7 +38,10 @@ public:
 	void chat_enable();
 	void chat_cancel();
 	void chat_enter();
+	void chat_input_update();
+	bool chat_carvis;
 	bool chat_active;
+	std::string chat_inputstring;
 
 	void show_scoreboard();
 	void update_scoreboard(const char *sdata);
@@ -52,10 +56,12 @@ public:
 protected:
 	GUI *gui;
 	ResourceLoader *resources;
+	net_cl *net_client;
 	bool *quit;
 
 	float scoreboard_timer;
 	float msg_timer;
+	double chat_caranim;
 
 	std::string chatlines[5];
 	

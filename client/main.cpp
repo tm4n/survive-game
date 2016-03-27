@@ -200,6 +200,10 @@ int main(int argc, char **argv)
 				{
 					menu->event_input_keys(&evt);
 				}
+				else if (cl != NULL)
+				{
+					cl->event_input(&evt);
+				}
 				break;
 			}
 		}
