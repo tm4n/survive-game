@@ -33,7 +33,11 @@ gameClient::~gameClient()
 	if (lvl_cl != NULL) delete lvl_cl;
 	renderer->render_sky = false;
 	delete effmgr;
-	if (net_client != NULL) delete net_client;
+	if (net_client != NULL)
+	{
+		net_client->host_destroy();
+		delete net_client;
+	}
 }
 
 void gameClient::reset()
@@ -693,8 +697,6 @@ bool gameClient::connect(const char *ip, int port)
         puts("An error occurred while trying to create an ENet client host.\n");
         exit (EXIT_FAILURE);
     }
-	
-	//v(mouse_mode) = 4;
 
 	ENetAddress address;
 

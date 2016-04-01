@@ -22,7 +22,7 @@ void net_cl::host_connect (const ENetAddress *address, size_t channelCount, enet
 {
 	if (local_only)
 	{
-		// TODO:
+		// nothing to do here
 	}
 	else
 	{
