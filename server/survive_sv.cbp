@@ -15,7 +15,6 @@
 				<Option parameters="1" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-Dserver" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -33,12 +32,13 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add option="`sdl-config --cflags`" />
+			<Add option="-Dserver" />
 			<Add directory="../shared" />
-			<Add directory="../libraries/tinyxml" />
-			<Add directory="../libraries/enet-1.3.5/include" />
+			<Add directory="../libs/enet/include" />
+			<Add directory="../libs/glm" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
