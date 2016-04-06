@@ -43,7 +43,7 @@
 		<Linker>
 			<Add option="`sdl-config --libs`" />
 			<Add library="../libs/enet/.libs/libenet.a" />
-			<Add library="SDL" />
+			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="../shared/Timer.cpp" />
 		<Unit filename="../shared/Timer.h" />
