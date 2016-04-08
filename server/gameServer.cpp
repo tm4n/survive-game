@@ -29,14 +29,14 @@ gameServer::gameServer()
 {
 	// create networked game server
 	net_server = new net_sv();
-	
+
 	//Initialize
     if( init() == false )
     {
         log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
         exit(EXIT_FAILURE);
     }
-    
+
     // TODO: set settings from the outside
     sv_num_npcs_limit = 30;
 	sv_barrier_probability = 5.f;
@@ -46,14 +46,14 @@ gameServer::gameServer(std::list<ENetPacket*> *in_queue, std::mutex *mutex_in_qu
 {
 	// create local game server
 	net_server = new net_sv(in_queue, mutex_in_queue, out_queue, mutex_out_queue);
-	
+
 	//Initialize
     if( init() == false )
     {
         log(LOG_ERROR, "Failed to initialize subsystems! Exitting..");
         exit(EXIT_FAILURE);
     }
-    
+
     // TODO: set settings from the outside
     sv_num_npcs_limit = 30;
 	sv_barrier_probability = 5.f;
@@ -99,10 +99,10 @@ void gameServer::clean_up()
 
 
 
-void gameServer::run() 
+void gameServer::run()
 {
     quit = false;
-    
+
     //end timeout
     double restart_countdown = 0.;
 
@@ -150,8 +150,8 @@ void gameServer::run()
         exit (EXIT_FAILURE);
     }
     log(LOG_DEBUG, "Network gameServer created!\n");
-    
-    
+
+
 	//////////////////////////////////////////////////////////
     // load level
 
@@ -178,11 +178,11 @@ void gameServer::run()
 
         while (net_server->host_service (&event, 0) > 0)
             handle_netevent(&event);
-        
+
 		// update all respawn timers
 		net_server->update_respawn_timers((float)time_delta);
-            
-            
+
+
 		//////////////////////////////////////////////////
 		// Game logic
 		if (state == GAME_STATE_WAITING)
@@ -191,10 +191,10 @@ void gameServer::run()
 			// check if a player wants to start (is done with event currently!)
 		}
 		if (state == GAME_STATE_RUNNING)
-		{			
+		{
 			// spawn npcs and boxes
 			spawner(time_delta);
-		
+
 			// check if the generator has been destroyed
 			if (lvl_sv->get_box(lvl_sv->get_generator()) == NULL)
 			{
@@ -203,16 +203,16 @@ void gameServer::run()
 
 				// TODO: get high score
 				if (scoremgr::determine_highscore()) scoremgr::save_highscore();
-				
+
 				// reset everything
 				reset();
 				net_server->reset_respawn_timers();
 			}
-			
+
 			// check if there are still players connected!
 			if (net_server->num_connected_clients() <= 0) state = GAME_STATE_END;
-			
-			
+
+
 			// check if we are counting down a wave
 			if (wave_wait_timer > 0 && state == GAME_STATE_RUNNING)
 			{
@@ -221,42 +221,42 @@ void gameServer::run()
 				if (wave_wait_tick > 1.0f)
 				{
 					wave_wait_tick -= 1.0f;
-					
+
 					wave_wait_timer -= 1;
 					net_server->broadcast_wave_wait_timer(wave_wait_timer);
-					
+
 					if (wave_wait_timer == 0)
 					{
-						// advance to next wave! 
-						
+						// advance to next wave!
+
 						sv_spawned_npcs = 0;
 						sv_spawn_timer = 0.f;
 						sv_barrier_timer = 0.f;
-						
+
 						wave += 1;
-						
+
 						// set number of npcs to spawn
 						sv_amount_npcs = 5 + (int)(log((double)(wave+1))*(5.f + get_num_players()*3.f));
-						
+
 						// set number of barriers to spawn
 						//sv_barrier_probability -= sv_barrier_probability/4; //don't lower anymore in current versions
-						
+
 						if (wave > 15) sv_wave_bonus += 0.1f;
-						
+
 						// update the players
 						net_server->broadcast_game_wave(wave);
-						
+
 						std::cout << "Wave " << wave << " started" << std::endl;
 					}
 				}
 			}
-			
+
 		}
 		if (state == GAME_STATE_END)
 		{
 			// Timeout, then switch to GAME_STATE_WAITING
 			restart_countdown += time_delta;
-			
+
 			// only do once:
 			if (restart_countdown > 5.*16.)
 			{
@@ -302,7 +302,7 @@ void gameServer::run()
         }
 
         time_delta = ((double)frametime.get_ticks()) / (1000./16.);
-		
+
     }
 
     // destroy enet_server
@@ -374,7 +374,7 @@ void gameServer::synchronizeClient(ENetPeer *receiver)
 			}
         }
     }
-    
+
     net_server->send_sync_finish(receiver);
 }
 
@@ -422,7 +422,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                 // extract packet data
                 uint32_t net_type = *((uint32_t*) event->packet->data);
                 char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
-                
+
                 /*std::ostringstream ss;
 				ss << "Server received packet " << net_type << std::endl;
 				log(LOG_DEBUG, ss.str().c_str());*/
@@ -447,29 +447,29 @@ void gameServer::handle_netevent(ENetEvent *event)
 
                             // resend to everyone
                             net_server->broadcast_chat(s.c_str(), s.length()+1);
-                            
+
                         } else log (LOG_ERROR, "NET_CHAT: received message from unsynced player!");
 
                         break;
                     }
-                    
+
                     case NET_SYNC_CLIENT:
                     {
                     	// char *data contains name as string
                     	// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-                    	
+
                     	size_t length = strlen(data);
-                    	
+
                     	if (length <= PLAYERNAME_LENGTH)
 						{
 							// safe player
 							pd->player_name = new char[length+1];
 							strncpy(pd->player_name, data, length+1);
-							
+
 							// start syncing player
 							synchronizeClient(event->peer);
-							
+
 							pd->clstate = 1;
 						}
 						else
@@ -477,73 +477,73 @@ void gameServer::handle_netevent(ENetEvent *event)
 							// TODO: malicious client!
 							log(LOG_ERROR, "Too long player name received!");
 						}
-                    	
 
-                    	
+
+
                     	break;
                     }
-                    
+
                     case NET_REQUEST_JOIN:
 					{
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-						
-						
+
+
 						// check player
 						if (state != GAME_STATE_END && pd->clstate == 1 && pd->respawn_timer <= 0.f)
 						{
 							if (state == GAME_STATE_WAITING) start_match();
-							
+
 							// create player
 							vec pos(0.f, 0.f, 0.f);
 							vec ang(0.f, 0.f, 0.f);
 							player_sv * pl = new player_sv(lvl, &pos, &ang, 100.f, pd->player_name, event->peer);
-							
+
 							pd->player_actor_id = pl->id;
-							
+
 							// send update
 							net_server->send_join(pl->id, event->peer);
-							
+
 							pd->clstate = 2;
 						}
 						else log(LOG_WARNING, "NET_REQUEST_JOIN not granted");
-						
+
 						break;
 					}
-					
+
                     case NET_INPUT_KEYS:
 					{
 						// get send data
 						s_net_input_keys *d = (s_net_input_keys *)data;
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-						
+
 						if (d->actor_id == pd->player_actor_id)
 						{
 							player_sv *pl= lvl_sv->get_player(d->actor_id);
 							if (pl != NULL)
 							{
 								pl->input = d->input;
-								
+
 								// resend input to all others
 								net_server->broadcast_input_keys_except(d->actor_id, d->input, event->peer);
 							}
 							else log(LOG_ERROR, "Received NET_INPUT_KEYS for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_INPUT_KEYS for actor thats not owned by this client");
-						
+
 						break;
 					}
-					
+
 					case NET_TAKE:
 					{
 						s_net_take *d = (s_net_take*)data;
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-						
+
 						player_sv *pl = lvl_sv->get_player(d->actor_id);
-						
+
 						if (d->actor_id == pd->player_actor_id && pl != NULL)
 						{
 							if (d->taken_id < 0)
@@ -554,7 +554,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 									pl->object_taken = -1;
 									box->taker_id = -1;
 									box->state = BOX_STATE_DEFAULT;
-									
+
 									net_server->broadcast_take(d->actor_id, d->taken_id);
 									net_server->broadcast_update_pos(box->id, &box->position);
 								}
@@ -575,7 +575,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 										pl->wpmgr->cancel_reload();
 										box->taker_id = d->actor_id;
 										box->state = BOX_STATE_TAKEN;
-										
+
 										net_server->broadcast_take(d->actor_id, d->taken_id);
 									}
 									else log(LOG_ERROR, "Received NET_TAKE but box was too far away or player already had one");
@@ -584,17 +584,17 @@ void gameServer::handle_netevent(ENetEvent *event)
 							}
 						}
 						else log(LOG_ERROR, "Received NET_TAKE for actor thats not owned by this client");
-						
+
 						break;
 					}
-					
+
 					case NET_UPDATE_ANG:
 					{
 						// get send data
 						s_net_update_ang *d = (s_net_update_ang *)data;
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-						
+
 						if (d->actor_id == pd->player_actor_id)
 						{
 							player_sv *pl= lvl_sv->get_player(d->actor_id);
@@ -602,7 +602,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 							{
 								pl->angle.x = d->ang;
 								pl->ang_interp_dir = d->ang_interp_dir;
-								
+
 								// send update to other players, every other time
 								pl->ang_count++;
 								if (pl->ang_count >= 2)
@@ -612,20 +612,20 @@ void gameServer::handle_netevent(ENetEvent *event)
 								}
 							}
 							else log(LOG_ERROR, "Received NET_UPDATE_ANG for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_ANG for actor thats not owned by this client");
-						
+
 						break;
 					}
-					
+
 					case NET_UPDATE_POS:
 					{
 						// get send data
 						s_net_update_pos *d = (s_net_update_pos *)data;
 						// get player data
                     	s_peer_data *pd = (s_peer_data *)event->peer->data;
-						
+
 						if (d->actor_id == pd->player_actor_id)
 						{
 							player_sv *pl= lvl_sv->get_player(d->actor_id);
@@ -644,13 +644,13 @@ void gameServer::handle_netevent(ENetEvent *event)
 								}
 							}
 							else log(LOG_ERROR, "Received NET_UPDATE_POS for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_UPDATE_POS for actor thats not owned by this client");
-						
+
 						break;
 					}
-                    
+
 					case NET_SHOOT:
 					{
 						// get send data
@@ -670,7 +670,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 								pl->wpmgr->shoot(shoot_origin, d->shoot_dir);
 							}
 							else log(LOG_ERROR, "Received NET_SHOOT for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_SHOOT for actor thats not owned by this client");
 
@@ -692,7 +692,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 								pl->wpmgr->wp_switch_impl(d->new_weapon_id);
 							}
 							else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_CHANGE_WEAPON for actor thats not owned by this client");
 
@@ -714,7 +714,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 								pl->wpmgr->wp_reload_impl();
 							}
 							else log(LOG_ERROR, "Received NET_RELOAD for non-player actor");
-							
+
 						}
 						else log(LOG_ERROR, "Received NET_RELOAD for actor thats not owned by this client");
 
@@ -734,7 +734,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 
 					default:
 						log(LOG_ERROR, "Packed with unkown/invalid type received");
-                    
+
                 }
 
 
@@ -742,7 +742,7 @@ void gameServer::handle_netevent(ENetEvent *event)
 
             /* Clean up the packet now that we're done using it. */
             enet_packet_destroy (event->packet);
-            
+
             /*std::ostringstream ss;
 			ss << "Server done receiving packets";
 			log(LOG_DEBUG, ss.str().c_str());*/
@@ -792,15 +792,15 @@ void gameServer::start_match()
 {
 	// reset values
 	reset();
-	
-	// reset level (lat0r, maybe done on exit?  
-	
+
+	// reset level (lat0r, maybe done on exit?
+
 	// add level starters
 	vec v, t;
 	// create generator
 	v.set(0.1f, 0.1f, lvl->level_ground);
 	new box_sv(lvl_sv, BOX_TYPE_GENERATOR, &v, &sv_num_barriers);
-	
+
 	// create starting crates
 	v.set(180, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
@@ -808,21 +808,21 @@ void gameServer::start_match()
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(180, 130, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
-	
+
 	v.set(-180, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(-130, 180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(-180, 130, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
-	
+
 	v.set(-180, -180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(-130, -180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(-180, -130, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
-	
+
 	v.set(180, -180, lvl->border_ground);
 	new box_sv(lvl_sv, BOX_TYPE_WOOD, &v, &sv_num_barriers);
 	v.set(130, -180, lvl->border_ground);
@@ -842,10 +842,10 @@ void gameServer::start_match()
 
 	/*v.set(400, 800, lvl->border_ground);
 	new npc_sv(lvl_sv, NPC_WITCH, &v, &t, &sv_num_npcs);*/
-    
+
     state = GAME_STATE_RUNNING;
     net_server->broadcast_game_state(state);
-    
+
     // start countdown to first
     next_wave();
 }
@@ -855,7 +855,7 @@ void gameServer::reset()
 	wave = 0;
 	wave_wait_timer = 0;
 	wave_wait_tick = 0.f;
-	
+
 	sv_spawned_npcs = 0;  // number of spawned npcs this round
 	sv_amount_npcs = 0;  // number of npcs to spawn this round
 	sv_num_npcs = 0;  // number of npcs currently alive
@@ -865,11 +865,11 @@ void gameServer::reset()
 	sv_spawn_timer = 0.f;
 	sv_spawn_cap = 0.f;
 	sv_barrier_timer = 0.f;
-	
+
 	sv_wave_bonus = 0.f;
-	
+
 	scoremgr::clear_all();
-	
+
 	// delete everything
 	for (uint i = 0; i < lvl_sv->actorlist.size; i++)
 	{
@@ -881,17 +881,17 @@ void gameServer::spawner(double time_frame)
 {
 	int spawn_type = 0;
 	int dice;
-	
+
 	// don't do any enemy if we are currently waiting for a new wave
 	if (wave_wait_timer <= 0)
 	{
-		
+
 		// check if we are ready a new wave, don't wait for all enemies to die
 		if (sv_spawned_npcs >= sv_amount_npcs && sv_num_npcs < sv_num_npcs_limit/4 && wave_wait_timer == 0)
 		{
 			next_wave();
 		}
-		
+
 		// spawn npcs
 		sv_spawn_cap = -0.2f*(float)get_num_players()+1.8f;
 		if (wave > 12) sv_spawn_cap -= ((float)wave-12.f)*0.1f;
@@ -899,101 +899,101 @@ void gameServer::spawner(double time_frame)
 		#ifdef ANDROID
 		sv_spawn_cap *= 2.f;  // easier for android singleplayer
 		#endif // ANDROID
-		
+
 		if (sv_spawn_timer >= sv_spawn_cap)
 		{
 			sv_spawn_timer -= sv_spawn_cap;
-			
+
 			if (sv_spawned_npcs < sv_amount_npcs && sv_num_npcs < sv_num_npcs_limit)
 			{
 				// roll the dice
 				dice = (int)random_range(100);
 
 				// decide which to spawn
-				
+
 				switch(wave)
 				{
 					case 1:
 						spawn_type = NPC_MUMMY;
 					break;
-					
+
 					case 2:
 						if (dice < 12) spawn_type = NPC_SMASHER; else spawn_type = NPC_MUMMY;
 					break;
-				
+
 					case 3:
 						if (dice < 20) spawn_type = NPC_SMASHER; else spawn_type = NPC_MUMMY;
 					break;
-					
-					
+
+
 					case 4:
 						if (dice < 15) spawn_type = NPC_SMASHER; else
 							if (dice > 80) spawn_type = NPC_WEREWOLF;
 								else spawn_type = NPC_MUMMY;
 					break;
-				
+
 					case 5:
 						if (dice < 60) spawn_type = NPC_WITCH;
 								else spawn_type = NPC_SMASHER;
 					break;
-				
+
 					case 6:
 						if (dice < 40) spawn_type = NPC_WITCH; else
 							if (dice > 80) spawn_type = NPC_WEREWOLF;
 								else spawn_type = NPC_MUMMY;
 					break;
-				
+
 					case 7:
 						if (dice < 30) spawn_type = NPC_WITCH; else
 							if (dice > 70) spawn_type = NPC_WEREWOLF;
 								else spawn_type = NPC_MUMMY;
 					break;
-					
-					
+
+
 					case 8:
 						if (dice < 20) spawn_type = NPC_HOGMAN; else
 							if (dice > 70) spawn_type = NPC_WITCH;
 								else spawn_type = NPC_MUMMY;
 					break;
-					
+
 					case 9:
 						spawn_type = NPC_WEREWOLF;
 					break;
-					
+
 					case 10:
 						if (dice < 50) spawn_type = NPC_HOGMAN; else
 							if (dice > 80) spawn_type = NPC_KNIGHT;
 								else spawn_type = NPC_MUMMY;
 					break;
-					
+
 					case 11:
 						if (dice < 30) spawn_type = NPC_WITCH; else
 							if (dice > 85) spawn_type = NPC_HARPY;
 								else spawn_type = NPC_KNIGHT;
 					break;
-					
+
 					case 12:
 						if (dice < 30) spawn_type = NPC_SMASHER; else
 							if (dice > 85) spawn_type = NPC_HARPY;
 								else spawn_type = NPC_WITCH;
 					break;
-					
+
 					case 13:
 						spawn_type = NPC_HARPY;
 					break;
-					
+
 					case 14:
 						if (dice < 40) spawn_type = NPC_WITCH; else
 							if (dice > 90) spawn_type = NPC_HARPY;
 								else spawn_type = NPC_KNIGHT;
 					break;
-					
+
 					case 15:
 						if (dice < 30) spawn_type = NPC_WITCH; else
 							if (dice > 50) spawn_type = NPC_HARPY;
 								else spawn_type = NPC_BAUUL;
 					break;
-					
+
 					default:
 					if (dice < 25) {spawn_type = NPC_WITCH; break;}
 					if (dice < 50) {spawn_type = NPC_HOGMAN; break;}
@@ -1003,20 +1003,20 @@ void gameServer::spawner(double time_frame)
 					spawn_type = NPC_KNIGHT;
 					break;
 				}
-				
+
 				npc_spawn(spawn_type, 1.0f + ((get_num_players()-1.0f)*(1.0f/MAX_PLAYERS)) + sv_wave_bonus);
 				sv_spawned_npcs += 1;
 			}
 		}
-		
+
 	}
-	
+
 	// TODO: maybe make spawning more random without counter?
 	// spawn barriers
 	if (sv_barrier_timer >= 0.5)
 	{
 		sv_barrier_timer -= 0.5;
-		
+
 		if (random_range(100) < sv_barrier_probability)
 		{
 			if (wave >= 2 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_CHAINSAW] == false)
@@ -1025,7 +1025,7 @@ void gameServer::spawner(double time_frame)
 				wpdrop_spawn(COLLECTIBLE_TYPE_WP_CHAINSAW);
 				return;
 			}
-			
+
 			if (wave >= 4 && lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_WESSON] == false)
 			{
 				lvl_sv->wpdrops[COLLECTIBLE_TYPE_WP_WESSON] = true;
@@ -1053,7 +1053,7 @@ void gameServer::spawner(double time_frame)
 			box_spawn();
 		}
 	}
-	
+
 	sv_spawn_timer += (float)(time_frame * 0.0625);
 	sv_barrier_timer += (float)(time_frame * 0.0625);
 }
@@ -1066,12 +1066,12 @@ void gameServer::spawner(double time_frame)
 void gameServer::next_wave()
 {
 	log(LOG_DEBUG, "Waiting for next wave.");
-	
+
 	// set waiting timer
 	wave_wait_timer = 45 + wave * 10;
 	wave_wait_timer = std::min(wave_wait_timer, 200);
-	wave_wait_timer = 5; 	//DEBUG: waves immediately
-	
+	//wave_wait_timer = 5; 	//DEBUG: waves immediately
+
 	net_server->broadcast_wave_wait_timer(wave_wait_timer);
 }
 
@@ -1084,16 +1084,16 @@ void gameServer::npc_spawn(int etype, float ebonus)
 	str_cat(str_temp, " with bonus ");
 	str_cat(str_temp, str_for_num(NULL, ebonus));
 	sv_debug(str_temp);*/
-	
+
 	// determine where they should spawn
 	float ang = toRadians(random_range(360));
 	vec v;
 	v.x = cos(ang) * lvl->level_size;
 	v.y = sin(ang) * lvl->level_size;
-	
+
 	if (b_npcs::instance()->at(etype)->ai_type == NPC_AI_PLAYER_FLYING) v.z = 200.f + random_range(400);
 	else v.z = lvl->level_ground;
-	
+
 	npc_sv *np = new npc_sv(lvl_sv, etype, &v, NULL, &sv_num_npcs);
 	np->health *= ebonus;
 }
@@ -1102,14 +1102,14 @@ void gameServer::box_spawn()
 {
 	vec pos;
 	float dice;
-	
+
 	log(LOG_DEBUG, "Spawning barrier crate");
-		
+
 	// get position anywhere on the level^
 	pos.x = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.y = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.z = 1500.f;
-	
+
 	dice = random_range(75);
 	if (dice <= 12.f)
 	{
@@ -1128,11 +1128,11 @@ void gameServer::wpdrop_spawn(int wtype)
 	vec pos;
 
 	log(LOG_DEBUG, "Spawning weapon crate, Type ");
-	
+
 	// get position anywhere on the level^
 	pos.x = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.y = random_range(lvl->level_size*2.f) - lvl->level_size;
 	pos.z = 1500.f;
-	
+
 	new collectible_sv(lvl_sv, (char)wtype, &pos);
 }

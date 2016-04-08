@@ -8,16 +8,16 @@ box_sv::box_sv(level *lvl, char abox_type, vec *pos, int *counter)
 {
 	box_counter = counter;
 	turret_target_timer = 0.;
-	
+
 	// set health
 	if (abox_type == BOX_TYPE_WOOD) health = 100.f;
 	if (abox_type == BOX_TYPE_METAL) health = 300.f;
-	if (abox_type == BOX_TYPE_GENERATOR) health = 5.f; // default 500, DEBUG HERE
+	if (abox_type == BOX_TYPE_GENERATOR) health = 500.f; // default 500
 	if (abox_type == BOX_TYPE_TURRET) health = 50.f;
 
 	// send creation to all connected players
 	net_server->broadcast_sync_box(id, abox_type, pos, health, target);
-	
+
 	*box_counter += 1;
 }
 
@@ -25,7 +25,7 @@ box_sv::~box_sv()
 {
 	// notify of removal
 	net_server->broadcast_remove_actor(id);
-	
+
 	*box_counter -= 1;
 }
 
@@ -37,7 +37,7 @@ void box_sv::frame(double time_delta)
 		delete this;
 		return;
 	}
-		
+
 	movement(time_delta);
 
 	if (box_type == BOX_TYPE_TURRET)
@@ -116,7 +116,7 @@ void box_sv::frame(double time_delta)
 			{
 				if (attack_count > 100.)
 				{
-				
+
 					t->health -= 0.6f; // damage target
 					if (t->health <= 0.f)
 					{

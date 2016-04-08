@@ -18,22 +18,22 @@ weaponmgr_sv::weaponmgr_sv(level *lvl, int *curr_weapon, ENetPeer *playerpeer, i
 void weaponmgr_sv::give_weapon(int weapon_id)
 {
 	bool send_update = false;
-	
+
 	s_weapons *wdata = b_weapons::instance()->at(weapon_id);
 
 	if (weapon_id < 0 || weapon_id >= WEAPON_ENTRIES || wdata == NULL) {log(LOG_ERROR, "Tried to give invalid weapon number"); return;}
-	
+
 	// also give full magazin on first pickup
 	if (!(pickups & (1<<weapon_id)))
 	{
 		pickups |= (1<<weapon_id);
 		log(LOG_DEBUG, "Weapon given to player");
-		
+
 		magazin[weapon_id] = wdata->magazin_size;
 		ammo[weapon_id] = wdata->ammo_size;
 		send_update = true;
 	}
-	
+
 	// fill up ammo
 	if (wdata->ammo_size > 0)
 	{
@@ -44,7 +44,7 @@ void weaponmgr_sv::give_weapon(int weapon_id)
 			send_update = true;
 		}
 	}
-	
+
 	if (send_update) net_server->send_update_ammo_magazin(player_id, weapon_id, ammo[weapon_id], magazin[weapon_id], playerpeer);
 
 	if (*curr_weapon == 0) *curr_weapon = weapon_id;
@@ -53,7 +53,7 @@ void weaponmgr_sv::give_weapon(int weapon_id)
 void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 {
 	vec shoot_target;
-	
+
 	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
 
 	int shoot_nums = wdata->bullets;
@@ -68,8 +68,6 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 
 	int32_t seed = rand();
 	random_seed(seed);
-	
-	log (LOG_DEBUG, "Starting shoot!");
 
 	// send including random seed
 	net_server->broadcast_shoot(player_id, &shoot_dir, seed);
@@ -103,9 +101,9 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 						#ifdef ANDROID
 						dmg *= 1.5f;  // more damage for android
 						#endif // ANDROID
-						
+
 						np->health -= dmg;
-						
+
 						scoremgr::add_points(playerpeer, (uint)dmg);
 						if (ac->health <= 0) {ac->health = 0; scoremgr::add_points(playerpeer, b_npcs::instance()->at(np->npc_type)->bounty);}
 						net_server->broadcast_update_health(ac->id, ac->health);
@@ -113,7 +111,7 @@ void weaponmgr_sv::shoot(vec &shoot_origin, vec &shoot_dir)
 				}
 			}
 		}
-	
+
 	}
 
 	scoremgr::update_points(playerpeer);
@@ -128,13 +126,13 @@ void weaponmgr_sv::wp_switch_impl(int num)
 	if (wp_cooldown > 0.f && wp_reloading == 0) {return;}
 	if (num < 0 || num > WEAPON_ENTRIES) {return;}
 	if (!(pickups & (1<<num)) || *curr_weapon == num) {return;}
-	
+
 	wp_ready = false;
 	wp_reloading = 0; // cancel reloading
-	
+
 	wp_switching = num;
 	wp_cooldown += 10.f;
-	
+
 	// send change back to client for animation
 	net_server->send_change_weapon(player_id, num, playerpeer);
 	log(LOG_DEBUG, "Server wp switch send out");
@@ -146,7 +144,7 @@ void weaponmgr_sv::wp_reload_impl()
 	wp_ready = false;
 	wp_cooldown += 10.f;
 	wp_reloading = 1;
-	
+
 	net_server->broadcast_reload(player_id);
 }
 
@@ -170,9 +168,9 @@ void weaponmgr_sv::frame(float time_frame)
 		{
 			*curr_weapon = wp_switching;
 			wp_switching = 0;
-	
+
 			net_server->broadcast_update_curr_weapon(player_id, *curr_weapon);
-	
+
 			wp_ready = true;
 		}
 	}
@@ -184,7 +182,7 @@ void weaponmgr_sv::frame(float time_frame)
 		{
 			int num_ammo = ammo[*curr_weapon];
 			int num_fired = b_weapons::instance()->at(*curr_weapon)->magazin_size - magazin[*curr_weapon];
-		
+
 			if (b_weapons::instance()->at(*curr_weapon)->ammo_size > 0)
 			{
 				if (num_ammo < num_fired)
@@ -208,7 +206,7 @@ void weaponmgr_sv::frame(float time_frame)
 
 			wp_ready = true;
 			wp_reloading = 0;
-		
+
 			net_server->send_update_ammo_magazin(player_id, *curr_weapon, ammo[*curr_weapon], magazin[*curr_weapon], playerpeer);
 		}
 	}
