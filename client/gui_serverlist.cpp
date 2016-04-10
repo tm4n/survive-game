@@ -81,7 +81,7 @@ void gui_serverlist::frame(double time_delta)
 		hide();
 
 		// TODO: set here what you want
-		conn_ip.assign("192.168.0.36");
+		conn_ip.assign("survive-game.de");
 		conn_port = 1201;
 
 		playMpCb->callback(but_connect);

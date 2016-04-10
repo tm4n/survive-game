@@ -416,6 +416,8 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
 			std::cout << "OGL error code: " << err << " on drawing after drawing" << std::endl;
 		}
 
+		// Draw a second time for outline
+
     }
 
     // Disable vertex array
@@ -474,6 +476,23 @@ void Mesh::setShader() {
 			"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" 
 			"  gl_FragColor.w *= alpha; \n"
             "}";
+
+	/*fragmentShaderBlackCode =
+		"#version 110 \n"
+		"#ifdef GL_ES \n"
+		"precision mediump float; \n"
+		"#endif \n"
+
+		"varying vec2 TexCoordOut; \n"
+		"uniform sampler2D Texture; \n"
+		"uniform float alpha; \n"
+		"uniform vec3 coloring; \n"
+		"void main() { \n"
+		//"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+		"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n"
+		"  gl_FragColor.w *= alpha; \n"
+		"}";*/
+
 }
 
 void Mesh::initShader() {

@@ -36,7 +36,7 @@ weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ush
 	this->curr_handmesh = get_handmesh(*curr_weapon);
 	this->curr_handmesh->addRenderObject(ro_h);
 	
-	this->curr_wpmesh = get_wpmesh(*curr_weapon);
+	this->curr_wpmesh = get_wpmesh(*curr_weapon);//renderer->resources.getMesh(ResourceLoader::meshType::HKSL8);//
 	this->curr_wpmesh->addRenderObject(ro_w);
 
 	// muzzle flash
@@ -148,10 +148,36 @@ void weaponmgr_cl::frame(double time_frame, vec &pl_pos, vec &pl_angle, int fram
 		ro_h->visible = false;
 		ro_w->visible = true;
 		
-		// TODO: hold ro in hand
-		ro_h->rotation[0] = pl_angle.x;
-		ro_h->rotation[1] = pl_angle.y;
-		ro_h->rotation[2] = pl_angle.z;
+		// hold ro_w in hand
+		// TODO: use vertex position based on current frame
+		ro_w->rotation[0] = pl_angle.x;
+		ro_w->rotation[1] = pl_angle.y;
+		ro_w->rotation[2] = pl_angle.z;
+
+		vec wpos(pl_pos);
+		move_dir(wpos, pl_angle, 27.5f, -6.5f, 19.f);
+
+		ro_w->translation[0] = wpos.x;
+		ro_w->translation[1] = wpos.y;
+		ro_w->translation[2] = wpos.z;
+
+		// muzzle flash
+		ro_mf->rotation[0] = pl_angle.x;
+		ro_mf->rotation[1] = pl_angle.y;
+		ro_mf->rotation[2] = pl_angle.z;
+
+		s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
+		move_dir(wpos, pl_angle, wdata->muzzle_pos.x, wdata->muzzle_pos.y, wdata->muzzle_pos.z); // TODO: find this out for every weapon
+
+		ro_mf->translation[0] = wpos.x;
+		ro_mf->translation[1] = wpos.y;
+		ro_mf->translation[2] = wpos.z;
+
+		if (ro_mf->alpha > 0.1f)
+		{
+			ro_mf->alpha -= 0.45f*(float)time_frame;
+			if (ro_mf->alpha <= 0.1f) ro_mf->visible = false;
+		}
 		
 		return;
 	}
@@ -188,7 +214,7 @@ void weaponmgr_cl::frame(double time_frame, vec &pl_pos, vec &pl_angle, int fram
 	ro_mf->translation[2] = renderer->CameraPos.z;
 
 	s_weapons *wdata = b_weapons::instance()->at(*curr_weapon);
-	move_dir(ro_mf->translation, renderer->CameraAngle, wdata->muzzle_pos.x, wdata->muzzle_pos.y, wdata->muzzle_pos.z);
+	move_dir(ro_mf->translation, renderer->CameraAngle, wdata->muzzle_pos_hand.x, wdata->muzzle_pos_hand.y, wdata->muzzle_pos_hand.z);
 
 	ro_mf->rotation[0] = renderer->CameraAngle.x;
 	ro_mf->rotation[1] = -renderer->CameraAngle.y;
@@ -444,10 +470,18 @@ void weaponmgr_cl::shoot(vec &shoot_origin, vec &shoot_dir, int rnd_seed)
 		}
 		else
 		{
-			vec orig;
+			vec orig, ang;
 			orig.set(&shoot_origin);
-			orig.z -= 7.f;
+
+			vec v(shoot_dir.x - shoot_origin.x, shoot_dir.y - shoot_origin.y, shoot_dir.z - shoot_origin.z);
+			ang.x = vec::angle(90.0f - vec::angle(atan2(v.x, v.y))*(float)(180.0 / M_PI));
+			ang.y = 0.f;//-vec::angle(asin(v.z / v.length())*(float)(180.0 / M_PI));
+			ang.z = 0.f;
+
+			orig.z -= 32.5f + CAMERA_VIEW_HEIGHT;
+			move_dir(orig, ang, 27.5f, -6.5f, 19.f);
 			effmgr->eff_bullettrail(&orig, &shoot_target);
+			show_muzzleflash(*curr_weapon);
 		}
 	
 	}

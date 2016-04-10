@@ -51,6 +51,7 @@ struct s_weapons{
 	float snd_reload_delay;
 	ResourceLoader::sndType snd_bg_loop;
 	#endif
+	vec muzzle_pos_hand;
 	vec muzzle_pos;
 	float muzzle_size;
 };

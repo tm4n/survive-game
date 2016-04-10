@@ -30,7 +30,8 @@ b_weapons::b_weapons()
 	wp_data[WP_COLT].snd_reload_delay = 0.f;
 	wp_data[WP_COLT].snd_bg_loop = ResourceLoader::sndType::None;
 	#endif
-	wp_data[WP_COLT].muzzle_pos.set(36.f, -2.f, -6.f);
+	wp_data[WP_COLT].muzzle_pos_hand.set(36.f, -2.f, -6.f);
+	wp_data[WP_COLT].muzzle_pos.set(6.0f, -0.3f, 2.0f);
 	wp_data[WP_COLT].muzzle_size = 0.5f;
 	
 	// Chainsaw, WP_CHAINSAW
@@ -57,10 +58,11 @@ b_weapons::b_weapons()
 	wp_data[WP_CHAINSAW].snd_reload_delay = 0;
 	wp_data[WP_CHAINSAW].snd_bg_loop = ResourceLoader::sndType::Chainsaw_loop;
 	#endif
+	wp_data[WP_CHAINSAW].muzzle_pos_hand.set(0.f, 0.f, 0.f);
 	wp_data[WP_CHAINSAW].muzzle_pos.set(0.f, 0.f, 0.f);
 	wp_data[WP_CHAINSAW].muzzle_size = 0;
 	
-		// Smith 'n Wesson, WP_WESSON
+	// Smith 'n Wesson, WP_WESSON
 	
 	wp_data[WP_WESSON].name.assign("Smith 'n Wesson");
 	#ifndef server
@@ -84,7 +86,8 @@ b_weapons::b_weapons()
 	wp_data[WP_WESSON].snd_reload_delay = 0.f;
 	wp_data[WP_WESSON].snd_bg_loop = ResourceLoader::sndType::None;
 	#endif
-	wp_data[WP_WESSON].muzzle_pos.set(39.2f, -6.4f, -5.f);
+	wp_data[WP_WESSON].muzzle_pos_hand.set(39.2f, -6.4f, -5.f);
+	wp_data[WP_WESSON].muzzle_pos.set(8.2f, 0.6f, 3.f);
 	wp_data[WP_WESSON].muzzle_size = 0.6f;
 	
 	
@@ -112,7 +115,8 @@ b_weapons::b_weapons()
 	wp_data[WP_HKSL8].snd_reload_delay = -0.1f;
 	wp_data[WP_HKSL8].snd_bg_loop = ResourceLoader::sndType::None;
 	#endif
-	wp_data[WP_HKSL8].muzzle_pos.set(37.5f, -7.7f, -7.5f);
+	wp_data[WP_HKSL8].muzzle_pos_hand.set(37.5f, -7.7f, -7.5f);
+	wp_data[WP_HKSL8].muzzle_pos.set(23.8f, 0.f, 1.7f);
 	wp_data[WP_HKSL8].muzzle_size = 1.f;
 	
 	
@@ -141,7 +145,8 @@ b_weapons::b_weapons()
 	wp_data[WP_SHOTGUN].snd_reload_delay = -0.3f;
 	wp_data[WP_SHOTGUN].snd_bg_loop = ResourceLoader::sndType::None;
 	#endif
-	wp_data[WP_SHOTGUN].muzzle_pos.set(34.4f, -7.f, -8.6f);
+	wp_data[WP_SHOTGUN].muzzle_pos_hand.set(34.4f, -7.f, -8.6f);
+	wp_data[WP_SHOTGUN].muzzle_pos.set(16.5f, 0.f, 3.6f);
 	wp_data[WP_SHOTGUN].muzzle_size = 1.f;
 	
 	
@@ -169,7 +174,8 @@ b_weapons::b_weapons()
 	wp_data[WP_USAS12].snd_reload_delay = -0.3f;
 	wp_data[WP_USAS12].snd_bg_loop = ResourceLoader::sndType::None;
 	#endif
-	wp_data[WP_USAS12].muzzle_pos.set(40.5f, -4.5f, -6.2f);
+	wp_data[WP_USAS12].muzzle_pos_hand.set(40.5f, -4.5f, -6.2f);
+	wp_data[WP_USAS12].muzzle_pos.set(23.8f, 0.2f, 1.6f);
 	wp_data[WP_USAS12].muzzle_size = 1.f;
 
 }
