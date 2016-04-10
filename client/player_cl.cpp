@@ -90,8 +90,6 @@ void player_cl::order_take_object()
 
 void player_cl::frame(double time_delta)
 {
-	if (health <= 0.f) printf("0 health player!");
-
 	// shooting
 	if (wpmgr->wp_ready == true && input_shoot == true)
 	{
@@ -198,6 +196,7 @@ void player_cl::animate(double time_delta)
 
 	if (state == ST_DEATH)
 	{
+		anim_prog += 7.f*(float)time_delta*anim_speed;
 		anim_prog = std::min(anim_prog, 100.f);
 		mesh->animate(ro, "death", anim_prog, 0);
 		return;

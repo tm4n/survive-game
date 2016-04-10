@@ -156,5 +156,6 @@ void player::movement(float time_step)
 
 		vec v2(move_force.x*time_step, move_force.y*time_step, 0.f);
 		move_rel_col(&v2);
-	} 
+	}
+	else state = ST_DEATH;
 }
