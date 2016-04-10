@@ -19,9 +19,9 @@ typedef unsigned short ushort;
 typedef unsigned char uchar;
 
 #ifndef ANDROID
-#define DEF_NAME_STR "Survive! 0.72 Alpha"
+#define DEF_NAME_STR "Survive! 0.73 Alpha"
 #else
-#define DEF_NAME_STR "Survive! for Android 0.72 Alpha"
+#define DEF_NAME_STR "Survive! for Android 0.73 Alpha"
 #endif // ANDROID
 
 #define DEF_VERSION 110   // Version of network protocol
