@@ -112,7 +112,12 @@ void npc_cl::callback_attack_done(int target, const vec &target_pos)
 	{
 		vec startpos(position.x, position.y, position.z + bb_max.z - 10.f);
 		// calculate angle
-		vec vdiff(target_pos.x - position.x, target_pos.y - position.y, target_pos.z - position.z);
+		vec trg(target_pos);
+
+		actor *t = lvl->actorlist.at(target);
+		if (t == NULL) { log(LOG_DEBUG, "no valid target in callback attack\n"); return; }
+		if (t->type == ACTOR_TYPE_BOX) trg.z += 21.f;  // move target up for boxes
+		vec vdiff(trg.x - position.x, trg.y - position.y, trg.z - position.z);
 		vec ang(angle.x, vec::angle((asin(vdiff.z / vdiff.length())*(float)(180.0 / M_PI))), 0.f);
 		projectile_cl *pr = new projectile_cl(lvl, startpos, ang, 30., get_damage(), renderer, renderer->resources.getMesh(ResourceLoader::meshType::Fireball), id);
 	}

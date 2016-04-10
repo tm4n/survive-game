@@ -28,15 +28,11 @@ void projectile_sv::hit_callback(int actor_hit)
 	{
 		if (ac->health > 0)
 		{
-			if (ac->type == ACTOR_TYPE_PLAYER)
+			if (ac->type == ACTOR_TYPE_BOX || ac->type == ACTOR_TYPE_PLAYER)
 			{
-				player_sv *pl = (player_sv *)ac;
-				pl->health -= (float)damage;
-				if (pl->health < 0)
-				{
-					pl->health = 0;
-				}
-				net_server->broadcast_update_health(pl->id, pl->health);
+				ac->health -= (float)damage;
+				if (ac->health < 0) ac->health = 0;
+				net_server->broadcast_update_health(ac->id, ac->health);
 			}
 			status = 0;
 		}
