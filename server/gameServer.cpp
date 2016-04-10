@@ -119,11 +119,7 @@ void gameServer::run()
     Timer frametime;
 
 
-    std::ostringstream s;
-
-    s << "Starting Survive Gameserver";
-
-    log(LOG_DEBUG, s.str().c_str());
+    log(LOG_DEBUG, "Starting Survive Gameserver");
 
     //printf("Size of short: %lu, Size of int: %lu, Size of float: %lu, sizeof double: %lu, size of long: %lu \n", sizeof(short), sizeof(int), sizeof(float), sizeof(double), sizeof(long));
 
@@ -246,7 +242,9 @@ void gameServer::run()
 						// update the players
 						net_server->broadcast_game_wave(wave);
 
-						std::cout << "Wave " << wave << " started" << std::endl;
+						std::ostringstream ss;
+						ss << "Wave " << wave << " started";
+						log(LOG_INFO, ss.str().c_str());
 					}
 				}
 			}
@@ -295,7 +293,9 @@ void gameServer::run()
         {
 
             //Calculate the frames per second and create the string
-            std::cout << "Server average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
+            std::ostringstream ss;
+            ss << "Server average Frames Per Second: " << 1000.f / fps.get_ticks() << endl;
+            log(LOG_DEBUG_VERBOSE, ss.str().c_str());
 
             //Restart the update timer
             update.start();
@@ -424,7 +424,7 @@ void gameServer::handle_netevent(ENetEvent *event)
                 char *data = (char*)(event->packet -> data) + sizeof(uint32_t);
 
                 /*std::ostringstream ss;
-				ss << "Server received packet " << net_type << std::endl;
+				ss << "Server received packet " << net_type;
 				log(LOG_DEBUG, ss.str().c_str());*/
 
                 ////////////////////////////

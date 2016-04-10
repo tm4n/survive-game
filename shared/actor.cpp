@@ -1,6 +1,7 @@
 #include "actor.h"
 #include <cmath>
 #include <algorithm>
+#include <sstream>
 #include "defs.h"
 #include "helper.h"
 #include "stdio.h"
@@ -18,7 +19,9 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
     // register in actorlist
     id = lvl->actorlist.add(this);
 
-	printf("freely created actor (type %u) at id=%u \n", type, id);
+    std::ostringstream ss;
+	ss << "freely created actor (type " << type << ") at id=" << id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     this->lvl = lvl;
     this->type = type;
@@ -34,8 +37,9 @@ actor::actor(level* lvl, uint type, vec *pos, vec *pan)
 
 actor::actor(level* lvl, uint actor_id, uint type, vec *pos, vec *pan)
 {
-	printf("creating actor (type = %i) with id=%i fixed \n", type, actor_id);
-
+	std::ostringstream ss;
+	ss << "creating actor (type = " << type << ") with id=" << actor_id << " fixed";
+	log(LOG_DEBUG, ss.str().c_str());
     // register in actorlist at fixed position
     id = lvl->actorlist.add_at(this, actor_id);
 

@@ -263,7 +263,7 @@ int net::send_take(uint actor_id, int taken_id, ENetPeer *receiver)
 	s.actor_id = actor_id;
 	s.taken_id = taken_id;
 	
-	puts("Sending take");
+	log(LOG_DEBUG, "Sending take");
 	
 	return send_event(NET_TAKE, (const char *)&s, sizeof(s_net_take), receiver);
 }

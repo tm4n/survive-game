@@ -2,6 +2,7 @@
 #include "vec.h"
 
 #include "string.h" // for memcpy, strcpy
+#include <sstream>
 
 
 net_sv *net_server = NULL;
@@ -154,6 +155,9 @@ int net_sv::send_sync_server(const char *mapfile, ENetPeer *receiver)
 
 int net_sv::broadcast_chat(const char* msg, uint len)
 {
+	std::ostringstream ss;
+	ss << "[CHAT] " << msg;
+	log(LOG_INFO, ss.str().c_str());
 	return broadcast_event(NET_CHAT, msg, len);
 }
 
@@ -172,7 +176,9 @@ int net_sv::send_sync_player(uint actor_id, vec *pos, vec *ang, float health, co
 	s.input = input;
 	s.object_taken = object_taken;
 
-    printf("net_sync_player mit actor_id=%u, name=%s \n", actor_id, name);
+	std::ostringstream ss;
+	ss << "net_sync_player with actor_id=" << actor_id << ", name=" << name;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return send_event(NET_SYNC_PLAYER, (const char *)&s, sizeof(s_net_sync_player), receiver);
 
@@ -193,7 +199,9 @@ int net_sv::broadcast_sync_player(uint actor_id, vec *pos, vec *ang, float healt
 	s.input = input;
 	s.object_taken = object_taken;
 
-    printf("net_sync_player_broadcast mit actor_id=%u, name=%s \n", actor_id,  name);
+	std::ostringstream ss;
+	ss << "net_sync_player_broadcast with actor_id=" << actor_id << ", name=" << name;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_SYNC_PLAYER, (const char *)&s, sizeof(s_net_sync_player));
 }
@@ -208,7 +216,9 @@ int net_sv::send_sync_box(uint actor_id, char box_type, vec *pos, float health, 
     s.health = health;
 	s.target = target;
 
-    printf("net_sync_box mit actor_id=%u\n", actor_id);
+    std::ostringstream ss;
+	ss << "net_sync_box with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return send_event(NET_SYNC_BOX, (const char *)&s, sizeof(s_net_sync_box), receiver);
 
@@ -225,7 +235,9 @@ int net_sv::broadcast_sync_box(uint actor_id, char box_type, vec *pos, float hea
     s.health = health;
 	s.target = target;
 
-    printf("net_sync_box broadcast mit actor_id=%u\n", actor_id);
+	std::ostringstream ss;
+	ss << "net_sync_box broadcast with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_SYNC_BOX, (const char *)&s, sizeof(s_net_sync_box));
 
@@ -239,7 +251,9 @@ int net_sv::send_sync_collectible(uint actor_id, char collectible_type, vec *pos
 	s.collectible_type = collectible_type;
     s.pos.set(pos);
 
-    printf("net_sync_collectible mit actor_id=%u\n", actor_id);
+    std::ostringstream ss;
+	ss << "net_sync_collectible with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return send_event(NET_SYNC_COLLECTIBLE, (const char *)&s, sizeof(s_net_sync_collectible), receiver);
 
@@ -255,7 +269,9 @@ int net_sv::broadcast_sync_collectible(uint actor_id, char collectible_type, vec
 	s.collectible_type = collectible_type;
     s.pos.set(pos);
 
-    printf("net_sync_collectible broadcast mit actor_id=%u\n", actor_id);
+    std::ostringstream ss;
+	ss << "net_sync_collectible broadcast with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_SYNC_COLLECTIBLE, (const char *)&s, sizeof(s_net_sync_collectible));
 
@@ -272,7 +288,9 @@ int net_sv::send_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, float
     s.health = health;
 	s.target = target;
 
-    printf("net_sync_npc mit actor_id=%u\n", actor_id);
+    std::ostringstream ss;
+	ss << "net_sync_npc with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return send_event(NET_SYNC_NPC, (const char *)&s, sizeof(s_net_sync_npc), receiver);
 }
@@ -288,7 +306,9 @@ int net_sv::broadcast_sync_npc(uint actor_id, int npc_type, vec *pos, vec *ang, 
     s.health = health;
 	s.target = target;
 
-    printf("net_sync_npc broadcast mit actor_id=%u\n", actor_id);
+    std::ostringstream ss;
+	ss << "net_sync_npc broadcast with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_SYNC_NPC, (const char *)&s, sizeof(s_net_sync_npc));
 }
@@ -300,14 +320,16 @@ int net_sv::broadcast_remove_actor(uint actor_id)
 
 	s.actor_id = actor_id;
 
-    printf("net_sync_remove_broadcast mit actor_id=%u\n", actor_id);
+	std::ostringstream ss;
+	ss << "net_sync_remove_broadcast with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_REMOVE_ACTOR, (const char *)&s, sizeof(s_net_remove_actor));
 }
 
 int net_sv::send_sync_finish(ENetPeer *receiver)
 {
-    printf("sending net_sync_finish\n");
+    log(LOG_DEBUG, "sending net_sync_finish\n");
 
     return send_event(NET_SYNC_FINISH, NULL, 0, receiver);
 }
@@ -318,7 +340,7 @@ int net_sv::send_join(uint own_actor_id, ENetPeer *receiver)
 	
 	s.own_actor_id = own_actor_id;
 	
-	printf("sending net_send_join\n");
+	log(LOG_DEBUG, "sending net_send_join\n");
 
     return send_event(NET_JOIN, (const char *)&s, sizeof(s_net_join), receiver);
 }
@@ -328,6 +350,8 @@ int net_sv::broadcast_game_wave(int game_wave)
     s_net_game_wave s;
 
 	s.game_wave = game_wave;
+	
+	log(LOG_DEBUG, "broadcasting game wave");
 
     return broadcast_event(NET_GAME_WAVE, (const char *)&s, sizeof(s_net_game_wave));
 }
@@ -337,6 +361,8 @@ int net_sv::broadcast_wave_wait_timer(int wave_wait_timer)
     s_net_wave_wait_timer s;
 
 	s.wave_wait_timer = wave_wait_timer;
+	
+	log(LOG_DEBUG, "broadcasting game wave wait timer");
 
     return broadcast_event(NET_WAVE_WAIT_TIMER, (const char *)&s, sizeof(s_net_wave_wait_timer));
 }
@@ -346,6 +372,8 @@ int net_sv::broadcast_game_state(int state)
     s_net_game_state s;
 
 	s.state = state;
+	
+	log(LOG_DEBUG, "broadcasting game state");
 
     return broadcast_event(NET_GAME_STATE, (const char *)&s, sizeof(s_net_game_state));
 }
@@ -357,7 +385,9 @@ int net_sv::broadcast_take(uint actor_id, int taken_id)
 	s.actor_id = actor_id;
 	s.taken_id = taken_id;
 
-    printf("broadcast_take mit actor_id=%u\n", actor_id);
+	std::ostringstream ss;
+	ss << "broadcast_take with actor_id=" << actor_id;
+	log(LOG_DEBUG, ss.str().c_str());
 
     return broadcast_event(NET_TAKE, (const char *)&s, sizeof(s_net_take));
 }

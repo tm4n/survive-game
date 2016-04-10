@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string.h>
 #include <stdint.h>
@@ -111,8 +112,10 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	numtris = header.numtris;
 	numframes = header.numframes;
 	
-	std::cout << "Opened "<< mesh_file << " with " << numskins << " skins, " << numverts << " vertices, " << numtris << " triangles, " << numframes<< " frames." << std::endl;
-
+	std::ostringstream ss;
+	ss << "Opened "<< mesh_file << " with " << numskins << " skins, " << numverts << " vertices, " << numtris << " triangles, " << numframes<< " frames.";
+	log(LOG_DEBUG, ss.str().c_str());
+	
 	if (tex_file)
 	{
 	    //////////////////////////////////////////////////

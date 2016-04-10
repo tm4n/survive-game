@@ -45,8 +45,9 @@ typedef unsigned char uchar;
 // log messages, see main.cpp
 #define LOG_DEBUG_VERBOSE 1
 #define LOG_DEBUG 2
-#define LOG_WARNING 3
-#define LOG_ERROR 4
+#define LOG_INFO 3
+#define LOG_WARNING 4
+#define LOG_ERROR 5
 
 void log(int importance, const char *msg);
 

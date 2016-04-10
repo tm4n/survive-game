@@ -465,10 +465,11 @@ void gameClient::handle_netevent(ENetEvent *event)
 							actor *ac = lvl_cl->actorlist.at(d->actor_id);
 							if (ac != NULL)
 							{
-								std::cout << "Received target" << d->target << " for actor " << d->actor_id << std::endl;
+								std::ostringstream ss;
+								ss << "Received target" << d->target << " for actor " << d->actor_id << std::endl;
+								log(LOG_DEBUG, ss.str().c_str());
 								if (ac->type == ACTOR_TYPE_NPC || ac->type == ACTOR_TYPE_BOX) ac->target = d->target;
 								else log(LOG_ERROR, "Received NET_UPDATE_TARGET for wrong actor type");
-								std::cout << "Target now: " << ac->target << " for actor " << ac->id << std::endl;
 							}
 							else log(LOG_ERROR, "Received NET_UPDATE_TARGET for invalid actor");
 						}

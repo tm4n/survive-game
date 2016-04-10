@@ -269,11 +269,13 @@ void check_heap(char *file, int line)
 
 #endif
 
+int log_output_level = 3; // default: output info, warning and error msgs
 #ifdef ANDROID
 	#include <android/log.h>
 #endif // ANDROID
 void log(int prop, char const* str)
 {
+	if (prop < log_output_level) return;
 	#ifdef ANDROID
 	__android_log_print(ANDROID_LOG_VERBOSE, "libsdl", "%s", str);
 	#endif // ANDROID

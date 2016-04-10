@@ -34,9 +34,11 @@ int str_lines(const std::string *str);
 // enum defines
 #define LOG_DEBUG_VERBOSE 1
 #define LOG_DEBUG 2
-#define LOG_WARNING 3
-#define LOG_ERROR 4
+#define LOG_INFO 3
+#define LOG_WARNING 4
+#define LOG_ERROR 5
 
+extern int log_output_level;
 void log(int, const char *);
 
 #ifdef ACKNEX

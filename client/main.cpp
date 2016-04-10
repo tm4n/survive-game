@@ -100,6 +100,12 @@ int SDL_main(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
+	// parse input arguments
+	for (int i = 1; i < argc; i++)
+	{
+		if (strcmp(argv[i], "--debug") == 0) log_output_level = 0;
+	}
+	
 	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 ) exit(1);
 	if( TTF_Init()==-1 )
 	{

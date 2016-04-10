@@ -16,7 +16,6 @@ CubeTexture::CubeTexture(std::vector<std::string> file) : Texture()
 	tgaFiles = new tga_file*[6];
 	for (int i = 0; i < 6; i++)
 	{
-		std::cout << "reading " << file[i].c_str() << std::endl;
 		tgaFiles[i] = readTGA(file[i].c_str());
 		if (tgaFiles[i] == NULL) { log(LOG_ERROR, "Error loading a tga file for a cube map");  return; }
 	
