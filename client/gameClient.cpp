@@ -119,7 +119,7 @@ void gameClient::handle_netevent(ENetEvent *event)
 						else
 						{
 							// send my name
-							net_client->send_sync_client("Player1", event->peer);
+							net_client->send_sync_client(b_settings::instance()->playername.c_str(), event->peer);
 						}
 
 						break;
