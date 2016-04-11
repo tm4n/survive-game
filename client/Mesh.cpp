@@ -68,6 +68,67 @@ typedef struct {
 	int8_t name[16]; // name of frame, used for animation
 } mdl_frame_t;
 
+float lightnormals[162][3] = {
+{-0.525725, 0.000000, 0.850650}, {-0.442863, 0.238856, 0.864188}, {-0.295242, 0.000000, 0.955423},
+{-0.309017, 0.500000, 0.809017}, {-0.162460, 0.262866, 0.951056}, {0.000000, 0.000000, 1.000000},
+{0.000000, 0.850651, 0.525731}, {-0.147621, 0.716567, 0.681718}, {0.147621, 0.716567, 0.681718},
+{0.000000, 0.525731, 0.850651}, {0.309017, 0.500000, 0.809017}, {0.525731, 0.000000, 0.850651},
+{0.295242, 0.000000, 0.955423}, {0.442863, 0.238856, 0.864188}, {0.162460, 0.262866, 0.951056},
+{-0.681718, 0.147621, 0.716567}, {-0.809017, 0.309017, 0.500000}, {-0.587785, 0.425325, 0.688191},
+{-0.850651, 0.525731, 0.000000}, {-0.864188, 0.442863, 0.238856}, {-0.716567, 0.681718, 0.147621},
+{-0.688191, 0.587785, 0.425325}, {-0.500000, 0.809017, 0.309017}, {-0.238856, 0.864188, 0.442863},
+{-0.425325, 0.688191, 0.587785}, {-0.716567, 0.681718, -0.147621}, {-0.500000, 0.809017, -0.309017},
+{-0.525731, 0.850651, 0.000000}, {0.000000, 0.850651, -0.525731}, {-0.238856, 0.864188, -0.442863},
+{0.000000, 0.955423, -0.295242}, {-0.262866, 0.951056, -0.162460}, {0.000000, 1.000000, 0.000000},
+{0.000000, 0.955423, 0.295242}, {-0.262866, 0.951056, 0.162460}, {0.238856, 0.864188, 0.442863},
+{0.262866, 0.951056, 0.162460}, {0.500000, 0.809017, 0.309017}, {0.238856, 0.864188, -0.442863},
+{0.262866, 0.951056, -0.162460}, {0.500000, 0.809017, -0.309017}, {0.850651, 0.525731, 0.000000},
+{0.716567, 0.681718, 0.147621}, {0.716567, 0.681718, -0.147621}, {0.525731, 0.850651, 0.000000},
+{0.425325, 0.688191, 0.587785}, {0.864188, 0.442863, 0.238856}, {0.688191, 0.587785, 0.425325},
+{0.809017, 0.309017, 0.500000}, {0.681718, 0.147621, 0.716567}, {0.587785, 0.425325, 0.688191},
+{0.955423, 0.295242, 0.000000}, {1.000000, 0.000000, 0.000000}, {0.951056, 0.162460, 0.262866},
+{0.850651, -0.525731, 0.000000}, {0.955423, -0.295242, 0.000000}, {0.864188, -0.442863, 0.238856},
+{0.951056, -0.162460, 0.262866}, {0.809017, -0.309017, 0.500000}, {0.681718, -0.147621, 0.716567},
+{0.850651, 0.000000, 0.525731}, {0.864188, 0.442863, -0.238856}, {0.809017, 0.309017, -0.500000},
+{0.951056, 0.162460, -0.262866}, {0.525731, 0.000000, -0.850651}, {0.681718, 0.147621, -0.716567},
+{0.681718, -0.147621, -0.716567}, {0.850651, 0.000000, -0.525731}, {0.809017, -0.309017, -0.500000},
+{0.864188, -0.442863, -0.238856}, {0.951056, -0.162460, -0.262866}, {0.147621, 0.716567, -0.681718},
+{0.309017, 0.500000, -0.809017}, {0.425325, 0.688191, -0.587785}, {0.442863, 0.238856, -0.864188},
+{0.587785, 0.425325, -0.688191}, {0.688197, 0.587780, -0.425327}, {-0.147621, 0.716567, -0.681718},
+{-0.309017, 0.500000, -0.809017}, {0.000000, 0.525731, -0.850651}, {-0.525731, 0.000000, -0.850651},
+{-0.442863, 0.238856, -0.864188}, {-0.295242, 0.000000, -0.955423}, {-0.162460, 0.262866, -0.951056},
+{0.000000, 0.000000, -1.000000}, {0.295242, 0.000000, -0.955423}, {0.162460, 0.262866, -0.951056},
+{-0.442863,-0.238856, -0.864188}, {-0.309017,-0.500000, -0.809017}, {-0.162460, -0.262866, -0.951056},
+{0.000000, -0.850651, -0.525731}, {-0.147621, -0.716567, -0.681718}, {0.147621, -0.716567, -0.681718},
+{0.000000, -0.525731, -0.850651}, {0.309017, -0.500000, -0.809017}, {0.442863, -0.238856, -0.864188},
+{0.162460, -0.262866, -0.951056}, {0.238856, -0.864188, -0.442863}, {0.500000, -0.809017, -0.309017},
+{0.425325, -0.688191, -0.587785}, {0.716567, -0.681718, -0.147621}, {0.688191, -0.587785, -0.425325},
+{0.587785, -0.425325, -0.688191}, {0.000000, -0.955423, -0.295242}, {0.000000, -1.000000, 0.000000},
+{0.262866, -0.951056, -0.162460}, {0.000000, -0.850651, 0.525731}, {0.000000, -0.955423, 0.295242},
+{0.238856, -0.864188, 0.442863}, {0.262866, -0.951056, 0.162460}, {0.500000, -0.809017, 0.309017},
+{0.716567, -0.681718, 0.147621}, {0.525731, -0.850651, 0.000000}, {-0.238856, -0.864188, -0.442863},
+{-0.500000, -0.809017, -0.309017}, {-0.262866, -0.951056, -0.162460}, {-0.850651, -0.525731, 0.000000},
+{-0.716567, -0.681718, -0.147621}, {-0.716567, -0.681718, 0.147621}, {-0.525731, -0.850651, 0.000000},
+{-0.500000, -0.809017, 0.309017}, {-0.238856, -0.864188, 0.442863}, {-0.262866, -0.951056, 0.162460},
+{-0.864188, -0.442863, 0.238856}, {-0.809017, -0.309017, 0.500000}, {-0.688191, -0.587785, 0.425325},
+{-0.681718, -0.147621, 0.716567}, {-0.442863, -0.238856, 0.864188}, {-0.587785, -0.425325, 0.688191},
+{-0.309017, -0.500000, 0.809017}, {-0.147621, -0.716567, 0.681718}, {-0.425325, -0.688191, 0.587785},
+{-0.162460, -0.262866, 0.951056}, {0.442863, -0.238856, 0.864188}, {0.162460, -0.262866, 0.951056},
+{0.309017, -0.500000, 0.809017}, {0.147621, -0.716567, 0.681718}, {0.000000, -0.525731, 0.850651},
+{0.425325, -0.688191, 0.587785}, {0.587785, -0.425325, 0.688191}, {0.688191, -0.587785, 0.425325},
+{-0.955423, 0.295242, 0.000000}, {-0.951056, 0.162460, 0.262866}, {-1.000000, 0.000000, 0.000000},
+{-0.850651, 0.000000, 0.525731}, {-0.955423, -0.295242, 0.000000}, {-0.951056, -0.162460, 0.262866},
+{-0.864188, 0.442863, -0.238856}, {-0.951056, 0.162460, -0.262866}, {-0.809017, 0.309017, -0.500000},
+{-0.864188,-0.442863, -0.238856}, {-0.951056,-0.162460, -0.262866}, {-0.809017, -0.309017, -0.500000},
+{-0.681718, 0.147621, -0.716567}, {-0.681718, -0.147621, -0.716567}, {-0.850651, 0.000000, -0.525731},
+{-0.688191, 0.587785, -0.425325}, {-0.587785, 0.425325, -0.688191}, {-0.425325, 0.688191, -0.587785},
+{-0.425325,-0.688191, -0.587785}, {-0.587785,-0.425325, -0.688191}, {-0.688197,-0.587780, -0.425327}
+};
+
+
+//////////////////////////////////////////////////////////////////
+// Begin mesh class
+
 
 Mesh::Mesh()
 {
@@ -248,12 +309,16 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 	// vertex buffer for upload
 	float *vertexBuffer = new float[numtris*3*3];
-	// vertex buffer for inbetween storage
+	float *vertexNBuffer = new float[numtris*3*3];
+	// vertex buffers for inbetween storage
 	float *vertexPosBuffer = new float[numverts*3];
+	float *vertexNormalBuffer = new float[numverts*3];
 
 	// generate buffers
     mVertexBuffer = new GLuint[numframes];
     glGenBuffers(numframes, mVertexBuffer);
+    mNormalsBuffer = new GLuint[numframes];
+    glGenBuffers(numframes, mNormalsBuffer);
 
 	for (int f = 0; f < numframes; f++)
 	{
@@ -289,9 +354,15 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 			vertexPosBuffer[i*3 + 0] = (header.scale[0] * (float)trivert.rawposition[0]) + header.offset[0];
 			vertexPosBuffer[i*3 + 1] = (header.scale[1] * (float)trivert.rawposition[1]) + header.offset[1];
 			vertexPosBuffer[i*3 + 2] = (header.scale[2] * (float)trivert.rawposition[2]) + header.offset[2];
+			
+			// safe normal into vertexNormalBuffer
+			vertexNormalBuffer[i*3 + 0] = lightnormals[trivert.lightnormalindex][0];
+			vertexNormalBuffer[i*3 + 1] = lightnormals[trivert.lightnormalindex][1];
+			vertexNormalBuffer[i*3 + 2] = lightnormals[trivert.lightnormalindex][2];
 		}
 
 		// transform gathered information to a vertex list, for uploading
+		// This increases memory use several times, by duplicating vertices. Should probably be optimized some day
 		for (int i = 0; i < numtris; i++)
 		{
 			for (int j = 0; j < 3; j++)
@@ -300,12 +371,18 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 				vertexBuffer[i*3*3 + j*3 + 0] = vertexPosBuffer[3*ind + 0];
 				vertexBuffer[i*3*3 + j*3 + 1] = vertexPosBuffer[3*ind + 1];
 				vertexBuffer[i*3*3 + j*3 + 2] = vertexPosBuffer[3*ind + 2];
+				vertexNBuffer[i*3*3 + j*3 + 0] = vertexNormalBuffer[3*ind + 0];
+				vertexNBuffer[i*3*3 + j*3 + 1] = vertexNormalBuffer[3*ind + 1];
+				vertexNBuffer[i*3*3 + j*3 + 2] = vertexNormalBuffer[3*ind + 2];
 			}
 		}
 
 		// upload vertex list for one frame
 	    glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[f]);
 	    glBufferData(GL_ARRAY_BUFFER, numtris * 3 * 3 * 4, vertexBuffer, GL_STATIC_DRAW);  
+	    // upload normals for one frame
+	    glBindBuffer(GL_ARRAY_BUFFER, mNormalsBuffer[f]);
+	    glBufferData(GL_ARRAY_BUFFER, numtris * 3 * 3 * 4, vertexNBuffer, GL_STATIC_DRAW);  
 	    glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
@@ -314,7 +391,9 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 	delete[] tris;
 
 	delete[] vertexBuffer;
+	delete[] vertexNBuffer;
 	delete[] vertexPosBuffer;
+	delete[] vertexNormalBuffer;
 	
 	delete[] buf;
 
@@ -346,15 +425,19 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
         
 		if (obj->visible == false) continue;
 
-        // get vertex positions into gpu
+        // get vertex positions and normals  into gpu
         // Bind vertex buffer object for triangle vertices
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[obj->animFrame]);
-            
         // Enable a handle to the triangle vertices
         glEnableVertexAttribArray(mPositionHandle);
-
         // Prepare the triangle coordinate data
         glVertexAttribPointer(mPositionHandle, 3,
+                                        GL_FLOAT, GL_FALSE,
+                                        0, 0);
+		// Prepare the normals coordinate data                                
+        glBindBuffer(GL_ARRAY_BUFFER, mNormalsBuffer[obj->animFrame]);
+        glEnableVertexAttribArray(mNormalsHandle);
+        glVertexAttribPointer(mNormalsHandle, 3,
                                         GL_FLOAT, GL_FALSE,
                                         0, 0);
 
@@ -371,7 +454,14 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
 		glVertexAttribPointer(mNextPositionHandle, 3,
 										GL_FLOAT, GL_FALSE,
 										0, 0);
-            
+		
+		// Prepare the normals coordinate data                                
+        glBindBuffer(GL_ARRAY_BUFFER, mNormalsBuffer[obj->animFrame]);
+        glEnableVertexAttribArray(mNextNormalsHandle);
+        glVertexAttribPointer(mNextNormalsHandle, 3,
+                                        GL_FLOAT, GL_FALSE,
+                                        0, 0);
+
 		err = glGetError();
 		if (err != 0) {
 			std::cout << "OGL error code: " << err << " on drawing after NextPos data" << std::endl;
@@ -427,8 +517,10 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
     glDisableVertexAttribArray(mTexCoordHandle);
         
     glDisableVertexAttribArray(mPositionHandle);
+    //glDisableVertexAttribArray(mNormalsHandle);
         
     glDisableVertexAttribArray(mNextPositionHandle);
+    //glDisableVertexAttribArray(mNextNormalsHandle);
         
     // unbind buffers
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -454,13 +546,17 @@ void Mesh::setShader() {
             "uniform mat4 uMVPMatrix; \n"
             "uniform float animProgress; \n"
 
-            "attribute vec4 vPosition; \n"
-            "attribute vec4 vNextPosition; \n"
-            "attribute vec2 TexCoordIn; \n" 
+            "attribute vec3 vPosition; \n"
+            "attribute vec3 vNormal; \n"
+            "attribute vec3 vNextPosition; \n"
+            "attribute vec3 vNextNormal; \n"
+            "attribute vec2 TexCoordIn; \n"
             "varying vec2 TexCoordOut; \n"
+            "varying vec3 TexNormal; \n"
             "void main() { \n"
             // the matrix must be included as a modifier of gl_Position
-            " gl_Position = uMVPMatrix * mix(vPosition, vNextPosition, animProgress); \n"
+            " TexNormal = mix(vNormal, vNextNormal, animProgress); \n"  // TODO: transform with model
+            " gl_Position = uMVPMatrix * vec4(mix(vPosition, vNextPosition, animProgress), 1.0); \n"
             " TexCoordOut = TexCoordIn; \n" 
             "}";
 
@@ -470,13 +566,19 @@ void Mesh::setShader() {
 			"precision mediump float; \n"
 			"#endif \n"
 			
-            "varying vec2 TexCoordOut; \n" 
+            "varying vec2 TexCoordOut; \n"
+            "varying vec3 TexNormal; \n"
             "uniform sampler2D Texture; \n"
 			"uniform float alpha; \n"
 			"uniform vec3 coloring; \n"
             "void main() { \n" 
-            //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-			"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" 
+            "  vec3 n = normalize(TexNormal.xyz); \n"
+            "  vec3 l = normalize(vec3(0.0, -0.5, -1.0)); \n"
+            "  float cosTheta = clamp(dot(n,l), 0.5, 1); \n"
+            //"  gl_FragColor = TexNormal; \n"texture2D(Texture, TexCoordOut) * texture2D(Texture, TexCoordOut).rgb
+            //"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" // Original code
+			"  gl_FragColor.rgb = texture2D(Texture, TexCoordOut).rgb * vec3(1.10, 1.10, 0.8) * cosTheta + coloring; \n" 
+			"  gl_FragColor.w = 1.0; \n"
 			"  gl_FragColor.w *= alpha; \n"
             "}";
 
@@ -514,11 +616,13 @@ void Mesh::initShader() {
     // get handle to fragment shader's TexCoord member
     mTexCoordHandle = glGetAttribLocation(mProgram, "TexCoordIn");
         
-    // get handle to vertex shader's vPosition member
+    // get handle to vertex shader's vPosition and vNormal member
     mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
+    mNormalsHandle = glGetAttribLocation(mProgram, "vNormal");
         
     // get handle to vertex shader's vNextPosition member
     mNextPositionHandle = glGetAttribLocation(mProgram, "vNextPosition");
+    mNextNormalsHandle = glGetAttribLocation(mProgram, "vNextNormal");
         
     // get handle to vertex shader's other members
     mAnimProgressHandle = glGetUniformLocation(mProgram, "animProgress");

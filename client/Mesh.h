@@ -59,12 +59,15 @@ protected:
     GLuint mTexCoordHandle;
     GLuint mPositionHandle;
     GLuint mNextPositionHandle;
+    GLuint mNormalsHandle;
+    GLuint mNextNormalsHandle;
     GLuint mAnimProgressHandle;
 	GLuint mAlphaHandle;
 	GLuint mColoringHandle;
 	GLuint mTexHandle;
 
     GLuint *mVertexBuffer;
+    GLuint *mNormalsBuffer;
     GLuint mTexCoordBuffer;
     GLuint mMVPMatrixHandle;
 

@@ -20,13 +20,16 @@ void MeshTerrain::setShader()
 			
             "uniform mat4 uMVPMatrix; \n"
 
-            "attribute vec4 vPosition; \n"
+            "attribute vec3 vPosition; \n"
             "attribute vec2 TexCoordIn; \n" 
+            "attribute vec3 vNormal; \n"
             "varying vec2 TexCoordOut; \n"
+            "varying vec3 TexNormal; \n"
             "void main() { \n"
             // the matrix must be included as a modifier of gl_Position
-            " gl_Position = uMVPMatrix * vPosition; \n"
+            " gl_Position = uMVPMatrix * vec4(vPosition, 1.0); \n"
             " TexCoordOut = TexCoordIn; \n" 
+            " TexNormal = vNormal;\n"
             "}";
 
     fragmentShaderCode =
@@ -36,11 +39,16 @@ void MeshTerrain::setShader()
 			"#endif \n"
 			
             "varying vec2 TexCoordOut; \n" 
+            "varying vec3 TexNormal; \n"
             "uniform sampler2D Texture1; \n"
 			"uniform sampler2D Texture2; \n"
             "void main() { \n" 
+            "  vec3 n = normalize(TexNormal.xyz); \n"
+            "  vec3 l = normalize(vec3(0.0, -0.5, -1.0)); \n"
+            "  float cosTheta = clamp(dot(n,l), 0.5, 1); \n"
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);"
-			"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
+			//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
+			"  gl_FragColor.rgb *= vec3(1.10, 1.10, 0.8) * cosTheta;"
 			"  gl_FragColor.w = 1.0; \n"
 			//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100.0) / 1.4) +  vec4(-0.05, -0.05, -0.25, 0.0); \n" //* vec4(1.0, 1.0, 0.7, 1.0) ;\n" 
             "}";
@@ -164,6 +172,7 @@ void MeshTerrain::initShader() {
         
     // get handle to vertex shader's vPosition member
     mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
+    mNormalsHandle = glGetAttribLocation(mProgram, "vNormal");
         
     // get handle to shape's transformation matrix
     mMVPMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");

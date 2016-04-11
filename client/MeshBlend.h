@@ -11,6 +11,7 @@ public:
 
 	virtual void draw(const glm::mat4 &mVPMatrix);
 	virtual void setShader();
+	virtual void initShader();
 
 protected:
 };

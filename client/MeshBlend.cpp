@@ -48,6 +48,41 @@ void MeshBlend::setShader() {
             "}";
 }
 
+void MeshBlend::initShader() {
+	
+	setShader();
+
+    // initialize shaders
+    int vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderCode);
+    int fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderCode);
+
+    mProgram = glCreateProgram();             // create empty OpenGL ES Program
+    glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
+    glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
+    glLinkProgram(mProgram);                  // creates OpenGL ES program executables
+        
+    // get handle to fragment shader's TexCoord member
+    mTexCoordHandle = glGetAttribLocation(mProgram, "TexCoordIn");
+        
+    // get handle to vertex shader's vPosition and vNormal member
+    mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
+        
+    // get handle to vertex shader's vNextPosition member
+    mNextPositionHandle = glGetAttribLocation(mProgram, "vNextPosition");
+        
+    // get handle to vertex shader's other members
+    mAnimProgressHandle = glGetUniformLocation(mProgram, "animProgress");
+	mAlphaHandle = glGetUniformLocation(mProgram, "alpha");
+	mColoringHandle = glGetUniformLocation(mProgram, "coloring");
+        
+    // get handle to shape's transformation matrix
+    mMVPMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");
+        
+    int err = glGetError();
+    if (err != 0) {
+        std::cout << "OGL error code: " << err << " on shader initialization" << std::endl;
+    }
+}
 
 void MeshBlend::draw(const glm::mat4 &mVPMatrix)
 {
