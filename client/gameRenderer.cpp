@@ -153,7 +153,7 @@ void gameRenderer::drawFrame(double time_delta)
 	// draw all meshes
     for (int i = 0; i < MAX_MESHES; i ++) {
 		Mesh *m = resources.getMesh(static_cast<ResourceLoader::meshType>(i));
-        if (m != NULL) m->draw(mVPMatrix);
+		if (m != NULL) m->draw(mVPMatrix, mVMatrix);
     }
     // workaroud to always draw muzzle flash. seems not to be needed
     //Mesh *m = resources.getMesh(ResourceLoader::meshType::Muzzleflash);

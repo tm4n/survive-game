@@ -11,7 +11,7 @@ public:
 
 	virtual void setShader();
 	virtual void initShader();
-	virtual void draw(const glm::mat4 &mVPMatrix);
+	virtual void draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix);
 
 protected:
 	GLuint mTexHandle2;

@@ -401,7 +401,7 @@ Mesh::Mesh(const char *mesh_file, const char *tex_file)
 
 }
 
-void Mesh::draw(const glm::mat4 &mVPMatrix)
+void Mesh::draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix)
 {
 	if (objectList.empty()) return;
 
@@ -490,6 +490,8 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
 	
 	    // Apply the projection and view transformation
 	    glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, glm::value_ptr(mFinalMatrix));
+		glUniformMatrix4fv(mVMatrixHandle, 1, GL_FALSE, glm::value_ptr(mVMatrix));
+		glUniformMatrix4fv(mMMatrixHandle, 1, GL_FALSE, glm::value_ptr(mTransformationMatrix));
 	        
 	    // Upload other values
 	    glUniform1f(mAnimProgressHandle, obj->animProgress);
@@ -536,50 +538,56 @@ void Mesh::draw(const glm::mat4 &mVPMatrix)
 void Mesh::setShader() {
 	// Set shader content
 	vertexShaderCode =
-            // This matrix member variable provides a hook to manipulate
-            // the coordinates of the objects that use this vertex shade
-			"#version 110 \n"
-			"#ifdef GL_ES \n"
-			"precision mediump float; \n"
-			"#endif \n"
-			
-            "uniform mat4 uMVPMatrix; \n"
-            "uniform float animProgress; \n"
+		// This matrix member variable provides a hook to manipulate
+		// the coordinates of the objects that use this vertex shade
+		"#version 110 \n"
+		"#ifdef GL_ES \n"
+		"precision mediump float; \n"
+		"#endif \n"
 
-            "attribute vec3 vPosition; \n"
-            "attribute vec3 vNormal; \n"
-            "attribute vec3 vNextPosition; \n"
-            "attribute vec3 vNextNormal; \n"
-            "attribute vec2 TexCoordIn; \n"
-            "varying vec2 TexCoordOut; \n"
-            "varying vec3 TexNormal; \n"
-            "void main() { \n"
-            // the matrix must be included as a modifier of gl_Position
-            " TexNormal = mix(vNormal, vNextNormal, animProgress); \n"  // TODO: transform with model
-            " gl_Position = uMVPMatrix * vec4(mix(vPosition, vNextPosition, animProgress), 1.0); \n"
-            " TexCoordOut = TexCoordIn; \n" 
-            "}";
+		"uniform mat4 uMVPMatrix; \n"
+		"uniform mat4 uVMatrix; \n"
+		"uniform mat4 uMMatrix; \n"
+		"uniform float animProgress; \n"
+
+		"attribute vec3 vPosition; \n"
+		"attribute vec3 vNormal; \n"
+		"attribute vec3 vNextPosition; \n"
+		"attribute vec3 vNextNormal; \n"
+		"attribute vec2 TexCoordIn; \n"
+		"varying vec2 TexCoordOut; \n"
+		"varying vec3 TexNormal; \n"
+		"varying vec3 LightDir; \n"
+		"void main() { \n"
+		// the matrix must be included as a modifier of gl_Position
+		" TexNormal = (uVMatrix * uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"  // TODO: only valid if M does nnot scale the model! use inverse transpose then
+		" vec3 LightPos = (uVMatrix * vec4(-0.5, 0.0, -1.0, 1.0)).xyz; \n"
+		" LightDir = LightPos; \n"
+		" gl_Position = uMVPMatrix * vec4(mix(vPosition, vNextPosition, animProgress), 1.0); \n"
+        " TexCoordOut = TexCoordIn; \n" 
+        "}";
 
     fragmentShaderCode =
-			"#version 110 \n"
-			"#ifdef GL_ES \n"
-			"precision mediump float; \n"
-			"#endif \n"
+		"#version 110 \n"
+		"#ifdef GL_ES \n"
+		"precision mediump float; \n"
+		"#endif \n"
 			
-            "varying vec2 TexCoordOut; \n"
-            "varying vec3 TexNormal; \n"
-            "uniform sampler2D Texture; \n"
-			"uniform float alpha; \n"
-			"uniform vec3 coloring; \n"
-            "void main() { \n" 
-            "  vec3 n = normalize(TexNormal.xyz); \n"
-            "  vec3 l = normalize(vec3(0.0, -0.5, -1.0)); \n"
-            "  float cosTheta = clamp(dot(n,l), 0.5, 1); \n"
-            //"  gl_FragColor = TexNormal; \n"texture2D(Texture, TexCoordOut) * texture2D(Texture, TexCoordOut).rgb
-            //"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" // Original code
-			"  gl_FragColor.rgb = texture2D(Texture, TexCoordOut).rgb * vec3(1.10, 1.10, 0.8) * cosTheta + coloring; \n" 
-			"  gl_FragColor.w = 1.0; \n"
-			"  gl_FragColor.w *= alpha; \n"
+        "varying vec2 TexCoordOut; \n"
+        "varying vec3 TexNormal; \n"
+		"varying vec3 LightDir; \n"
+        "uniform sampler2D Texture; \n"
+		"uniform float alpha; \n"
+		"uniform vec3 coloring; \n"
+        "void main() { \n" 
+        "  vec3 n = normalize(TexNormal.xyz); \n"
+		"  vec3 l = normalize(LightDir); \n"
+		"  float cosTheta = 0.5 + (clamp(dot(n,l), 0, 1) / 2); \n"
+        //"  gl_FragColor = TexNormal; \n"texture2D(Texture, TexCoordOut) * texture2D(Texture, TexCoordOut).rgb
+        //"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" // Original code
+		"  gl_FragColor.rgb = texture2D(Texture, TexCoordOut).rgb * vec3(1.10, 1.10, 0.8) * cosTheta + coloring; \n" 
+		"  gl_FragColor.w = 1.0; \n"
+		"  gl_FragColor.w *= alpha; \n"
             "}";
 
 	/*fragmentShaderBlackCode =
@@ -629,8 +637,10 @@ void Mesh::initShader() {
 	mAlphaHandle = glGetUniformLocation(mProgram, "alpha");
 	mColoringHandle = glGetUniformLocation(mProgram, "coloring");
         
-    // get handle to shape's transformation matrix
+    // get handle to shape's transformation matrices
     mMVPMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");
+	mVMatrixHandle = glGetUniformLocation(mProgram, "uVMatrix");
+	mMMatrixHandle = glGetUniformLocation(mProgram, "uMMatrix");
         
     int err = glGetError();
     if (err != 0) {

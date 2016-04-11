@@ -44,10 +44,10 @@ void MeshTerrain::setShader()
 			"uniform sampler2D Texture2; \n"
             "void main() { \n" 
             "  vec3 n = normalize(TexNormal.xyz); \n"
-            "  vec3 l = normalize(vec3(0.0, -0.5, -1.0)); \n"
-            "  float cosTheta = clamp(dot(n,l), 0.5, 1); \n"
+            "  vec3 l = normalize(vec3(-0.5, 0.0, -1.0)); \n"
+			"  float cosTheta = 0.4 + (clamp(dot(n,l), 0, 1) / 1.666); \n"
             //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);"
-			//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
+			"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
 			"  gl_FragColor.rgb *= vec3(1.10, 1.10, 0.8) * cosTheta;"
 			"  gl_FragColor.w = 1.0; \n"
 			//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100.0) / 1.4) +  vec4(-0.05, -0.05, -0.25, 0.0); \n" //* vec4(1.0, 1.0, 0.7, 1.0) ;\n" 
@@ -55,7 +55,7 @@ void MeshTerrain::setShader()
 }
 
 
-void MeshTerrain::draw(const glm::mat4 &mVPMatrix)
+void MeshTerrain::draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix)
 {
 	if (objectList.empty()) return;
 
@@ -97,6 +97,17 @@ void MeshTerrain::draw(const glm::mat4 &mVPMatrix)
 		if (err != 0) {
 			std::cout << "OGL error code: " << err << " on drawing after Pos data" << std::endl;
 		}     	
+
+		// Bind normal buffer object for triangle vertices
+		glBindBuffer(GL_ARRAY_BUFFER, mNormalsBuffer[obj->animFrame]);
+		glEnableVertexAttribArray(mNormalsHandle);
+		glVertexAttribPointer(mNormalsHandle, 3,
+			GL_FLOAT, GL_FALSE,
+			0, 0);
+		err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after Normals data" << std::endl;
+		}
         	
 	    // calculate translation and movement
 
@@ -141,6 +152,8 @@ void MeshTerrain::draw(const glm::mat4 &mVPMatrix)
         
     glDisableVertexAttribArray(mPositionHandle);
 
+	glDisableVertexAttribArray(mNormalsHandle);
+
         
     // unbind buffers
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -183,6 +196,6 @@ void MeshTerrain::initShader() {
         
     int err = glGetError();
     if (err != 0) {
-        std::cout << "OGL error code: " << err << " on drawing" << std::endl;
+        std::cout << "OGL error code: " << err << " on initializing shader" << std::endl;
     }
 }

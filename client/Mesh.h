@@ -34,7 +34,7 @@ public:
 	Mesh();
 	Mesh(const char *mesh_file, const char *tex_file);
 
-	virtual void draw(const glm::mat4 &mVPMatrix);
+	virtual void draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix);
 
 	virtual void initShader();
 	virtual void setShader();
@@ -70,6 +70,8 @@ protected:
     GLuint *mNormalsBuffer;
     GLuint mTexCoordBuffer;
     GLuint mMVPMatrixHandle;
+	GLuint mVMatrixHandle;
+	GLuint mMMatrixHandle;
 
 	int loadShader(int type, const char *code);
 };
