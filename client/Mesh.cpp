@@ -560,9 +560,14 @@ void Mesh::setShader() {
 		"varying vec3 LightDir; \n"
 		"void main() { \n"
 		// the matrix must be included as a modifier of gl_Position
-		" TexNormal = (uVMatrix * uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"  // TODO: only valid if M does nnot scale the model! use inverse transpose then
-		" vec3 LightPos = (uVMatrix * vec4(-0.5, 0.0, -1.0, 1.0)).xyz; \n"
-		" LightDir = LightPos; \n"
+		//prev " TexNormal = (uVMatrix * uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"  // TODO: only valid if M does nnot scale the model! use inverse transpose then
+		" TexNormal = (uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"
+		// prev " vec3 vertexPosition_cameraspace = ( uVMatrix * uMMatrix * vec4(vPosition,1)).xyz; \n"
+		// prev " vec3 EyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace; \n"
+		// prev " vec3 LightPos = (uVMatrix * vec4(500, 0, 0, 1)).xyz; \n" // light normal was: vec4(-0.5, 0.0, -1.0, 1.0)
+		" LightDir = vec3(-0.5, 0.0, -1.0); \n"
+		// prev " LightDir = LightPos + EyeDirection_cameraspace; \n"
+
 		" gl_Position = uMVPMatrix * vec4(mix(vPosition, vNextPosition, animProgress), 1.0); \n"
         " TexCoordOut = TexCoordIn; \n" 
         "}";
@@ -580,12 +585,12 @@ void Mesh::setShader() {
 		"uniform float alpha; \n"
 		"uniform vec3 coloring; \n"
         "void main() { \n" 
-        "  vec3 n = normalize(TexNormal.xyz); \n"
+        "  vec3 n = normalize(TexNormal); \n"
 		"  vec3 l = normalize(LightDir); \n"
-		"  float cosTheta = 0.5 + (clamp(dot(n,l), 0, 1) / 2); \n"
-        //"  gl_FragColor = TexNormal; \n"texture2D(Texture, TexCoordOut) * texture2D(Texture, TexCoordOut).rgb
+		//"  float cosTheta = 0.5 + (clamp(dot(n,l), 0, 1) / 2); \n"
+        "  gl_FragColor = vec4(n, 1.0); \n"//texture2D(Texture, TexCoordOut) * texture2D(Texture, TexCoordOut).rgb
         //"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n" // Original code
-		"  gl_FragColor.rgb = texture2D(Texture, TexCoordOut).rgb * vec3(1.10, 1.10, 0.8) * cosTheta + coloring; \n" 
+		//"  gl_FragColor.rgb = texture2D(Texture, TexCoordOut).rgb * vec3(1.10, 1.10, 0.8) * cosTheta + coloring; \n" 
 		"  gl_FragColor.w = 1.0; \n"
 		"  gl_FragColor.w *= alpha; \n"
             "}";
