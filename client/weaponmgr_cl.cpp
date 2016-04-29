@@ -4,6 +4,7 @@
 #include "helper.h"
 #include "net_cl.h"
 #include <algorithm>
+#include <sstream>
 #include "box_cl.h"
 
 weaponmgr_cl::weaponmgr_cl(level *lvl, int *curr_weapon, bool *local_player, ushort *plstate, gameRenderer *renderer, effectmgr *effmgr, int player_id)
@@ -368,7 +369,9 @@ void weaponmgr_cl::set_mag_ammo(int weapon_id, short mag, short am)
 	magazin[weapon_id] = mag;
 	ammo[weapon_id] = am;
 
-	std::cout << "client received ammo update: " << magazin[weapon_id] << " " << ammo[weapon_id] << std::endl;
+	std::ostringstream ss;
+	ss << "client received ammo update: " << magazin[weapon_id] << " " << ammo[weapon_id] << std::endl;
+	log(LOG_DEBUG, ss.str().c_str());
 }
 
 void weaponmgr_cl::switch_cl(int new_weapon_id)

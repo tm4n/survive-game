@@ -561,7 +561,7 @@ void Mesh::setShader() {
 		"void main() { \n"
 		// the matrix must be included as a modifier of gl_Position
 		//prev " TexNormal = (uVMatrix * uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"  // TODO: only valid if M does nnot scale the model! use inverse transpose then
-		" TexNormal = (uMMatrix * vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n"
+		" TexNormal = (vec4(mix(vNormal, vNextNormal, animProgress), 1.0)).xyz; \n" // eigentlich * uMMatrix
 		// prev " vec3 vertexPosition_cameraspace = ( uVMatrix * uMMatrix * vec4(vPosition,1)).xyz; \n"
 		// prev " vec3 EyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace; \n"
 		// prev " vec3 LightPos = (uVMatrix * vec4(500, 0, 0, 1)).xyz; \n" // light normal was: vec4(-0.5, 0.0, -1.0, 1.0)
