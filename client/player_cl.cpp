@@ -22,6 +22,10 @@ player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health
         	
     renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->addRenderObject(ro);
 
+	// create text for player
+	gui_plname_id = renderer->gui->addText(std::string(name), renderer->resources.getFont(ResourceLoader::fontType::fnt_norm), 1, GUIObject::Alignment::downleft, 500.f, 500.f);
+	renderer->gui->setVisible(gui_plname_id, false);
+
 	send_pos_timer = 0.f;
 	send_angle_timer = 0.f;
 	step_count = 0.;
@@ -32,6 +36,7 @@ player_cl::player_cl(level *lvl, uint actor_id, vec *pos, vec *ang, float health
 player_cl::~player_cl()
 {
 	renderer->resources.getMesh(ResourceLoader::meshType::Soldier)->removeRenderObject(ro);
+	renderer->gui->removeObject(gui_plname_id);
 
 	delete ro;
 	delete wpmgr;
@@ -136,7 +141,21 @@ void player_cl::frame(double time_delta)
 	else
 	{
 		animate(time_delta);
+		// show name above me
+		glm::vec4 clipSpacePos = renderer->mProjMatrix * (renderer->mVMatrix * glm::vec4(position.x, position.y, position.z + 52.f, 1.0));
+		if (clipSpacePos.w > 0.f)
+		{
+			glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos.x, clipSpacePos.y, clipSpacePos.z) / clipSpacePos.w;
+			glm::vec2 windowSpacePos = glm::vec2((ndcSpacePos.x + 1.0) / 2.0, (ndcSpacePos.y + 1.0) / 2.0) * glm::vec2(renderer->ss_x, renderer->ss_y);
+			renderer->gui->setX(gui_plname_id, windowSpacePos.x - renderer->gui->getSizeX(gui_plname_id) / 2.f);
+			renderer->gui->setY(gui_plname_id, -windowSpacePos.y);
+
+			renderer->gui->setVisible(gui_plname_id, true);
+		}
+		else renderer->gui->setVisible(gui_plname_id, false);
 	}
+		
+	
 
 	wpmgr->frame(time_delta, position, angle, ro->animFrame);
 	

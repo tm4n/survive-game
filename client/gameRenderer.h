@@ -32,8 +32,14 @@ public:
 
 	void drawFrame(double time_delta);
 
+	int ss_x, ss_y;
+
 	glm::vec3 CameraPos;
 	glm::vec3 CameraAngle;
+
+	glm::mat4 mVPMatrix;
+	glm::mat4 mProjMatrix;
+	glm::mat4 mVMatrix;
 
 	bool render_sky;
 	
@@ -42,10 +48,6 @@ public:
 private:
 	SDL_Window *window;
 	SDL_GLContext glcontext;
-
-	glm::mat4 mVPMatrix;
-	glm::mat4 mProjMatrix;
-	glm::mat4 mVMatrix;
 };
 
 

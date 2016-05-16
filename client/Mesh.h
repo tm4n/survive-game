@@ -60,7 +60,7 @@ protected:
     GLuint mPositionHandle;
     GLuint mNextPositionHandle;
     GLuint mNormalsHandle;
-    GLuint mNextNormalsHandle;
+    //GLuint mNextNormalsHandle;
     GLuint mAnimProgressHandle;
 	GLuint mAlphaHandle;
 	GLuint mColoringHandle;
@@ -70,8 +70,8 @@ protected:
     GLuint *mNormalsBuffer;
     GLuint mTexCoordBuffer;
     GLuint mMVPMatrixHandle;
-	GLuint mVMatrixHandle;
-	GLuint mMMatrixHandle;
+	//GLuint mVMatrixHandle;
+	//GLuint mMMatrixHandle;
 
 	int loadShader(int type, const char *code);
 };

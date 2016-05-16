@@ -626,3 +626,13 @@ float GUI::getAlpha(int id)
 {
 	return elements.at(id)->alpha;
 }
+
+float GUI::getSizeX(int id)
+{
+	return elements.at(id)->size_x;
+}
+
+float GUI::getSizeY(int id)
+{
+	return elements.at(id)->size_y;
+}

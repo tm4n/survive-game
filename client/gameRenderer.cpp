@@ -7,10 +7,12 @@
 #include "SDL2/SDL_mixer.h"
 #include "backends/b_settings.h"
 
-gameRenderer::gameRenderer(int ss_x, int ss_y, float ratio, bool fullscreen, bool antialias)
+gameRenderer::gameRenderer(int ass_x, int ass_y, float ratio, bool fullscreen, bool antialias)
 {
 	CameraJoyInputY = 0.f;
 	CameraJoyInputX = 0.f;
+	ss_x = ass_x;
+	ss_y = ass_y;
 	render_sky = false;
 
 	// Initialize sound

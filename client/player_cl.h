@@ -14,6 +14,7 @@ public:
 	bool input_shoot;
 
 	RenderObject *ro;
+	int gui_plname_id;
 
 	weaponmgr_cl *wpmgr;
 
