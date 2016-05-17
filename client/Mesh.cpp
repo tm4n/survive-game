@@ -136,9 +136,10 @@ Mesh::Mesh()
 }
 
 
-Mesh::Mesh(const char *mesh_file, const char *tex_file)
+Mesh::Mesh(const char *mesh_file, const char *tex_file, float aoutline_fac)
 {
 	loaded = false;
+	outline_fac = aoutline_fac;
 
 	// local storage vars
 	mdl_header header;
@@ -497,20 +498,23 @@ void Mesh::draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix)
 			std::cout << "OGL error code: " << err << " on drawing after drawing" << std::endl;
 		}
 
-		// Draw a second time for outline
-		glUniform3fv(mColoringHandle, 1, glm::value_ptr(glm::vec3(-5, -5, -5)));
-		// change scale
-		mTransformationMatrix = glm::scale(mTransformationMatrix, obj->scale*1.02f);
-		mFinalMatrix = mVPMatrix * mTransformationMatrix;
-		glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, glm::value_ptr(mFinalMatrix));
+		if (outline_fac > 1.0f)
+		{
+			// Draw a second time for outline
+			glUniform3fv(mColoringHandle, 1, glm::value_ptr(glm::vec3(-5, -5, -5)));
+			// change scale
+			mTransformationMatrix = glm::scale(mTransformationMatrix, glm::vec3(outline_fac, outline_fac, outline_fac));
+			mFinalMatrix = mVPMatrix * mTransformationMatrix;
+			glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, glm::value_ptr(mFinalMatrix));
 
-		glFrontFace(GL_CCW);
-		glDrawArrays(GL_TRIANGLES, 0, numtris * 3);
-		glFrontFace(GL_CW);
+			glFrontFace(GL_CCW);
+			glDrawArrays(GL_TRIANGLES, 0, numtris * 3);
+			glFrontFace(GL_CW);
 
-		err = glGetError();
-		if (err != 0) {
-			std::cout << "OGL error code: " << err << " on drawing after second drawing" << std::endl;
+			err = glGetError();
+			if (err != 0) {
+				std::cout << "OGL error code: " << err << " on drawing after second drawing" << std::endl;
+			}
 		}
     }
 
@@ -569,7 +573,7 @@ void Mesh::setShader() {
         "void main() { \n" 
         "  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n"
 		"  gl_FragColor.w *= alpha; \n"
-            "}";
+        "}";
 
 }
 

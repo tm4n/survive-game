@@ -23,7 +23,7 @@ void ResourceLoader::loadIngame()
 	Mesh *m;
 	// crates
 
-	meshes[(int)meshType::Crate] = new Mesh("assets/models/c.mdl", NULL);
+	meshes[(int)meshType::Crate] = new Mesh("assets/models/c.mdl", NULL, 1.025f);
 	if (meshes[(int)meshType::Crate]->loaded == false) {std::cout << "ERROR loading model for Crate" << std::endl; exit(-1);}
 	meshes[(int)meshType::Crate]->initShader();
 
@@ -31,7 +31,7 @@ void ResourceLoader::loadIngame()
 	if (meshes[(int)meshType::Crate_damaged]->loaded == false) {std::cout << "ERROR loading model for Crate_damaged" << std::endl; exit(-1);}
 	meshes[(int)meshType::Crate_damaged]->initShader();
 
-	meshes[(int)meshType::Generator] = new Mesh("assets/models/genera.mdl", NULL);
+	meshes[(int)meshType::Generator] = new Mesh("assets/models/genera.mdl", NULL, 1.02f);
 	if (meshes[(int)meshType::Generator]->loaded == false) {std::cout << "ERROR loading model for Generator" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator]->initShader();
 
@@ -39,7 +39,7 @@ void ResourceLoader::loadIngame()
 	if (meshes[(int)meshType::Generator_glass]->loaded == false) {std::cout << "ERROR loading model for Generator_glass" << std::endl; exit(-1);}
 	meshes[(int)meshType::Generator_glass]->initShader();
 
-	meshes[(int)meshType::Metalcrate] = new Mesh("assets/models/mc.mdl", NULL);
+	meshes[(int)meshType::Metalcrate] = new Mesh("assets/models/mc.mdl", NULL, 1.025f);
 	if (meshes[(int)meshType::Metalcrate]->loaded == false) {std::cout << "ERROR loading model for Metalcrate" << std::endl; exit(-1);}
 	meshes[(int)meshType::Metalcrate]->initShader();
 
@@ -47,15 +47,15 @@ void ResourceLoader::loadIngame()
 	if (meshes[(int)meshType::Metalcrate_damaged]->loaded == false) {std::cout << "ERROR loading model for Metalcrate_damaged" << std::endl; exit(-1);}
 	meshes[(int)meshType::Metalcrate_damaged]->initShader();
 
-	meshes[(int)meshType::Turred] = new Mesh("assets/models/turret_stand.mdl", NULL);
+	meshes[(int)meshType::Turred] = new Mesh("assets/models/turret_stand.mdl", NULL, 1.02f);
 	if (meshes[(int)meshType::Turred]->loaded == false) {std::cout << "ERROR loading model for Turred" << std::endl; exit(-1);}
 	meshes[(int)meshType::Turred]->initShader();
 
-	meshes[(int)meshType::Turred_MG] = new Mesh("assets/models/turret_mg.mdl", NULL);
+	meshes[(int)meshType::Turred_MG] = new Mesh("assets/models/turret_mg.mdl", NULL, 1.02f);
 	if (meshes[(int)meshType::Turred_MG]->loaded == false) {std::cout << "ERROR loading model for Turred_MG" << std::endl; exit(-1);}
 	meshes[(int)meshType::Turred_MG]->initShader();
 
-	m = new Mesh("assets/models/wc.mdl", NULL);
+	m = new Mesh("assets/models/wc.mdl", NULL, 1.02f);
 	meshes[(int)meshType::Weaponcrate] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -65,7 +65,7 @@ void ResourceLoader::loadIngame()
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/powerup_hp.mdl", NULL);
+	m = new Mesh("assets/models/powerup_hp.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Powerup_health] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -78,7 +78,7 @@ void ResourceLoader::loadIngame()
 	if (meshes[(int)meshType::Terrain]->loaded == false) {std::cout << "ERROR loading model for terrain" << std::endl; exit(-1);}
 	meshes[(int)meshType::Terrain]->initShader();
 
-	meshes[(int)meshType::Tree] = new Mesh("assets/models/tree1.mdl", NULL);
+	meshes[(int)meshType::Tree] = new Mesh("assets/models/tree1.mdl", NULL, 1.01f);
 	if (meshes[(int)meshType::Tree]->loaded == false) {std::cout << "ERROR loading model for tree1" << std::endl; exit(-1);}
 	meshes[(int)meshType::Tree]->initShader();
 
@@ -90,48 +90,48 @@ void ResourceLoader::loadIngame()
 
 	// characters
 
-	m = new Mesh("assets/models/soldier.mdl", NULL);
+	m = new Mesh("assets/models/soldier.mdl", NULL, 1.02f);
 	meshes[(int)meshType::Soldier] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
 	// npcs
-	m = new Mesh("assets/models/mummy.mdl", NULL);
+	m = new Mesh("assets/models/mummy.mdl", NULL, 1.02f);
 	meshes[(int)meshType::Mummy] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/werewolf.mdl", NULL);
+	m = new Mesh("assets/models/werewolf.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Werewolf] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/smasher.mdl", NULL);
+	m = new Mesh("assets/models/smasher.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Smasher] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/witch.mdl", NULL);
+	m = new Mesh("assets/models/witch.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Witch] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/hogman.mdl", NULL);
+	m = new Mesh("assets/models/hogman.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Hogman] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/knight.mdl", NULL);
+	m = new Mesh("assets/models/knight.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Knight] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/bauul.mdl", NULL);
+	m = new Mesh("assets/models/bauul.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Bauul] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/harpy.mdl", NULL);
+	m = new Mesh("assets/models/harpy.mdl", NULL, 1.025f);
 	meshes[(int)meshType::Harpy] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
@@ -148,62 +148,62 @@ void ResourceLoader::loadIngame()
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 
-	m = new Mesh("assets/models/weapons/colt.mdl", NULL);
+	m = new Mesh("assets/models/weapons/colt.mdl", NULL, 1.03f);
 	meshes[(int)meshType::Colt] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/colt_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/colt_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::Colt_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL);
+	m = new Mesh("assets/models/weapons/chainsaw.mdl", NULL, 1.03f);
 	meshes[(int)meshType::Chainsaw] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/chainsaw_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/chainsaw_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::Chainsaw_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/wesson.mdl", NULL);
+	m = new Mesh("assets/models/weapons/wesson.mdl", NULL, 1.03f);
 	meshes[(int)meshType::Wesson] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/wesson_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/wesson_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::Wesson_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/hksl8.mdl", NULL);
+	m = new Mesh("assets/models/weapons/hksl8.mdl", NULL, 1.03f);
 	meshes[(int)meshType::HKSL8] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/hksl8_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/hksl8_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::HKSL8_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/shotgun.mdl", NULL);
+	m = new Mesh("assets/models/weapons/shotgun.mdl", NULL, 1.03f);
 	meshes[(int)meshType::Shotgun] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/shotgun_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/shotgun_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::Shotgun_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new Mesh("assets/models/weapons/usas12.mdl", NULL);
+	m = new Mesh("assets/models/weapons/usas12.mdl", NULL, 1.03f);
 	meshes[(int)meshType::USAS12] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();
 	
-	m = new MeshGUI("assets/models/weapons/usas12_hand.mdl", NULL);
+	m = new MeshGUI("assets/models/weapons/usas12_hand.mdl", NULL, 1.0018f);
 	meshes[(int)meshType::USAS12_hand] = m;
 	if (m->loaded == false) {std::cout << "ERROR loading model '" << m->filename << "'" << std::endl; exit(-1);}
 	m->initShader();

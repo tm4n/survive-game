@@ -7,9 +7,9 @@ class MeshGUI: public Mesh
 {
 public:
 
-	MeshGUI(const char *mesh_file, const char *tex_file);
+	MeshGUI(const char *mesh_file, const char *tex_file, float outline_fac = 1.0f);
 
-	virtual void draw(const glm::mat4 &mVPMatrix);
+	//virtual void draw(const glm::mat4 &mVPMatrix);
 
 protected:
 	GLuint mTransHandle;

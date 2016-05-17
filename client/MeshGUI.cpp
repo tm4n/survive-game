@@ -4,12 +4,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-MeshGUI::MeshGUI(const char *mesh_file, const char *tex_file) : Mesh(mesh_file, tex_file)
+MeshGUI::MeshGUI(const char *mesh_file, const char *tex_file, float aoutline_fac) : Mesh(mesh_file, tex_file, aoutline_fac)
 {
 }
 
 
-void MeshGUI::draw(const glm::mat4 &mVPMatrix)
+/*void MeshGUI::draw(const glm::mat4 &mVPMatrix)
 {
 	if (objectList.empty()) return;
 
@@ -126,4 +126,4 @@ void MeshGUI::draw(const glm::mat4 &mVPMatrix)
         std::cout << "OGL error code: " << err << " on drawing after disabling" << std::endl;
 	}  
         
-}
+}*/

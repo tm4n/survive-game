@@ -29,10 +29,12 @@ public:
 	vec bb_min;
 	vec bb_max;
 
+	float outline_fac;
+
 	std::list<RenderObject*> objectList;
 
 	Mesh();
-	Mesh(const char *mesh_file, const char *tex_file);
+	Mesh(const char *mesh_file, const char *tex_file, float outline_fac = 1.0f);
 
 	virtual void draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix);
 
