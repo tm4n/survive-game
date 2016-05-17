@@ -498,7 +498,20 @@ void Mesh::draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix)
 		}
 
 		// Draw a second time for outline
+		glUniform3fv(mColoringHandle, 1, glm::value_ptr(glm::vec3(-5, -5, -5)));
+		// change scale
+		mTransformationMatrix = glm::scale(mTransformationMatrix, obj->scale*1.02f);
+		mFinalMatrix = mVPMatrix * mTransformationMatrix;
+		glUniformMatrix4fv(mMVPMatrixHandle, 1, GL_FALSE, glm::value_ptr(mFinalMatrix));
 
+		glFrontFace(GL_CCW);
+		glDrawArrays(GL_TRIANGLES, 0, numtris * 3);
+		glFrontFace(GL_CW);
+
+		err = glGetError();
+		if (err != 0) {
+			std::cout << "OGL error code: " << err << " on drawing after second drawing" << std::endl;
+		}
     }
 
     // Disable vertex array
@@ -557,22 +570,6 @@ void Mesh::setShader() {
         "  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n"
 		"  gl_FragColor.w *= alpha; \n"
             "}";
-
-	/*fragmentShaderBlackCode =
-		"#version 110 \n"
-		"#ifdef GL_ES \n"
-		"precision mediump float; \n"
-		"#endif \n"
-
-		"varying vec2 TexCoordOut; \n"
-		"uniform sampler2D Texture; \n"
-		"uniform float alpha; \n"
-		"uniform vec3 coloring; \n"
-		"void main() { \n"
-		//"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-		"  gl_FragColor = texture2D(Texture, TexCoordOut) * vec4(1.10, 1.10, 0.8, 1.0) + vec4(coloring, 0.0); \n"
-		"  gl_FragColor.w *= alpha; \n"
-		"}";*/
 
 }
 

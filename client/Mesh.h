@@ -48,6 +48,7 @@ public:
 protected:
 	const char *vertexShaderCode;
 	const char *fragmentShaderCode;
+	//const char *fragmentShaderBlackCode; // todo: optimize with this code
 
 	std::vector<std::string> frameNames;
 
