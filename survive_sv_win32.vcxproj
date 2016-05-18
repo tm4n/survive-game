@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5A783FD5-AE81-4C1D-BC47-8BCAB7010F41}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>survive_sv_win32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="server\base85.cpp" />
+    <ClCompile Include="server\box_sv.cpp" />
+    <ClCompile Include="server\collectible_sv.cpp" />
+    <ClCompile Include="server\gameServer.cpp" />
+    <ClCompile Include="server\level_sv.cpp" />
+    <ClCompile Include="server\net_sv.cpp" />
+    <ClCompile Include="server\npc_sv.cpp" />
+    <ClCompile Include="server\player_sv.cpp" />
+    <ClCompile Include="server\projectile_sv.cpp" />
+    <ClCompile Include="server\scoremgr.cpp" />
+    <ClCompile Include="server\weaponmgr_sv.cpp" />
+    <ClCompile Include="shared\actor.cpp" />
+    <ClCompile Include="shared\box.cpp" />
+    <ClCompile Include="shared\collectible.cpp" />
+    <ClCompile Include="shared\game.cpp" />
+    <ClCompile Include="shared\helper.cpp" />
+    <ClCompile Include="shared\level.cpp" />
+    <ClCompile Include="shared\net.cpp" />
+    <ClCompile Include="shared\npc.cpp" />
+    <ClCompile Include="shared\player.cpp" />
+    <ClCompile Include="shared\projectile.cpp" />
+    <ClCompile Include="shared\Timer.cpp" />
+    <ClCompile Include="shared\vec.cpp" />
+    <ClCompile Include="shared\weaponmgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="server\box_sv.h" />
+    <ClInclude Include="server\collectible_sv.h" />
+    <ClInclude Include="server\gameServer.h" />
+    <ClInclude Include="server\level_sv.h" />
+    <ClInclude Include="server\net_sv.h" />
+    <ClInclude Include="server\npc_sv.h" />
+    <ClInclude Include="server\player_sv.h" />
+    <ClInclude Include="server\projectile_sv.h" />
+    <ClInclude Include="server\scoremgr.h" />
+    <ClInclude Include="server\weaponmgr_sv.h" />
+    <ClInclude Include="shared\actor.h" />
+    <ClInclude Include="shared\box.h" />
+    <ClInclude Include="shared\collectible.h" />
+    <ClInclude Include="shared\defs.h" />
+    <ClInclude Include="shared\flist.h" />
+    <ClInclude Include="shared\game.h" />
+    <ClInclude Include="shared\helper.h" />
+    <ClInclude Include="shared\level.h" />
+    <ClInclude Include="shared\net.h" />
+    <ClInclude Include="shared\npc.h" />
+    <ClInclude Include="shared\player.h" />
+    <ClInclude Include="shared\projectile.h" />
+    <ClInclude Include="shared\Timer.h" />
+    <ClInclude Include="shared\vec.h" />
+    <ClInclude Include="shared\weaponmgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\Survive_Logo.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

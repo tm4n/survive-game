@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+    </ResourceCompile>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E8EBC28B-C96C-41C5-ABBC-BD19B0FFFD89}</ProjectGuid>
+    <RootNamespace>survive_cl_win32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>D:\Development\survive\libs\SDL2_mixer\include;D:\Development\survive\libs\glm;D:\Development\survive\libs\enet\include;D:\Development\survive\libs\SDL2\include;D:\Development\survive\libs\SDL2_ttf-2.0.12\include;D:\Development\survive\shared;$(IncludePath);D:\Development\survive\client;D:\Development\survive\shared</IncludePath>
+    <LibraryPath>D:\Development\survive\libs\enet\Debug;D:\Development\survive\libs\SDL2\lib\x86;D:\Development\survive\libs\SDL2_ttf-2.0.12\lib\x86;D:\Development\survive\libs\SDL2_mixer\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>D:\Development\survive\libs\SDL2_mixer\include;D:\Development\survive\libs\glm;D:\Development\survive\libs\enet\include;D:\Development\survive\libs\SDL2\include;D:\Development\survive\libs\SDL2_ttf-2.0.12\include;$(IncludePath);D:\Development\survive\client;D:\Development\survive\shared</IncludePath>
+    <LibraryPath>D:\Development\survive\libs\enet\Release;D:\Development\survive\libs\SDL2\lib\x86;D:\Development\survive\libs\SDL2_mixer\lib\x86;D:\Development\survive\libs\SDL2_ttf-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>enet.lib;sdl2.lib;opengl32.lib;SDL2_mixer.lib;sdl2_ttf.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>enet.lib;sdl2.lib;opengl32.lib;SDL2_mixer.lib;sdl2_ttf.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="client\backends\b_settings.cpp" />
+    <ClCompile Include="client\box_cl.cpp" />
+    <ClCompile Include="client\collectible_cl.cpp" />
+    <ClCompile Include="client\CubeTexture.cpp" />
+    <ClCompile Include="client\effectmgr.cpp" />
+    <ClCompile Include="client\gameClient.cpp" />
+    <ClCompile Include="client\gameRenderer.cpp" />
+    <ClCompile Include="client\gl_core_2_1.c" />
+    <ClCompile Include="client\GUI.cpp" />
+    <ClCompile Include="client\GUIObject.cpp" />
+    <ClCompile Include="client\gui_hud.cpp" />
+    <ClCompile Include="client\gui_serverlist.cpp" />
+    <ClCompile Include="client\level_cl.cpp" />
+    <ClCompile Include="client\main.cpp" />
+    <ClCompile Include="client\Menu.cpp" />
+    <ClCompile Include="client\Mesh.cpp" />
+    <ClCompile Include="client\MeshBlend.cpp" />
+    <ClCompile Include="client\MeshGUI.cpp" />
+    <ClCompile Include="client\MeshSkybox.cpp" />
+    <ClCompile Include="client\MeshTerrain.cpp" />
+    <ClCompile Include="client\net_cl.cpp" />
+    <ClCompile Include="client\npc_cl.cpp" />
+    <ClCompile Include="client\particlemgr.cpp" />
+    <ClCompile Include="client\player_cl.cpp" />
+    <ClCompile Include="client\projectile_cl.cpp" />
+    <ClCompile Include="client\RenderObject.cpp" />
+    <ClCompile Include="client\ResourceLoader.cpp" />
+    <ClCompile Include="client\Sound.cpp" />
+    <ClCompile Include="client\Texture.cpp" />
+    <ClCompile Include="client\weaponmgr_cl.cpp" />
+    <ClCompile Include="server\projectile_sv.cpp" />
+    <ClCompile Include="server\scoremgr.cpp" />
+    <ClCompile Include="server\box_sv.cpp" />
+    <ClCompile Include="server\collectible_sv.cpp" />
+    <ClCompile Include="server\gameServer.cpp" />
+    <ClCompile Include="server\level_sv.cpp" />
+    <ClCompile Include="server\net_sv.cpp" />
+    <ClCompile Include="server\npc_sv.cpp" />
+    <ClCompile Include="server\player_sv.cpp" />
+    <ClCompile Include="server\weaponmgr_sv.cpp" />
+    <ClCompile Include="shared\actor.cpp" />
+    <ClCompile Include="shared\backends\b_npcs.cpp" />
+    <ClCompile Include="shared\backends\b_weapons.cpp" />
+    <ClCompile Include="shared\box.cpp" />
+    <ClCompile Include="shared\collectible.cpp" />
+    <ClCompile Include="shared\game.cpp" />
+    <ClCompile Include="shared\helper.cpp" />
+    <ClCompile Include="shared\level.cpp" />
+    <ClCompile Include="shared\net.cpp" />
+    <ClCompile Include="shared\npc.cpp" />
+    <ClCompile Include="shared\player.cpp" />
+    <ClCompile Include="shared\projectile.cpp" />
+    <ClCompile Include="shared\Timer.cpp" />
+    <ClCompile Include="shared\vec.cpp" />
+    <ClCompile Include="shared\weaponmgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="client\backends\b_settings.h" />
+    <ClInclude Include="client\box_cl.h" />
+    <ClInclude Include="client\collectible_cl.h" />
+    <ClInclude Include="client\CubeTexture.h" />
+    <ClInclude Include="client\effectmgr.h" />
+    <ClInclude Include="client\gameClient.h" />
+    <ClInclude Include="client\gameRenderer.h" />
+    <ClInclude Include="client\gl_core_2_1.h" />
+    <ClInclude Include="client\GUI.h" />
+    <ClInclude Include="client\GUIObject.h" />
+    <ClInclude Include="client\gui_hud.h" />
+    <ClInclude Include="client\gui_serverlist.h" />
+    <ClInclude Include="client\level_cl.h" />
+    <ClInclude Include="client\Menu.h" />
+    <ClInclude Include="client\Mesh.h" />
+    <ClInclude Include="client\MeshBlend.h" />
+    <ClInclude Include="client\MeshGUI.h" />
+    <ClInclude Include="client\MeshSkybox.h" />
+    <ClInclude Include="client\MeshTerrain.h" />
+    <ClInclude Include="client\net_cl.h" />
+    <ClInclude Include="client\npc_cl.h" />
+    <ClInclude Include="client\particlemgr.h" />
+    <ClInclude Include="client\player_cl.h" />
+    <ClInclude Include="client\projectile_cl.h" />
+    <ClInclude Include="client\RenderObject.h" />
+    <ClInclude Include="client\ResourceLoader.h" />
+    <ClInclude Include="client\Sound.h" />
+    <ClInclude Include="client\Texture.h" />
+    <ClInclude Include="client\weaponmgr_cl.h" />
+    <ClInclude Include="server\projectile_sv.h" />
+    <ClInclude Include="server\scoremgr.h" />
+    <ClInclude Include="server\box_sv.h" />
+    <ClInclude Include="server\collectible_sv.h" />
+    <ClInclude Include="server\gameServer.h" />
+    <ClInclude Include="server\level_sv.h" />
+    <ClInclude Include="server\net_sv.h" />
+    <ClInclude Include="server\npc_sv.h" />
+    <ClInclude Include="server\player_sv.h" />
+    <ClInclude Include="server\weaponmgr_sv.h" />
+    <ClInclude Include="shared\actor.h" />
+    <ClInclude Include="shared\backends\b_npcs.h" />
+    <ClInclude Include="shared\backends\b_weapons.h" />
+    <ClInclude Include="shared\box.h" />
+    <ClInclude Include="shared\collectible.h" />
+    <ClInclude Include="shared\defs.h" />
+    <ClInclude Include="shared\game.h" />
+    <ClInclude Include="shared\helper.h" />
+    <ClInclude Include="shared\level.h" />
+    <ClInclude Include="shared\net.h" />
+    <ClInclude Include="shared\npc.h" />
+    <ClInclude Include="shared\player.h" />
+    <ClInclude Include="shared\projectile.h" />
+    <ClInclude Include="shared\Timer.h" />
+    <ClInclude Include="shared\vec.h" />
+    <ClInclude Include="shared\weaponmgr.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

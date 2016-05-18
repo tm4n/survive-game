@@ -54,8 +54,8 @@ public:
 	void setButtonDefault(int id);
 
 	float getAlpha(int id);
-	float getSizeX(int id);
-	float getSizeY(int id);
+	int getSizeX(int id);
+	int getSizeY(int id);
 
 	void draw();
 	void event_mouse(SDL_Event *evt);
