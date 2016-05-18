@@ -53,7 +53,7 @@ void box_sv::frame(double time_delta)
 				else
 				{
 					vec from(position.x, position.y, position.z + 22.f);
-					if (asin(abs(position.z - ac->position.z) / position.dist(&ac->position)) >= toRadians(40.f)
+					if (asin(std::abs(position.z - ac->position.z) / position.dist(&ac->position)) >= toRadians(40.f)
 						|| lvl->trace(from, ac->position, NULL, NULL, id, target) == true)
 					{
 						log(LOG_DEBUG_VERBOSE, "TURRET LOST TARGET: blocked or angle"); target = -1; net_server->broadcast_update_target(id, target);
@@ -82,7 +82,7 @@ void box_sv::frame(double time_delta)
 					{
 							// is alive, within range and turret can turn to face him
 						if (ac->health > 0 && position.dist(&ac->position) <= attack_range
-							&& asin(abs(position.z - ac->position.z) / position.dist(&ac->position)) < toRadians(40.f))
+							&& asin(std::abs(position.z - ac->position.z) / position.dist(&ac->position)) < toRadians(40.f))
 						{
 							// no obstacle is in the way
 							vec from(position.x, position.y, position.z + 22.f);
