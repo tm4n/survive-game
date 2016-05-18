@@ -10,6 +10,7 @@
 #include "SDL2/SDL.h"
 #include "helper.h"
 #include "Sound.h"
+#include "backends/b_settings.h"
 
 // base header
 typedef struct {
@@ -498,7 +499,7 @@ void Mesh::draw(const glm::mat4 &mVPMatrix, const glm::mat4 &mVMatrix)
 			std::cout << "OGL error code: " << err << " on drawing after drawing" << std::endl;
 		}
 
-		if (outline_fac > 1.0f)
+		if (outline_fac > 1.0f && b_settings::instance()->shader)
 		{
 			// Draw a second time for outline
 			glUniform3fv(mColoringHandle, 1, glm::value_ptr(glm::vec3(-5, -5, -5)));

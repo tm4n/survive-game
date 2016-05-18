@@ -32,26 +32,26 @@ void MeshTerrain::setShader()
             " TexNormal = vNormal;\n"
             "}";
 
-    fragmentShaderCode =
-			"#version 110 \n"
-			"#ifdef GL_ES \n"
-			"precision mediump float; \n"
-			"#endif \n"
-			
-            "varying vec2 TexCoordOut; \n" 
-            "varying vec3 TexNormal; \n"
-            "uniform sampler2D Texture1; \n"
-			"uniform sampler2D Texture2; \n"
-            "void main() { \n" 
-            "  vec3 n = normalize(TexNormal.xyz); \n"
-            "  vec3 l = normalize(vec3(-0.5, 0.0, -1.0)); \n"
-			"  float cosTheta = 0.4 + (clamp(dot(n,l), 0, 1) / 1.666); \n"
-            //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);"
-			"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
-			"  gl_FragColor.rgb *= vec3(1.10, 1.10, 0.8) * cosTheta;"
-			"  gl_FragColor.w = 1.0; \n"
-			//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100.0) / 1.4) +  vec4(-0.05, -0.05, -0.25, 0.0); \n" //* vec4(1.0, 1.0, 0.7, 1.0) ;\n" 
-            "}";
+	fragmentShaderCode =
+		"#version 110 \n"
+		"#ifdef GL_ES \n"
+		"precision mediump float; \n"
+		"#endif \n"
+
+		"varying vec2 TexCoordOut; \n"
+		"varying vec3 TexNormal; \n"
+		"uniform sampler2D Texture1; \n"
+		"uniform sampler2D Texture2; \n"
+		"void main() { \n"
+		"  vec3 n = normalize(TexNormal.xyz); \n"
+		"  vec3 l = vec3(-0.447214, 0.0, -0.894427);" // originally: normalize(vec3(-0.5, 0.0, -1.0));
+		"  float cosTheta = 0.4 + (clamp(dot(n,l), 0.0, 1.0) / 1.666); \n"
+        //"  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);"
+		"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + (vec4(0.5, 0.5, 0.5, 0.0) - texture2D(Texture2, TexCoordOut*100.0)*0.7)) * vec4(1.1, 1.1, 0.8, 1.0);\n" //vec4(0.22, 0.18, 0.0, 0.0); \n"
+		"  gl_FragColor.rgb *= vec3(1.10, 1.10, 0.8) * cosTheta;"
+		"  gl_FragColor.w = 1.0; \n"
+		//"  gl_FragColor = (texture2D(Texture1, TexCoordOut) + texture2D(Texture2, TexCoordOut*100.0) / 1.4) +  vec4(-0.05, -0.05, -0.25, 0.0); \n" //* vec4(1.0, 1.0, 0.7, 1.0) ;\n" 
+        "}";
 }
 
 
