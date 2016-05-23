@@ -2,6 +2,11 @@
 
 level_sv::level_sv(const char *filename) : level(filename)
 {
+	reset();
+}
+
+void level_sv::reset()
+{
 	for (int i = 0; i < NUM_WPDROPS; i++) wpdrops[i] = false;
 }
 

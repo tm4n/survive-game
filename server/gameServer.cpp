@@ -875,6 +875,7 @@ void gameServer::reset()
 	{
 		if (lvl_sv->actorlist.at(i) != 0) delete lvl_sv->actorlist.at(i);
 	}
+	lvl_sv->reset();
 }
 
 void gameServer::spawner(double time_frame)
