@@ -43,12 +43,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>libs\SDL2_mixer\include;libs\glm;libs\enet\include;libs\SDL2\include;libs\SDL2_ttf-2.0.12\include;shared;$(IncludePath);client</IncludePath>
-    <LibraryPath>libs\enet\Debug;libs\SDL2\lib\x86;libs\SDL2_ttf-2.0.12\lib\x86;libs\SDL2_mixer\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>libs\SDL2_mixer\include;libs\glm;libs\enet\include;libs\SDL2\include;libs\SDL2_ttf\include;shared;$(IncludePath);client</IncludePath>
+    <LibraryPath>libs\enet\Debug;libs\SDL2\lib\x86;libs\SDL2_ttf\lib\x86;libs\SDL2_mixer\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>libs\SDL2_mixer\include;libs\glm;libs\enet\include;libs\SDL2\include;libs\SDL2_ttf-2.0.12\include;$(IncludePath);client;shared</IncludePath>
-    <LibraryPath>libs\enet\Release;libs\SDL2\lib\x86;libs\SDL2_mixer\lib\x86;libs\SDL2_ttf-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>libs\SDL2_mixer\include;libs\glm;libs\enet\include;libs\SDL2\include;libs\SDL2_ttf\include;$(IncludePath);client;shared</IncludePath>
+    <LibraryPath>libs\enet\Release;libs\SDL2\lib\x86;libs\SDL2_mixer\lib\x86;libs\SDL2_ttf\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
