@@ -2,7 +2,7 @@
 
 Survive! is an online team-based shooter. Survive round after round of attacks by scary monsters.
 
-Download the game at http://tman.bplaced.net/blog/
+Download the game at [indiedb/](https://www.indiedb.com/games/survive/downloads)
 
 TODO: Add screenshots
 
